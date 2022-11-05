@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Use image label to cleanup possible orphaned images.
+oImgs=$(buildah images | grep -F '<none>' | awk '{print $3}')
+for img in $oImgs ; do
+    if buildah inspect $img | grep -q '"AUTOMATION_CONTAINER_IMAGE": "api-checkpoint"'; then
+        buildah rmi --force $img
+    fi
+done
+
+if [ "$1" == "purge" ]; then
+    if podman volume ls | awk '{print $2}' | grep -q ^api-checkpoint$; then
+        printf "\n* Clean up api-checkpoint volume...\n"
+        podman volume rm -f api-checkpoint
+        podman volume rm -f api-checkpoint-db
+        podman volume rm -f api-checkpoint-cacerts
+    fi
+fi
+
+# Force debconf cleanup.
+echo PURGE | debconf-communicate automation-interface-api-checkpoint-container
+
+exit 0

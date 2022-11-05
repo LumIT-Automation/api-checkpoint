@@ -1,0 +1,6 @@
+.idea
+*.pyc
+*.swp
+*/__pycache__
+api/*.db
+checkpoint/sql/checkpoint.data-development.sql

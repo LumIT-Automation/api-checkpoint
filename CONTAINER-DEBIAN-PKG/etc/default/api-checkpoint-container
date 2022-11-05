@@ -1,0 +1,6 @@
+# Days of Retention for api-checkpoint databases backup
+API_CHECKPOINT_DB_RETENTION=30
+
+# Days of Retention for api-checkpoint volumes backup
+API_CHECKPOINT_VOL_RETENTION=120
+
