@@ -36,8 +36,7 @@ class Domain:
     def add(assetId: int, domain: str) -> int:
         if domain == "any":
             try:
-                did = Repository.add(assetId, domain)
-                return did
+                return Repository.add(assetId, domain)
             except Exception as e:
                 raise e
         else:
@@ -46,8 +45,7 @@ class Domain:
             for v in checkpointDomains:
                 if v["name"] == domain:
                     try:
-                        did = Repository.add(assetId, domain)
-                        return did
+                        return Repository.add(assetId, domain)
                     except Exception as e:
                         raise e
 

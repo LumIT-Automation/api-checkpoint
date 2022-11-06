@@ -58,10 +58,8 @@ class Asset:
 
     @staticmethod
     def add(data: dict) -> None:
-        from checkpoint.models.Permission.Role import Role
         from checkpoint.models.Permission.Domain import Domain as PermissionDomain
         from checkpoint.models.Permission.Permission import Permission
-        from checkpoint.models.Permission.IdentityGroup import IdentityGroup
 
         try:
             aId = Repository.add(data)
@@ -70,10 +68,13 @@ class Asset:
             PermissionDomain.add(aId, "any")
 
             # Also, add a "*" permission for the workflow.local system user.
-            Permission.add(
-                identityGroup=IdentityGroup(identityGroupIdentifier="workflow.local"),
-                role=Role(role="workflow"),
-                domain=PermissionDomain(assetId=aId, name="any")
+            Permission.addFacade(
+                identityGroupIdentifier="workflow.local",
+                role="workflow",
+                domainInfo={
+                    "assetId": aId,
+                    "name": "any"
+                }
             )
         except Exception as e:
             raise e

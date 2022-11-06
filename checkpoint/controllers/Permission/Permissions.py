@@ -33,7 +33,7 @@ class PermissionsController(CustomControllerCheckPointGetList, CustomControllerC
     def post(self, request: Request) -> Response:
         def actionCallback(data):
             return Permission.addFacade(
-                identityGroupId=data["identity_group_identifier"],
+                identityGroupIdentifier=data["identity_group_identifier"],
                 role=data["role"],
                 domainInfo={
                     "assetId": data["domain"]["id_asset"],

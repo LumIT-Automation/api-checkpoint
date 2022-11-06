@@ -28,19 +28,6 @@ class Permission:
     # Public methods
     ####################################################################################################################
 
-    def modify(self, identityGroup: IdentityGroup, role: Role, domain: Domain) -> None:
-        try:
-            Repository.modify(
-                self.id,
-                identityGroupId=identityGroup.id,
-                roleId=role.id,
-                domainId=domain.id
-            )
-        except Exception as e:
-            raise e
-
-
-
     def delete(self) -> None:
         try:
             Repository.delete(self.id)
@@ -138,27 +125,14 @@ class Permission:
 
 
     @staticmethod
-    def add(identityGroup: IdentityGroup, role: Role, domain: Domain) -> None:
-        try:
-            Repository.add(
-                identityGroupId=identityGroup.id,
-                roleId=role.id,
-                domainId=domain.id
-            )
-        except Exception as e:
-            raise e
-
-
-
-    @staticmethod
-    def addFacade(identityGroupId: str, role: str, domainInfo: dict) -> None:
+    def addFacade(identityGroupIdentifier: str, role: str, domainInfo: dict) -> None:
         domainAssetId = domainInfo.get("assetId", "")
         domainName = domainInfo.get("name", "")
 
         try:
             # Get existent or new domain.
             if role == "admin":
-                # role admin -> "any" partition, which always exists.
+                # Role admin -> "any" partition, which always exists.
                 domain = Domain(assetId=domainAssetId, name="any")
             else:
                 try:
@@ -176,8 +150,8 @@ class Permission:
                     else:
                         raise e
 
-            Permission.add(
-                identityGroup=IdentityGroup(identityGroupIdentifier=identityGroupId),
+            Permission.__add(
+                identityGroup=IdentityGroup(identityGroupIdentifier=identityGroupIdentifier),
                 role=Role(role=role),
                 domain=domain
             )
@@ -212,7 +186,7 @@ class Permission:
                     else:
                         raise e
 
-            Permission(permissionId).modify(
+            Permission(permissionId).__modify(
                 identityGroup=IdentityGroup(identityGroupIdentifier=identityGroupId),
                 role=Role(role=role),
                 domain=domain
@@ -233,5 +207,35 @@ class Permission:
             self.identityGroup = IdentityGroup(id=info["id_group"])
             self.role = Role(id=info["id_role"])
             self.domain = Domain(id=info["id_domain"])
+        except Exception as e:
+            raise e
+
+
+
+    def __modify(self, identityGroup: IdentityGroup, role: Role, domain: Domain) -> None:
+        try:
+            Repository.modify(
+                self.id,
+                identityGroupId=identityGroup.id,
+                roleId=role.id,
+                domainId=domain.id
+            )
+        except Exception as e:
+            raise e
+
+
+
+    ####################################################################################################################
+    # Private static methods
+    ####################################################################################################################
+
+    @staticmethod
+    def __add(identityGroup: IdentityGroup, role: Role, domain: Domain) -> None:
+        try:
+            Repository.add(
+                identityGroupId=identityGroup.id,
+                roleId=role.id,
+                domainId=domain.id
+            )
         except Exception as e:
             raise e
