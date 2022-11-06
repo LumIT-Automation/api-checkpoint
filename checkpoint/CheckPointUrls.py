@@ -30,7 +30,6 @@ from .controllers.CheckPoint import NatRule, NatRulebase
 from .controllers.CheckPoint import NatRuleObjects
 from .controllers.CheckPoint import Roles as CheckPointRoles, Role as CheckPointRole
 from .controllers.CheckPoint import LayersAccess, LayersThreat, LayersHttps, LayerAccess, LayerThreat, LayerHttps
-from .controllers import History
 
 
 urlpatterns = [
@@ -165,9 +164,6 @@ urlpatterns = [
     # Roles.
     path('<int:assetId>/<str:domain>/access-roles/', CheckPointRoles.CheckPointRolesController.as_view(), name='access-roles'),
     path('<int:assetId>/<str:domain>/access-roles/<str:roleUid>/', CheckPointRole.CheckPointRoleController.as_view(), name='access-role'),
-
-    # Log history.
-    path('history/', History.HistoryLogsController.as_view(), name='checkpoint-log-history'),
 
     # Use cases.
     # Remove host.
