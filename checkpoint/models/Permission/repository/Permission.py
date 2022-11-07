@@ -71,9 +71,7 @@ class Permission:
         c = connection.cursor()
 
         try:
-            c.execute("DELETE FROM group_role_domain WHERE id = %s", [
-                permissionId
-            ])
+            c.execute("DELETE FROM group_role_domain WHERE id = %s", [permissionId])
         except Exception as e:
             raise CustomException(status=400, payload={"database": e.__str__()})
         finally:
