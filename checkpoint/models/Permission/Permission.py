@@ -168,7 +168,7 @@ class Permission:
         try:
             # Get existent or new domain.
             if role == "admin":
-                # role admin -> "any" partition, which always exists.
+                # role admin -> "any" domain, which always exists.
                 domain = Domain(assetId=domainAssetId, name="any")
             else:
                 try:

@@ -148,8 +148,8 @@ class PermissionPrivilege:
                                 #     set "any" for assets value.
 
                                 # asset:
-                                #    a privilege does not require the partitions to be specified <--> it's valid for all partitions within the asset;
-                                #    set "any" for partitions value.
+                                #    a privilege does not require the domains to be specified <--> it's valid for all domains within the asset;
+                                #    set "any" for domains value.
                                 #
                                 # object:
                                 #     standard.
