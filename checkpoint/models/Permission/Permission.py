@@ -161,7 +161,7 @@ class Permission:
 
 
     @staticmethod
-    def modifyFacade(permissionId: int, identityGroupId: str, role: str, domainInfo: dict) -> None:
+    def modifyFacade(permissionId: int, identityGroupIdentifier: str, role: str, domainInfo: dict) -> None:
         domainAssetId = domainInfo.get("assetId", "")
         domainName = domainInfo.get("name", "")
 
@@ -187,7 +187,7 @@ class Permission:
                         raise e
 
             Permission(permissionId).__modify(
-                identityGroup=IdentityGroup(identityGroupIdentifier=identityGroupId),
+                identityGroup=IdentityGroup(identityGroupIdentifier=identityGroupIdentifier),
                 role=Role(role=role),
                 domain=domain
             )

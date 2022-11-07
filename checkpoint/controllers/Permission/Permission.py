@@ -41,7 +41,7 @@ class PermissionController(CustomControllerCheckPointGetInfo, CustomControllerCh
         def actionCallback(data):
             return Permission.modifyFacade(
                 permissionId=permissionId,
-                identityGroupId=data["identity_group_identifier"],
+                identityGroupIdentifier=data["identity_group_identifier"],
                 role=data["role"],
                 domainInfo={
                     "assetId": data["domain"]["id_asset"],
