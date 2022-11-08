@@ -4011,7 +4011,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/policy-packages/?local",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/policy-packages/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -4027,12 +4027,6 @@
 												"POLAND",
 												"policy-packages",
 												""
-											],
-											"query": [
-												{
-													"key": "local",
-													"value": null
-												}
 											]
 										}
 									},
@@ -4128,7 +4122,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"data\": {\n        \"access-layers\": {\n            \"add\": [\n                {\n                    \"name\": \"98e853be-a51d-4833-99fa-11ea30cba3be\",\n                    \"position\": 1\n                }\n            ]\n        }\n    }\n}",
+											"raw": "{\n    \"data\": {\n        \"comments\": \"This is a comment, prove I'm wrong\"\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -4136,7 +4130,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/policy-package/47a84249-e965-4e94-a112-01c8835ffe17/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/policy-package/55f0b9d6-7ab1-478c-b8d7-a62f0551ac3c/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -4151,7 +4145,7 @@
 												"1",
 												"POLAND",
 												"policy-package",
-												"47a84249-e965-4e94-a112-01c8835ffe17",
+												"55f0b9d6-7ab1-478c-b8d7-a62f0551ac3c",
 												""
 											]
 										}

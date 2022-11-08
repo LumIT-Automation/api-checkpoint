@@ -34,5 +34,5 @@ class CheckPointPolicyPackageSerializer(serializers.Serializer):
     access = serializers.BooleanField(required=False)
     qos = serializers.BooleanField(required=False)
     tags = serializers.JSONField(required=False)
-    color = serializers.CharField(max_length=64, required=True)
+    color = serializers.CharField(max_length=64, required=False)
     comments = serializers.CharField(max_length=255, required=False, allow_blank=True)
