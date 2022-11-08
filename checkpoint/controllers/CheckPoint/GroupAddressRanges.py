@@ -37,7 +37,6 @@ class CheckPointGroupAddressRangesController(CustomControllerCheckPointGetList, 
             request=request,
             assetId=assetId,
             domain=domain,
-            containerObjectUid=groupUid,
             Serializer=Serializer,
             actionCallback=lambda data: GroupAddressRange.addAddressRangesToGroup(
                 sessionId=self.sessionId,
