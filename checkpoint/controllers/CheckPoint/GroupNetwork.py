@@ -1,58 +1,28 @@
-import uuid
-import time
-
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from checkpoint.models.CheckPoint.GroupNetwork import GroupNetwork
-from checkpoint.models.CheckPoint.Session import Session
-from checkpoint.models.Permission.Permission import Permission
 
-from checkpoint.controllers.CustomControllerBase import CustomControllerBase
-
-from checkpoint.helpers.Lock import Lock
-from checkpoint.helpers.Log import Log
+from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
 
 
-class CheckPointGroupNetworkController(CustomControllerBase):
+class CheckPointGroupNetworkController(CustomControllerCheckPointDelete):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.sessionId = uuid.uuid4().hex
+        CustomControllerCheckPointDelete.__init__(self, subject="group_network", *args, **kwargs)
 
 
 
     def delete(self, request: Request, assetId: int, domain: str, groupUid: str, networkUid: str) -> Response:
-        user = CustomControllerBase.loggedUser(request)
-
-        try:
-            if Permission.hasUserPermission(groups=user["groups"], action="group_network_delete", assetId=assetId, domain=domain) or user["authDisabled"]:
-                Log.actionLog("Group network removal", user)
-
-                lock = Lock("Group", locals(), groupUid)
-                if lock.isUnlocked():
-                    lock.lock()
-
-                    GroupNetwork(sessionId=self.sessionId, assetId=assetId, domain=domain, groupUid=groupUid, networkUid=networkUid).remove()
-                    httpStatus = status.HTTP_200_OK
-                    lock.release()
-                else:
-                    httpStatus = status.HTTP_423_LOCKED
-            else:
-                httpStatus = status.HTTP_403_FORBIDDEN
-        except Exception as e:
-            Lock("group", locals(), locals()["groupUid"]).release()
-
-            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-        finally:
-            try:
-                time.sleep(0.5)
-                Session(sessionId=self.sessionId, assetId=assetId, domain=domain).logout()
-            except Exception:
-                pass
-
-        return Response(None, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        return self.remove(
+            request=request,
+            assetId=assetId,
+            domain=domain,
+            objectUid=groupUid,
+            actionCallback=lambda: GroupNetwork(sessionId=self.sessionId, assetId=assetId, domain=domain, groupUid=groupUid, networkUid=networkUid).remove(),
+            permission={
+                "args": {
+                    "assetId": assetId,
+                    "domain": domain
+                }
+            }
+        )
