@@ -36,7 +36,6 @@ class CheckPointGroupHostsController(CustomControllerCheckPointGetList, CustomCo
             request=request,
             assetId=assetId,
             domain=domain,
-            containerObjectUid=groupUid,
             Serializer=Serializer,
             actionCallback=lambda data: GroupHost.addHostsToGroup(sessionId=self.sessionId, assetId=assetId, domain=domain, groupUid=groupUid, hostUids=data["hosts"]),
             permission={
