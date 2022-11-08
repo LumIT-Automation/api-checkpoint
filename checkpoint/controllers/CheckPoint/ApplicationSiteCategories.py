@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.ApplicationSiteCategory import ApplicationSiteCategory
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.CheckPoint.ApplicationSiteCategory import CheckPointApplicationSiteCategorySerializer as Serializer
 
@@ -23,7 +22,6 @@ class CheckPointApplicationSiteCategoriesController(CustomControllerCheckPointGe
             domain=domain,
             actionCallback=lambda: ApplicationSiteCategory.listQuick(sessionId="", assetId=assetId, domain=domain),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -41,7 +39,6 @@ class CheckPointApplicationSiteCategoriesController(CustomControllerCheckPointGe
             Serializer=Serializer,
             actionCallback=lambda data: ApplicationSiteCategory.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

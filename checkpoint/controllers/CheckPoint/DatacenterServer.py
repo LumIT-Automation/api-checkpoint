@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.DatacenterServer import DatacenterServer
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.CheckPoint.Host import CheckPointHostSerializer as Serializer
 
@@ -24,7 +23,6 @@ class CheckPointDatacenterServerController(CustomControllerCheckPointGetInfo, Cu
             objectUid=datacenterUid,
             actionCallback=lambda: DatacenterServer(sessionId="", assetId=assetId, domain=domain, uid=datacenterUid).info(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -44,7 +42,6 @@ class CheckPointDatacenterServerController(CustomControllerCheckPointGetInfo, Cu
             },
             actionCallback=lambda: DatacenterServer(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=datacenterUid).delete(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -63,7 +60,6 @@ class CheckPointDatacenterServerController(CustomControllerCheckPointGetInfo, Cu
             Serializer=Serializer,
             actionCallback=lambda data: DatacenterServer(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=datacenterUid).modify(data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

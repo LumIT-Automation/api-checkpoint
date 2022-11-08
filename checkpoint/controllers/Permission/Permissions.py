@@ -22,7 +22,6 @@ class PermissionsController(CustomControllerCheckPointGetList, CustomControllerC
             Serializer=PermissionsSerializer,
             actionCallback=lambda: Permission.permissionsDataList(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                 }
             }
@@ -46,7 +45,6 @@ class PermissionsController(CustomControllerCheckPointGetList, CustomControllerC
             Serializer=PermissionSerializer,
             actionCallback=lambda data: actionCallback(data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                 }
             }

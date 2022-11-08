@@ -6,6 +6,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 
+from checkpoint.models.Permission.Permission import Permission
 from checkpoint.models.CheckPoint.Session import Session
 
 from checkpoint.controllers.CustomControllerBase import CustomControllerBase
@@ -24,15 +25,14 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
     def modify(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable, objectUid: str, assetId: int = 0, domain: str = "", objectType: str = "", containerObjectUid: str = "") -> Response:
         action = self.subject + "_patch"
         actionLog = f"{self.subject.capitalize()} {objectType} - modification: {domain} {objectUid}".replace("  ", " ")
-        lockedObject = self.subject + objectType
+        lockedObjectClass = self.subject + objectType
 
         response = None
 
         try:
             user = CustomControllerBase.loggedUser(request)
-            permissionMethod = permission["method"]
-
-            if permissionMethod(groups=user["groups"], action=action, **permission["args"]) or user["authDisabled"]:
+            # Check if user has permission of doing <action> on asset (if specified) and partition (if specified).
+            if Permission.hasUserPermission(groups=user["groups"], action=action, **permission["args"]) or user["authDisabled"]:
                 Log.actionLog(actionLog, user)
                 Log.actionLog("User data: " + str(request.data), user)
 
@@ -43,7 +43,7 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
                     # [no containerObjectUid specified] Locking logic for a specific object, for example: group:PATCH:1:POLAND = 'objectUid'.
                     # [containerObjectUid specified] Additional locking logic for the container object, example: group:PATCH:1:POLAND = 'containerObjectUid'.  # @todo.
                     # A type can also be specified (example: layeraccess:PATCH:1:POLAND = 'objectUid').
-                    lock = Lock(lockedObject, locals(), objectUid)
+                    lock = Lock(lockedObjectClass, locals(), objectUid)
                     if lock.isUnlocked():
                         lock.lock()
 
@@ -64,7 +64,7 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
             else:
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:
-            Lock(lockedObject, locals(), locals()["objectUid"]).release()
+            Lock(lockedObjectClass, locals(), locals()["objectUid"]).release()
 
             data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)

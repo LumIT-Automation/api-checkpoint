@@ -3,7 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Layer import Layer
 from checkpoint.models.CheckPoint.Rule import Rule
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
@@ -53,7 +52,6 @@ class CheckPointRulebaseController(CustomControllerCheckPointGetList, CustomCont
             objectType=self.layerType,
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -75,7 +73,6 @@ class CheckPointRulebaseController(CustomControllerCheckPointGetList, CustomCont
             Serializer=RuleBaseControllerFactory(self.layerType)(), # get suitable Serializer.
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

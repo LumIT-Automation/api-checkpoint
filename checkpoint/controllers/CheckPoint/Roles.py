@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Role import Role
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 
@@ -27,7 +26,6 @@ class CheckPointRolesController(CustomControllerCheckPointGetList):
             domain=domain,
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

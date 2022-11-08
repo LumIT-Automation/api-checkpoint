@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.GroupAddressRange import GroupAddressRange
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
 
@@ -23,7 +22,6 @@ class CheckPointGroupAddressRangeController(CustomControllerCheckPointDelete):
             },
             actionCallback=lambda: GroupAddressRange(sessionId=self.sessionId, assetId=assetId, domain=domain, groupUid=groupUid, rangeUid=rangeUid).remove(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

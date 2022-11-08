@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Layer import Layer
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
@@ -48,7 +47,6 @@ class CheckPointLayerController(CustomControllerCheckPointGetInfo, CustomControl
             objectType=self.layerType,
             actionCallback=lambda: Layer(sessionId="", layerType=self.layerType, assetId=assetId, domain=domain, uid=layerUid).info(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -69,7 +67,6 @@ class CheckPointLayerController(CustomControllerCheckPointGetInfo, CustomControl
             },
             actionCallback=lambda: Layer(sessionId=self.sessionId, layerType=self.layerType, assetId=assetId, domain=domain, uid=layerUid).delete(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -89,7 +86,6 @@ class CheckPointLayerController(CustomControllerCheckPointGetInfo, CustomControl
             Serializer=LayerControllerFactory(self.layerType)(), # get suitable Serializer.
             actionCallback=lambda data: Layer(sessionId=self.sessionId, layerType=self.layerType, assetId=assetId, domain=domain, uid=layerUid).modify(data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

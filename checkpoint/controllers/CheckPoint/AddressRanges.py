@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.AddressRange import AddressRange
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.CheckPoint.AddressRange import CheckPointAddressRangeSerializer as Serializer
 
@@ -30,7 +29,6 @@ class CheckPointAddressRangesController(CustomControllerCheckPointGetList, Custo
             domain=domain,
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -48,7 +46,6 @@ class CheckPointAddressRangesController(CustomControllerCheckPointGetList, Custo
             Serializer=Serializer,
             actionCallback=lambda data: AddressRange.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

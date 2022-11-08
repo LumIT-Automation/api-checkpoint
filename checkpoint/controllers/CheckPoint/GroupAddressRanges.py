@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.GroupAddressRange import GroupAddressRange
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.CheckPoint.GroupAddressRanges import CheckPointGroupAddressRangesSerializer as Serializer
 
@@ -22,10 +21,8 @@ class CheckPointGroupAddressRangesController(CustomControllerCheckPointGetList, 
             request=request,
             assetId=assetId,
             domain=domain,
-            containerObjectUid=groupUid,
             actionCallback=lambda: GroupAddressRange.listGroupAddressRanges(sessionId="", assetId=assetId, domain=domain, groupUid=groupUid),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -50,7 +47,6 @@ class CheckPointGroupAddressRangesController(CustomControllerCheckPointGetList, 
                 rangeUids=data["address-ranges"]
             ),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

@@ -6,6 +6,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 
+from checkpoint.models.Permission.Permission import Permission
 from checkpoint.models.CheckPoint.Session import Session
 
 from checkpoint.controllers.CustomControllerBase import CustomControllerBase
@@ -27,15 +28,14 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
         else:
             action = self.subject + "s_post"
         actionLog = f"{self.subject.capitalize()} {objectType} - addition: {domain}".replace("  ", " ")
-        lockedObject = self.subject + objectType
+        lockedObjectClass = self.subject + objectType
 
         response = dict()
 
         try:
             user = CustomControllerBase.loggedUser(request)
-            permissionMethod = permission["method"]
-
-            if permissionMethod(groups=user["groups"], action=action, **permission["args"]) or user["authDisabled"]:
+            # Check if user has permission of doing <action> on asset (if specified) and partition (if specified).
+            if Permission.hasUserPermission(groups=user["groups"], action=action, **permission["args"]) or user["authDisabled"]:
                 Log.actionLog(actionLog, user)
                 Log.actionLog("User data: " + str(request.data), user)
 
@@ -46,7 +46,7 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
                     # [no containerObjectUid specified] Locking logic for a class of objects, for example: group:POST:1:POLAND = 'any'.
                     # [containerObjectUid specified] Locking logic for a class of objects contained within the containerObject, example: hosts within a group: group_host:POST:1:POLAND = ' ID'.
                     # A type can also be specified (example: layeraccess:POST:1:POLAND = 'any').
-                    lock = Lock(lockedObject, locals(), containerObjectUid)
+                    lock = Lock(lockedObjectClass, locals(), containerObjectUid)
                     if lock.isUnlocked():
                         lock.lock()
 
@@ -70,7 +70,7 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
                 response = None
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:
-            Lock(lockedObject, locals(), locals()["containerObjectUid"]).release()
+            Lock(lockedObjectClass, locals(), locals()["containerObjectUid"]).release()
 
             data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)

@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Task import Task
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
@@ -28,7 +27,6 @@ class CheckPointTasksController(CustomControllerCheckPointGetList, CustomControl
             domain=domain,
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

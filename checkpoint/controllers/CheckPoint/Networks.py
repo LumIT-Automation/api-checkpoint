@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Network import Network
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.CheckPoint.Network import CheckPointNetworkSerializer as Serializer
 
@@ -28,7 +27,6 @@ class CheckPointNetworksController(CustomControllerCheckPointGetList, CustomCont
             domain=domain,
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -44,7 +42,6 @@ class CheckPointNetworksController(CustomControllerCheckPointGetList, CustomCont
             Serializer=Serializer,
             actionCallback=lambda data: Network.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Service import Service
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
@@ -50,7 +49,6 @@ class CheckPointServicesController(CustomControllerCheckPointGetList, CustomCont
             objectType=self.serviceType,
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -72,7 +70,6 @@ class CheckPointServicesController(CustomControllerCheckPointGetList, CustomCont
             Serializer=ServiceControllerFactory(self.serviceType)(), # get suitable Serializer.
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

@@ -20,7 +20,6 @@ class AuthorizationsController(CustomControllerCheckPointGetList):
             request=request,
             actionCallback=lambda: Permission.authorizationsList(user["groups"]),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                 }
             }

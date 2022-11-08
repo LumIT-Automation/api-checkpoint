@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.RuleObject import RuleObject
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
@@ -28,7 +27,6 @@ class CheckPointRuleObjectController(CustomControllerCheckPointGetInfo, CustomCo
             },
             actionCallback=lambda: RuleObject(sessionId=self.sessionId, ruleType=self.ruleType, assetId=assetId, domain=domain, layerUid=layerUid, ruleUid=ruleUid, objectUid=ruleObjectUid).remove(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

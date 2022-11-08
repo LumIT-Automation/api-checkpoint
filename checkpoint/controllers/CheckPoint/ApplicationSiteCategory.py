@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.ApplicationSiteCategory import ApplicationSiteCategory
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.CheckPoint.ApplicationSiteCategory import CheckPointApplicationSiteCategorySerializer as Serializer
 
@@ -24,7 +23,6 @@ class CheckPointApplicationSiteCategoryController(CustomControllerCheckPointGetI
             objectUid=categoryUid,
             actionCallback=lambda: ApplicationSiteCategory(sessionId="", assetId=assetId, domain=domain, uid=categoryUid).info(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -44,7 +42,6 @@ class CheckPointApplicationSiteCategoryController(CustomControllerCheckPointGetI
             },
             actionCallback=lambda: ApplicationSiteCategory(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=categoryUid).delete(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -63,7 +60,6 @@ class CheckPointApplicationSiteCategoryController(CustomControllerCheckPointGetI
             Serializer=Serializer,
             actionCallback=lambda data: ApplicationSiteCategory(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=categoryUid).modify(data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

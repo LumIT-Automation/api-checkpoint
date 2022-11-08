@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.Permission.IdentityGroup import IdentityGroup
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.Permission.IdentityGroup import IdentityGroupSerializer as GroupSerializer
 
@@ -25,7 +24,6 @@ class PermissionIdentityGroupController(CustomControllerCheckPointGetInfo, Custo
             },
             actionCallback=lambda: IdentityGroup(identityGroupIdentifier=identityGroupIdentifier).delete(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                 }
             }
@@ -40,7 +38,6 @@ class PermissionIdentityGroupController(CustomControllerCheckPointGetInfo, Custo
             Serializer=GroupSerializer,
             actionCallback=lambda data: IdentityGroup(identityGroupIdentifier=identityGroupIdentifier).modify(data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                 }
             }

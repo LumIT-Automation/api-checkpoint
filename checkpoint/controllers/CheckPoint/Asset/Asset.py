@@ -2,7 +2,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Asset.Asset import Asset
-from checkpoint.models.Permission.Permission import Permission
+
 from checkpoint.serializers.CheckPoint.Asset.Asset import CheckPointAssetSerializer as Serializer
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
@@ -25,7 +25,6 @@ class CheckPointAssetController(CustomControllerCheckPointGetInfo, CustomControl
             },
             actionCallback=lambda: Asset(assetId).delete(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId
                 }
@@ -42,7 +41,6 @@ class CheckPointAssetController(CustomControllerCheckPointGetInfo, CustomControl
             Serializer=Serializer,
             actionCallback=lambda data: Asset(assetId).modify(data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId
                 }

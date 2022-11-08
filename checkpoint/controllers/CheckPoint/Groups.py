@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Group import Group
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.CheckPoint.Group import CheckPointGroupSerializer as Serializer
 
@@ -30,7 +29,6 @@ class CheckPointGroupsController(CustomControllerCheckPointGetList, CustomContro
             domain=domain,
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -48,7 +46,6 @@ class CheckPointGroupsController(CustomControllerCheckPointGetList, CustomContro
             Serializer=Serializer,
             actionCallback=lambda data: Group.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

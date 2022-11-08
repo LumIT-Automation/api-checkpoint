@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Rule import Rule
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
@@ -47,7 +46,6 @@ class CheckPointRuleController(CustomControllerCheckPointGetInfo, CustomControll
             objectType=self.ruleType,
             actionCallback=lambda: Rule(sessionId="", ruleType=self.ruleType, assetId=assetId, domain=domain, layerUid=layerUid, uid=ruleUid).info(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -70,7 +68,6 @@ class CheckPointRuleController(CustomControllerCheckPointGetInfo, CustomControll
             },
             actionCallback=lambda: Rule(sessionId=self.sessionId, ruleType=self.ruleType, assetId=assetId, domain=domain, layerUid=layerUid, uid=ruleUid).delete(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -93,7 +90,6 @@ class CheckPointRuleController(CustomControllerCheckPointGetInfo, CustomControll
             Serializer=RuleControllerFactory(self.ruleType)(), # get suitable Serializer.
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

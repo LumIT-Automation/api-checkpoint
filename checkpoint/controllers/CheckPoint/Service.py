@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Service import Service
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
@@ -45,7 +44,6 @@ class CheckPointServiceController(CustomControllerCheckPointGetInfo, CustomContr
             objectType=self.serviceType,
             actionCallback=lambda: Service(sessionId="", serviceType=self.serviceType, assetId=assetId, domain=domain, uid=serviceUid).info(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -66,7 +64,6 @@ class CheckPointServiceController(CustomControllerCheckPointGetInfo, CustomContr
             },
             actionCallback=lambda: Service(sessionId=self.sessionId, serviceType=self.serviceType, assetId=assetId, domain=domain, uid=serviceUid).delete(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain
@@ -89,7 +86,6 @@ class CheckPointServiceController(CustomControllerCheckPointGetInfo, CustomContr
             Serializer=ServiceControllerFactory(self.serviceType)(), # get suitable Serializer.
             actionCallback=actionCallback,
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId,
                     "domain": domain

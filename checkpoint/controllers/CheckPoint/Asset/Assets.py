@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Asset.Asset import Asset
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.CheckPoint.Asset.Asset import CheckPointAssetSerializer as AssetSerializer
 from checkpoint.serializers.CheckPoint.Asset.Assets import CheckPointAssetsSerializer as AssetsSerializer
@@ -23,7 +22,6 @@ class CheckPointAssetsController(CustomControllerCheckPointGetList, CustomContro
             Serializer=AssetsSerializer,
             actionCallback=lambda: Asset.list(),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                 }
             }
@@ -37,7 +35,6 @@ class CheckPointAssetsController(CustomControllerCheckPointGetList, CustomContro
             Serializer=AssetSerializer,
             actionCallback=lambda data: Asset.add(data),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                 }
             }

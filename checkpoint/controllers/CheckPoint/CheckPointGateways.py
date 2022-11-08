@@ -2,7 +2,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.CheckPointGateway import CheckPointGateway
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 
@@ -19,7 +18,6 @@ class CheckPointGatewaysController(CustomControllerCheckPointGetList):
             assetId=assetId,
             actionCallback=lambda: CheckPointGateway.listQuick(sessionId="", assetId=assetId),
             permission={
-                "method": Permission.hasUserPermission,
                 "args": {
                     "assetId": assetId
                 }
