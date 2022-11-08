@@ -11,6 +11,7 @@ class CheckPointNatRuleSerializer(serializers.Serializer):
         self.fields["translated-destination"] = serializers.CharField(max_length=255, required=False)
         self.fields["translated-service"] = serializers.CharField(max_length=255, required=False)
         self.fields["translated-source"] = serializers.CharField(max_length=255, required=False)
+
         self.fields["details-level"] = serializers.CharField(max_length=64, required=False)
         self.fields["ignore-warnings"] = serializers.BooleanField(required=False)
 

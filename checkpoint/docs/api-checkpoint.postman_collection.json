@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "41aa3ac8-0d65-4745-ad0d-4377f8e490cb",
+		"_postman_id": "e0a6ed5b-f665-4c31-8f29-a65365f4df6f",
 		"name": "api-checkpoint",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -5785,7 +5785,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"data\": {\n        \"original-destination\": {\n            \"uid\": \"\"\n        },\n        \"translated-destination\": {\n            \"uid\": \"\"\n        },\n        \"original-source\": {\n            \"uid\": \"\"\n        },\n        \"translated-source\": {\n            \"uid\": \"\"\n        }\n    }\n}",
+													"raw": "{\n    \"data\": {\n        \"original-source\": \"97aeb369-9aea-11d5-bd16-0090272ccb30\"\n    }\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -5793,7 +5793,7 @@
 													}
 												},
 												"url": {
-													"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/package/55f0b9d6-7ab1-478c-b8d7-a62f0551ac3c/nat-rule/fa7e28bc-c5ee-46d6-a128-4370cf0942b5/objects/",
+													"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/package/55f0b9d6-7ab1-478c-b8d7-a62f0551ac3c/nat-rule/5710445d-1d58-45c5-91c6-49a7ce922f18/objects/",
 													"protocol": "http",
 													"host": [
 														"10",
@@ -5810,7 +5810,7 @@
 														"package",
 														"55f0b9d6-7ab1-478c-b8d7-a62f0551ac3c",
 														"nat-rule",
-														"fa7e28bc-c5ee-46d6-a128-4370cf0942b5",
+														"5710445d-1d58-45c5-91c6-49a7ce922f18",
 														"objects",
 														""
 													]

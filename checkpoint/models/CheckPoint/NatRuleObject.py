@@ -32,11 +32,9 @@ class NatRuleObject:
     def addObjectsToNatRule(sessionId: str, assetId: int, domain: str, packageUid: str, natRuleUid: str, data: dict) -> None:
         try:
             for t in ("original-destination", "translated-destination", "original-source", "translated-source"):
-                if t in data:
-                    if "uid" in data[t]:
-                        if data[t]["uid"]:
-                            NatRule(sessionId=sessionId, assetId=assetId, domain=domain, packageUid=packageUid, uid=natRuleUid).modify({
-                                t: data[t]["uid"]
-                            })
+                if t in data and data[t]:
+                    NatRule(sessionId=sessionId, assetId=assetId, domain=domain, packageUid=packageUid, uid=natRuleUid).modify({
+                        t: data[t]
+                    })
         except Exception as e:
             raise e
