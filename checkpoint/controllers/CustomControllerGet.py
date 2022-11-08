@@ -14,6 +14,10 @@ from checkpoint.helpers.Conditional import Conditional
 from checkpoint.helpers.Log import Log
 
 
+########################################################################################################################
+# Info
+########################################################################################################################
+
 class CustomControllerCheckPointGetInfo(CustomControllerBase):
     def __init__(self, subject: str, *args, **kwargs):
         self.sessionId = uuid.uuid4().hex
@@ -71,7 +75,7 @@ class CustomControllerCheckPointGetInfo(CustomControllerBase):
                 data = None
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:
-            Lock(lockedObjectClass, locals(), locals()["objectUid"]).release()
+            Lock(lockedObjectClass, locals(), objectUid).release()
 
             data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)
@@ -82,6 +86,10 @@ class CustomControllerCheckPointGetInfo(CustomControllerBase):
         })
 
 
+
+########################################################################################################################
+# List
+########################################################################################################################
 
 class CustomControllerCheckPointGetList(CustomControllerBase):
     def __init__(self, subject: str, *args, **kwargs):

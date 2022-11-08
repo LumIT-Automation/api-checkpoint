@@ -61,10 +61,8 @@ class CheckPointLayerController(CustomControllerCheckPointGetInfo, CustomControl
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": layerUid,
-                "class": self.layerType
-            },
+            objectUid=layerUid,
+            objectType=self.layerType,
             actionCallback=lambda: Layer(sessionId=self.sessionId, layerType=self.layerType, assetId=assetId, domain=domain, uid=layerUid).delete(),
             permission={
                 "args": {

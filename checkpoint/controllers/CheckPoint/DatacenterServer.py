@@ -37,9 +37,7 @@ class CheckPointDatacenterServerController(CustomControllerCheckPointGetInfo, Cu
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": datacenterUid
-            },
+            objectUid=datacenterUid,
             actionCallback=lambda: DatacenterServer(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=datacenterUid).delete(),
             permission={
                 "args": {

@@ -22,13 +22,18 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
 
 
 
-    def create(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable, assetId: int = 0, domain: str = "", objectType: str = "", containerObjectUid: str = "") -> Response:
+    def create(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
         if self.subject[-1:] == "y":
             action = self.subject[:-1] + "ies_post"
         else:
             action = self.subject + "s_post"
         actionLog = f"{self.subject.capitalize()} {objectType} - addition: {domain}".replace("  ", " ")
         lockedObjectClass = self.subject + objectType
+
+        # Example:
+        #   subject: hosts
+        #   action: hosts_post
+        #   lockedObjectClass: host
 
         response = dict()
 
@@ -43,10 +48,10 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
                 if serializer.is_valid():
                     data = serializer.validated_data
 
-                    # [no containerObjectUid specified] Locking logic for a class of objects, for example: group:POST:1:POLAND = 'any'.
-                    # [containerObjectUid specified] Locking logic for a class of objects contained within the containerObject, example: hosts within a group: group_host:POST:1:POLAND = ' ID'.
-                    # A type can also be specified (example: layeraccess:POST:1:POLAND = 'any').
-                    lock = Lock(lockedObjectClass, locals(), containerObjectUid)
+                    # Locking logic for a class of objects, for example: host:POST:1:DOMAIN = 'any'.
+                    # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.
+
+                    lock = Lock(lockedObjectClass, locals())
                     if lock.isUnlocked():
                         lock.lock()
 
@@ -70,7 +75,7 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
                 response = None
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:
-            Lock(lockedObjectClass, locals(), locals()["containerObjectUid"]).release()
+            Lock(lockedObjectClass, locals()).release()
 
             data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)

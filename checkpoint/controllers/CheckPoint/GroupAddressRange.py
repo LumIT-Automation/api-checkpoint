@@ -16,10 +16,7 @@ class CheckPointGroupAddressRangeController(CustomControllerCheckPointDelete):
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": rangeUid,
-                "containerUid": groupUid
-            },
+            objectUid=rangeUid,
             actionCallback=lambda: GroupAddressRange(sessionId=self.sessionId, assetId=assetId, domain=domain, groupUid=groupUid, rangeUid=rangeUid).remove(),
             permission={
                 "args": {

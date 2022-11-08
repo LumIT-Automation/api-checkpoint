@@ -22,10 +22,15 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
 
 
 
-    def modify(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable, objectUid: str, assetId: int = 0, domain: str = "", objectType: str = "", containerObjectUid: str = "") -> Response:
+    def modify(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable, objectUid: str, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
         action = self.subject + "_patch"
         actionLog = f"{self.subject.capitalize()} {objectType} - modification: {domain} {objectUid}".replace("  ", " ")
         lockedObjectClass = self.subject + objectType
+
+        # Example:
+        #   subject: host
+        #   action: host_patch
+        #   lockedObjectClass: host
 
         response = None
 
@@ -40,9 +45,9 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
                 if serializer.is_valid():
                     data = serializer.validated_data
 
-                    # [no containerObjectUid specified] Locking logic for a specific object, for example: group:PATCH:1:POLAND = 'objectUid'.
-                    # [containerObjectUid specified] Additional locking logic for the container object, example: group:PATCH:1:POLAND = 'containerObjectUid'.  # @todo.
-                    # A type can also be specified (example: layeraccess:PATCH:1:POLAND = 'objectUid').
+                    # Locking logic for a specific object, example: host:PATCH:1:DOMAIN = 'objectUid',
+                    # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.
+
                     lock = Lock(lockedObjectClass, locals(), objectUid)
                     if lock.isUnlocked():
                         lock.lock()
@@ -64,7 +69,7 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
             else:
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:
-            Lock(lockedObjectClass, locals(), locals()["objectUid"]).release()
+            Lock(lockedObjectClass, locals(), objectUid).release()
 
             data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)

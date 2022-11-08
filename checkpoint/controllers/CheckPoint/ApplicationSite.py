@@ -37,9 +37,7 @@ class CheckPointApplicationSiteController(CustomControllerCheckPointGetInfo, Cus
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": appSiteUid
-            },
+            objectUid=appSiteUid,
             actionCallback=lambda: ApplicationSite(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=appSiteUid).delete(),
             permission={
                 "args": {

@@ -22,18 +22,15 @@ class CustomControllerCheckPointDelete(CustomControllerBase):
 
 
 
-    def remove(self, request: Request, permission: dict, actionCallback: Callable, obj: dict, assetId: int = 0, domain: str = "") -> Response:
-        objectUid = obj.get("uid", "")
-        objectClass = obj.get("class", "")
-
-        containerObjectUid = obj.get("containerUid", "")
-        containerObjectType = obj.get("containerType", "")
-
+    def remove(self, request: Request, permission: dict, actionCallback: Callable, objectUid: str, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
         action = self.subject + "_delete"
-        actionLog = f"{self.subject.capitalize()} {objectClass} - deletion: {domain} {objectUid}".replace("  ", " ")
+        actionLog = f"{self.subject.capitalize()} {objectType} - deletion: {domain} {objectUid}".replace("  ", " ")
+        lockedObjectClass = self.subject + objectType
 
-        lockedObjectClass = self.subject + objectClass
-        lockedContainerObject = containerObjectType
+        # Example:
+        #   subject: host
+        #   action: host_delete
+        #   lockedObjectClass: host
 
         try:
             user = CustomControllerBase.loggedUser(request)
@@ -41,21 +38,17 @@ class CustomControllerCheckPointDelete(CustomControllerBase):
             if Permission.hasUserPermission(groups=user["groups"], action=action, **permission["args"]) or user["authDisabled"]:
                 Log.actionLog(actionLog, user)
 
-                # [no containerObjectUid specified] Locking logic for a specific object, for example: host:DELETE:1:POLAND = 'objectUid'.
-                # [containerObjectUid specified] Additional locking logic for the container object, example: group:DELETE:1:POLAND = 'containerObjectUid'.
-                # @todo: should be done on all object's containers: an object should always provide its containers ("whereused").
-                # A class can also be specified (example: layeraccess:DELETE:1:POLAND = 'any').
-                olock = Lock(lockedObjectClass, locals(), objectUid)
-                clock = Lock(lockedContainerObject, locals(), containerObjectUid)
-                if olock.isUnlocked() and clock.isUnlocked():
-                    olock.lock()
-                    clock.lock() # if lockedContainerObject empty, no action is performed.
+                # Locking logic for a specific object, example: host:DELETE:1:DOMAIN = 'objectUid',
+                # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.
+
+                lock = Lock(lockedObjectClass, locals(), objectUid)
+                if lock.isUnlocked():
+                    lock.lock()
 
                     actionCallback()
                     httpStatus = status.HTTP_200_OK
 
-                    olock.release()
-                    clock.release()
+                    lock.release()
                 else:
                     data = None
                     httpStatus = status.HTTP_423_LOCKED
@@ -63,8 +56,7 @@ class CustomControllerCheckPointDelete(CustomControllerBase):
                 data = None
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:
-            Lock(lockedObjectClass, locals(), locals()["objectUid"]).release()
-            Lock(lockedContainerObject, locals(), locals()["containerObjectUid"]).release()
+            Lock(lockedObjectClass, locals(), objectUid).release()
 
             data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)

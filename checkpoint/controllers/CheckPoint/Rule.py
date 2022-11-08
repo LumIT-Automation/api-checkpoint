@@ -60,12 +60,8 @@ class CheckPointRuleController(CustomControllerCheckPointGetInfo, CustomControll
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": ruleUid,
-                "class": self.ruleType,
-                "containerUid": layerUid,
-                "containerType": "layer"+self.ruleType
-            },
+            objectUid=ruleUid,
+            objectType=self.ruleType,
             actionCallback=lambda: Rule(sessionId=self.sessionId, ruleType=self.ruleType, assetId=assetId, domain=domain, layerUid=layerUid, uid=ruleUid).delete(),
             permission={
                 "args": {

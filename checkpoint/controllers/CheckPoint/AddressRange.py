@@ -38,9 +38,7 @@ class CheckPointAddressRangeController(CustomControllerCheckPointGetInfo, Custom
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": rangeUid
-            },
+            objectUid=rangeUid,
             actionCallback=lambda: AddressRange(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=rangeUid).delete(),
             permission={
                 "args": {

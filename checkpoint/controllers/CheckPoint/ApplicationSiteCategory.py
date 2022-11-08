@@ -37,9 +37,7 @@ class CheckPointApplicationSiteCategoryController(CustomControllerCheckPointGetI
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": categoryUid
-            },
+            objectUid=categoryUid,
             actionCallback=lambda: ApplicationSiteCategory(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=categoryUid).delete(),
             permission={
                 "args": {

@@ -21,10 +21,7 @@ class CheckPointRuleObjectController(CustomControllerCheckPointGetInfo, CustomCo
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": ruleObjectUid,
-                "containerUid": ruleUid
-            },
+            objectUid=ruleObjectUid,
             actionCallback=lambda: RuleObject(sessionId=self.sessionId, ruleType=self.ruleType, assetId=assetId, domain=domain, layerUid=layerUid, ruleUid=ruleUid, objectUid=ruleObjectUid).remove(),
             permission={
                 "args": {

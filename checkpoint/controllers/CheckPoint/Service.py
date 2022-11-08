@@ -58,10 +58,8 @@ class CheckPointServiceController(CustomControllerCheckPointGetInfo, CustomContr
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": serviceUid,
-                "class": self.serviceType
-            },
+            objectUid=serviceUid,
+            objectType=self.serviceType,
             actionCallback=lambda: Service(sessionId=self.sessionId, serviceType=self.serviceType, assetId=assetId, domain=domain, uid=serviceUid).delete(),
             permission={
                 "args": {

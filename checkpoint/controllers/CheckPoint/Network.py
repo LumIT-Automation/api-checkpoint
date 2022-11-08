@@ -36,9 +36,7 @@ class CheckPointNetworkController(CustomControllerCheckPointGetInfo, CustomContr
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": networkUid
-            },
+            objectUid=networkUid,
             actionCallback=lambda: Network(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=networkUid).delete(),
             permission={
                 "args": {

@@ -37,9 +37,7 @@ class CheckPointGroupController(CustomControllerCheckPointGetInfo, CustomControl
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": groupUid
-            },
+            objectUid=groupUid,
             actionCallback=lambda: Group(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=groupUid).delete(),
             permission={
                 "args": {

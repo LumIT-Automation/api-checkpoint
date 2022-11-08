@@ -37,9 +37,7 @@ class CheckPointHostController(CustomControllerCheckPointGetInfo, CustomControll
             request=request,
             assetId=assetId,
             domain=domain,
-            obj={
-                "uid": hostUid
-            },
+            objectUid=hostUid,
             actionCallback=lambda: Host(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=hostUid).delete(),
             permission={
                 "args": {

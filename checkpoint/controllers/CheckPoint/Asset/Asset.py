@@ -20,9 +20,7 @@ class CheckPointAssetController(CustomControllerCheckPointGetInfo, CustomControl
         return self.remove(
             request=request,
             assetId=0,
-            obj={
-                "uid": str(assetId)
-            },
+            objectUid=str(assetId),
             actionCallback=lambda: Asset(assetId).delete(),
             permission={
                 "args": {

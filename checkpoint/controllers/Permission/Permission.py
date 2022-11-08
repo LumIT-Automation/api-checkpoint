@@ -19,9 +19,7 @@ class PermissionController(CustomControllerCheckPointGetInfo, CustomControllerCh
     def delete(self, request: Request, permissionId: int) -> Response:
         return self.remove(
             request=request,
-            obj={
-                "uid": str(permissionId)
-            },
+            objectUid=str(permissionId),
             actionCallback=lambda: Permission(permissionId).delete(),
             permission={
                 "args": {

@@ -19,9 +19,7 @@ class PermissionIdentityGroupController(CustomControllerCheckPointGetInfo, Custo
     def delete(self, request: Request, identityGroupIdentifier: str) -> Response:
         return self.remove(
             request=request,
-            obj={
-                "uid": identityGroupIdentifier
-            },
+            objectUid=identityGroupIdentifier,
             actionCallback=lambda: IdentityGroup(identityGroupIdentifier=identityGroupIdentifier).delete(),
             permission={
                 "args": {
