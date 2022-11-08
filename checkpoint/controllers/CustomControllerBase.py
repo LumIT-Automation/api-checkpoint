@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 
+from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Log import Log
 
 
@@ -37,6 +38,31 @@ class CustomControllerBase(APIView):
             user["authDisabled"] = False
 
         return user
+
+
+
+    @staticmethod
+    def validate(data, Serializer, many: bool = False):
+        try:
+            if Serializer:
+                if many:
+                    serializer = Serializer(data={"items": data}) # serializer needs an "items" key.
+                    if serializer.is_valid():
+                        return serializer.validated_data["items"]
+                else:
+                    serializer = Serializer(data=data)
+                    if serializer.is_valid():
+                        return serializer.validated_data
+
+                Log.log("Upstream data incorrect: " + str(serializer.errors))
+                raise CustomException(
+                    status=500,
+                    payload={"CheckPoint": "upstream data mismatch."}
+                )
+            else:
+                return data
+        except Exception as e:
+            raise e
 
 
 

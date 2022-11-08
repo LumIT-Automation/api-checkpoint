@@ -9,7 +9,6 @@ from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.controllers.CustomControllerBase import CustomControllerBase
 
-from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Lock import Lock
 from checkpoint.helpers.Conditional import Conditional
 from checkpoint.helpers.Log import Log
@@ -22,30 +21,36 @@ class CustomControllerCheckPointGetInfo(CustomControllerBase):
 
 
 
-    def getInfo(self, request: Request, permission: dict, actionCallback: Callable, assetId: int, objectUid: str, domain: str = "", objectType: str = "", Serializer: Callable = None) -> Response:
+    def getInfo(self, request: Request, permission: dict, actionCallback: Callable, objectUid: str, assetId: int = 0, domain: str = "", objectType: str = "", Serializer: Callable = None) -> Response:
         Serializer = Serializer or None
 
         action = self.subject + "_get" # example: host_get.
         actionLog = f"{self.subject.capitalize()} {objectType} - info {domain} {objectUid}".replace("  ", " ")
-        lockedObjectClass = self.subject + objectType # example: host (subject=host) // ruleaccess (subject=rule  + type=access).
+        lockedObjectClass = self.subject + objectType # example: host (subject=host) // ruleaccess (subject=rule + type=access).
+
+        # Example:
+        #   subject: host
+        #   action: host_get
+        #   lockedObjectClass: host
 
         data = dict()
         etagCondition = {"responseEtag": ""}
 
         try:
             user = CustomControllerBase.loggedUser(request)
+            # Check if user has permission of doing <action> on asset (if specified) and domain (if specified).
             if Permission.hasUserPermission(groups=user["groups"], action=action, **permission["args"]) or user["authDisabled"]:
                 Log.actionLog(actionLog, user)
 
-                # Locking logic for a specific object,
-                # example: host:GET:1:POLAND = 'objectUid',
-                # example: ruleaccess:GET:1:POLAND = 'objectUid' (when objectType is specified).
+                # Locking logic for a specific object, example: host:GET:1:DOMAIN = 'objectUid',
+                # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.
+
                 lock = Lock(lockedObjectClass, locals(), objectUid)
                 if lock.isUnlocked():
                     lock.lock()
 
                     data = {
-                        "data": self.__validate(actionCallback(), Serializer),
+                        "data": CustomControllerBase.validate(actionCallback(), Serializer),
                         "href": request.get_full_path()
                     }
 
@@ -78,25 +83,6 @@ class CustomControllerCheckPointGetInfo(CustomControllerBase):
 
 
 
-    def __validate(self, data, Serializer):
-        try:
-            if Serializer:
-                serializer = Serializer(data={"items": data}) # serializer needs an "items" key.
-                if serializer.is_valid():
-                    return serializer.validated_data["items"]
-                else:
-                    Log.log("Upstream data incorrect: " + str(serializer.errors))
-                    raise CustomException(
-                        status=500,
-                        payload={"CheckPoint": "upstream data mismatch."}
-                    )
-            else:
-                return data
-        except Exception as e:
-            raise e
-
-
-
 class CustomControllerCheckPointGetList(CustomControllerBase):
     def __init__(self, subject: str, *args, **kwargs):
         self.sessionId = uuid.uuid4().hex
@@ -104,7 +90,7 @@ class CustomControllerCheckPointGetList(CustomControllerBase):
 
 
 
-    def getList(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable = None, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
+    def getList(self, request: Request, permission: dict, actionCallback: Callable, assetId: int = 0, domain: str = "", objectType: str = "", Serializer: Callable = None) -> Response:
         Serializer = Serializer or None
         data = dict()
         etagCondition = {"responseEtag": ""}
@@ -136,7 +122,7 @@ class CustomControllerCheckPointGetList(CustomControllerBase):
 
                     data = {
                         "data": {
-                            "items": self.__validate(actionCallback(), Serializer)
+                            "items": CustomControllerBase.validate(actionCallback(), Serializer, many=True)
                         },
                         "href": request.get_full_path()
                     }
@@ -167,22 +153,3 @@ class CustomControllerCheckPointGetList(CustomControllerBase):
             "ETag": etagCondition["responseEtag"],
             "Cache-Control": "must-revalidate"
         })
-
-
-
-    def __validate(self, data, Serializer):
-        try:
-            if Serializer:
-                serializer = Serializer(data={"items": data}) # serializer needs an "items" key.
-                if serializer.is_valid():
-                    return serializer.validated_data["items"]
-                else:
-                    Log.log("Upstream data incorrect: " + str(serializer.errors))
-                    raise CustomException(
-                        status=500,
-                        payload={"CheckPoint": "upstream data mismatch."}
-                    )
-            else:
-                return data
-        except Exception as e:
-            raise e
