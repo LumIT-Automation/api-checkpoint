@@ -117,6 +117,10 @@ class HostRemoval:
     ####################################################################################################################
 
     def __securityRuleManagement(self, ruleType: str, domain: str, layer: str, rule: str, obj: str) -> None:
+        autopublish = False
+        if domain == "Global":
+            autopublish = True
+
         try:
             o = RuleObject.listObjectsInRule(self.sessionId, ruleType, self.assetId, domain, layer, rule)
             if (obj in o["source"] and len(o["source"]) < 2) \
@@ -124,11 +128,11 @@ class HostRemoval:
 
                 # Delete rule if no source or destination is to remain.
                 HostRemoval.__log(domain, f"Deleting orphaned rule '{layer}/{rule}'")
-                Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete(autoPublish=False)
+                Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete(autoPublish=autopublish)
             else:
                 # Remove host in rule (within source and/or destination).
                 HostRemoval.__log(domain, f"Unlinking object '{obj}' from rule '{rule}'")
-                RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=False)
+                RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=autopublish)
 
             # @todo: installed-on [?].
         except KeyError:
@@ -139,6 +143,10 @@ class HostRemoval:
 
 
     def __natRuleManagement(self, domain: str, package: str, rule: str, obj: str) -> None:
+        autopublish = False
+        if domain == "Global":
+            autopublish = True
+
         try:
             # If object is in one of the rule fields, remove the rule.
             natRule = NatRule(self.sessionId, assetId=self.assetId, domain=domain, packageUid=package, uid=rule)
@@ -147,7 +155,7 @@ class HostRemoval:
             for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
                 if info.get(f)["uid"] == obj:
                     HostRemoval.__log(domain, f"Deleting orphaned NAT rule '{package}/{rule}'")
-                    natRule.delete(autoPublish=False)
+                    natRule.delete(autoPublish=autopublish)
 
                     break
 
@@ -160,9 +168,13 @@ class HostRemoval:
 
 
     def __groupHostUnlinking(self, domain: str, group: str, host: str):
+        autopublish = False
+        if domain == "Global":
+            autopublish = True
+
         try:
             HostRemoval.__log(domain, f"Unlinking host '{host}' from group '{group}'")
-            GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove(autoPublish=False)
+            GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove(autoPublish=autopublish)
         except Exception as e:
             raise e
 
@@ -196,6 +208,10 @@ class HostRemoval:
 
 
     def __groupsManagement(self, domain: str, group: str, host: str, sonGroup: str = "") -> None:
+        autopublish = False
+        if domain == "Global":
+            autopublish = True
+
         try:
             # If group is to remain empty on host deletion, delete also this group.
             g = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group)
@@ -205,7 +221,7 @@ class HostRemoval:
             if sonGroup:
                 # Always unlink son group (while in recursion).
                 HostRemoval.__log(domain, f"Unlinking group '{sonGroup}' from group '{group}'")
-                g.deleteInnerGroup(sonGroup, autoPublish=False)
+                g.deleteInnerGroup(sonGroup, autoPublish=autopublish)
 
             if len(members) == 0:
                 # Group is deletable (empty).
@@ -219,7 +235,7 @@ class HostRemoval:
                 self.__groupRuleManagement(domain, g)
 
                 HostRemoval.__log(domain, f"Deleting lonely group '{group}'")
-                g.delete(autoPublish=False)
+                g.delete(autoPublish=autopublish)
         except KeyError:
             pass
         except CustomException as c:
