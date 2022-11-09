@@ -13,33 +13,17 @@ class Session:
     @staticmethod
     def publish(sessionId: str, assetId: int, domain: str) -> dict:
         try:
-            return ApiSupplicant(sessionId, assetId).post(
+            response = ApiSupplicant(sessionId, assetId).post(
                 urlSegment="publish",
                 domain=domain,
                 data={}
             )
-        except Exception as e:
-            raise e
 
+            if domain == "Global":
+                # Do assign-global-assignment to all domains.
+                Session.__assign(sessionId, assetId)
 
-
-    @staticmethod
-    def assign(sessionId: str, assetId: int) -> dict:
-        from checkpoint.models.CheckPoint.Domain import Domain
-        domains = list()
-
-        try:
-            ds = Domain.listQuick(sessionId, assetId)
-            for d in ds:
-                domains.append(d["name"])
-
-            return ApiSupplicant(sessionId, assetId).post(
-                urlSegment="assign-global-assignment",
-                data={
-                    "global-domains": "Global",
-                    "dependent-domains": domains
-                }
-            )
+            return response
         except Exception as e:
             raise e
 
@@ -105,5 +89,31 @@ class Session:
                     break
 
             return out
+        except Exception as e:
+            raise e
+
+
+
+    ####################################################################################################################
+    # Private static methods
+    ####################################################################################################################
+
+    @staticmethod
+    def __assign(sessionId: str, assetId: int) -> dict:
+        from checkpoint.models.CheckPoint.Domain import Domain
+        domains = list()
+
+        try:
+            ds = Domain.listQuick(sessionId, assetId)
+            for d in ds:
+                domains.append(d["name"])
+
+            return ApiSupplicant(sessionId, assetId).post(
+                urlSegment="assign-global-assignment",
+                data={
+                    "global-domains": "Global",
+                    "dependent-domains": domains
+                }
+            )
         except Exception as e:
             raise e

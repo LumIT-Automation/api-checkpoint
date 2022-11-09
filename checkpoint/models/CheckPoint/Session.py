@@ -28,15 +28,6 @@ class Session:
 
 
 
-    def globalAssign(self) -> dict:
-        # Executes the assign-global-assignment from Global to all dependent domains.
-        try:
-            return Backend.assign(self.sessionId, self.assetId)
-        except Exception as e:
-            raise e
-
-
-
     def discard(self) -> None:
         # Discard all changes in the current CheckPoint session.
         try:

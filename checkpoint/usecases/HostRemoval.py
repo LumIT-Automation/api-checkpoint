@@ -82,12 +82,9 @@ class HostRemoval:
                             # Finally delete host.
                             HostRemoval.__deleteHost(currentDomain, host, hostUid)
 
-                            # Apply all the modifications.
+                            # Apply all the modifications (a global assignment is performed on Global domain).
                             HostRemoval.__log(currentDomain, f"Publishing modifications")
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
-                            if currentDomain == "Global":
-                                HostRemoval.__log(currentDomain, f"Assign global assignments")
-                                Session(self.sessionId, assetId=self.assetId).globalAssign()
 
                             time.sleep(1) # @todo: API show-task.
                         except Exception as e:
