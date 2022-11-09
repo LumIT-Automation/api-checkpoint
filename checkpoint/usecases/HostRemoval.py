@@ -28,7 +28,6 @@ class HostRemoval:
     def __call__(self, *args, **kwargs) -> None:
         whereUsed = dict()
         existentHost = False
-        localOnlySearch = True
 
         try:
             domains = Domain.listQuick(self.sessionId, self.assetId)
@@ -39,14 +38,13 @@ class HostRemoval:
 
                 # Find where the host is used within the domain.
                 # More than one host can coexist with the same IPv4 address, but with different names.
-                if currentDomain == "Global":
-                    localOnlySearch = False
-
-                hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, currentDomain, self.ipv4Address, localOnly=localOnlySearch)
+                hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, currentDomain, self.ipv4Address, localOnly=False)
                 for h in hostsWithIpv4:
                     if h:
                         hostUid = h["uid"]
                         host = Host(self.sessionId, assetId=self.assetId, domain=currentDomain, uid=hostUid)
+
+                        hostDetails = host.info()
 
                         w = host.whereUsed()
                         for el in ("objects", "access-control-rules", "nat-rules", "threat-prevention-rules", "https-rules"):
@@ -82,9 +80,14 @@ class HostRemoval:
                                 )
 
                             # Finally delete host.
-                            HostRemoval.__deleteHost(currentDomain, host, hostUid)
+                            if currentDomain == "Global":
+                                HostRemoval.__deleteHost(currentDomain, host, hostUid)
+                            else:
+                                # On non-Global domains, remove only non-global hosts.
+                                if hostDetails["domain"]["domain-type"] != "global domain":
+                                    HostRemoval.__deleteHost(currentDomain, host, hostUid)
 
-                            # Apply all the modifications (a global assignment is performed on Global domain).
+                            # Apply all the modifications (a global assignment is performed when on Global domain).
                             HostRemoval.__log(currentDomain, f"Publishing modifications")
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
                         except Exception as e:
