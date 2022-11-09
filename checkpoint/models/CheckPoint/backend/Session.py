@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 from django.conf import settings
@@ -19,9 +20,12 @@ class Session:
                 data={}
             )
 
+            time.sleep(1)
+
             if domain == "Global":
                 # Do assign-global-assignment to all domains.
                 Session.__assign(sessionId, assetId)
+                time.sleep(10) # @todo: API show-task.
 
             return response
         except Exception as e:

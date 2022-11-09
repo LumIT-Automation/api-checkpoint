@@ -1,5 +1,3 @@
-import time
-
 from checkpoint.models.CheckPoint.Domain import Domain
 from checkpoint.models.CheckPoint.Host import Host
 from checkpoint.models.CheckPoint.Group import Group
@@ -30,6 +28,7 @@ class HostRemoval:
     def __call__(self, *args, **kwargs) -> None:
         whereUsed = dict()
         existentHost = False
+        localOnlySearch = True
 
         try:
             domains = Domain.listQuick(self.sessionId, self.assetId)
@@ -39,8 +38,11 @@ class HostRemoval:
                 currentDomain = domain["name"]
 
                 # Find where the host is used within the domain.
-                # More than one host can coexist with the same IPv4 address, but different names.
-                hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, currentDomain, self.ipv4Address)
+                # More than one host can coexist with the same IPv4 address, but with different names.
+                if currentDomain == "Global":
+                    localOnlySearch = False
+
+                hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, currentDomain, self.ipv4Address, localOnly=localOnlySearch)
                 for h in hostsWithIpv4:
                     if h:
                         hostUid = h["uid"]
@@ -85,8 +87,6 @@ class HostRemoval:
                             # Apply all the modifications (a global assignment is performed on Global domain).
                             HostRemoval.__log(currentDomain, f"Publishing modifications")
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
-
-                            time.sleep(1) # @todo: API show-task.
                         except Exception as e:
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).discard()
                             raise e
@@ -224,7 +224,9 @@ class HostRemoval:
             pass
         except CustomException as c:
             if c.status == 404:
-                pass
+                pass # ignore error if already removed.
+            else:
+                raise c
         except Exception as e:
             raise e
 
