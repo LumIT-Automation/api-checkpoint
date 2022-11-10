@@ -74,7 +74,8 @@ class Layer:
 
         try:
             Backend = LayerBackendFactory(layerType)() # get suitable Backend.
-            if localOnly:
+
+            if localOnly and domain != "Global":
                 o = Backend(sessionId, assetId, domain).list()
                 for el in o:
                     if "domain" in el and "domain-type" in el["domain"]:
@@ -111,7 +112,8 @@ class Layer:
 
         try:
             Backend = LayerBackendFactory(layerType)()
-            if localOnly:
+
+            if localOnly and domain != "Global":
                 l = Backend(sessionId, assetId, domain, accessLayerUid).listRules()
                 for el in l:
                     if "rulebase" in el:

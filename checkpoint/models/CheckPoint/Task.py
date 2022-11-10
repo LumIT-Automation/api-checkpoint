@@ -36,7 +36,7 @@ class Task(Object):
         out = list()
 
         try:
-            if localOnly:
+            if localOnly and domain != "Global":
                 o = Backend.list(sessionId, assetId, domain, filter=filter)
                 for el in o:
                     if "domain" in el and "domain-type" in el["domain"]:

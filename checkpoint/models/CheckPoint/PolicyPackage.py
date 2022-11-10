@@ -52,7 +52,7 @@ class PolicyPackage:
         out = list()
 
         try:
-            if localOnly:
+            if localOnly and domain != "Global":
                 o = Backend.list(sessionId, assetId, domain)
                 for el in o:
                     if "domain" in el and "domain-type" in el["domain"]:
@@ -86,7 +86,7 @@ class PolicyPackage:
         out = list()
 
         try:
-            if localOnly:
+            if localOnly and domain != "Global":
                 o = Backend.listRules(sessionId, assetId, domain, policyPackageUid)
                 for el in o:
                     if "domain" in el and "domain-type" in el["domain"]:

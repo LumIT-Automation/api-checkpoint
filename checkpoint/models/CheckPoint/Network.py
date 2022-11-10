@@ -53,7 +53,7 @@ class Network:
         try:
             out = list()
 
-            if localOnly:
+            if localOnly and domain != "Global":
                 o = Backend.list(sessionId, assetId, domain)
                 for el in o:
                     if "domain" in el and "domain-type" in el["domain"]:

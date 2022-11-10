@@ -81,7 +81,8 @@ class Service:
 
         try:
             Backend = ServiceBackendFactory(serviceType)() # get suitable Backend.
-            if localOnly:
+
+            if localOnly and domain != "Global":
                 o = Backend(sessionId, assetId, domain).list()
                 for el in o:
                     if "domain" in el and "domain-type" in el["domain"]:
