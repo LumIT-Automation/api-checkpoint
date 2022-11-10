@@ -45,6 +45,7 @@ class HostRemoval:
                         host = Host(self.sessionId, assetId=self.assetId, domain=currentDomain, uid=hostUid)
 
                         hostDetails = host.info()
+                        hostScope = hostDetails["domain"]["domain-type"]
 
                         w = host.whereUsed()
                         for el in ("objects", "access-control-rules", "nat-rules", "threat-prevention-rules", "https-rules"):
@@ -55,7 +56,7 @@ class HostRemoval:
                             # Unlink host from all groups: a host could be linked to more than one group in the hierarchy.
                             for o in whereUsed["objects"]:
                                 if o["type"] == "group":
-                                    self.__groupHostUnlinking(domain=currentDomain, group=o["uid"], host=hostUid)
+                                    self.__groupHostUnlinking(domain=currentDomain, group=o["uid"], groupScope=o["domain"]["domain-type"], host=hostUid, hostScope=hostScope)
 
                             # Delete lonely groups.
                             for o in whereUsed["objects"]:
@@ -69,23 +70,18 @@ class HostRemoval:
                             for r in ("access-control-rules", "https-rules", "threat-prevention-rules"):
                                 for o in whereUsed[r]:
                                     self.__securityRuleManagement(
-                                        domain=currentDomain, ruleType=r.split("-")[0], layer=o["layer"]["uid"], rule=o["rule"]["uid"], obj=h["uid"]
+                                        domain=currentDomain, ruleType=r.split("-")[0], layer=o["layer"]["uid"], rule=o["rule"]["uid"], ruleScope=o["rule"]["domain"]["domain-type"], obj=h["uid"], objScope=hostScope
                                     )
 
                             # NAT rules.
                             # If host is in one of the rule fields, remove the rule.
                             for o in whereUsed["nat-rules"]:
                                 self.__natRuleManagement(
-                                    domain=currentDomain, package=o["package"]["uid"], rule=o["rule"]["uid"], obj=hostUid
+                                    domain=currentDomain, package=o["package"]["uid"], rule=o["rule"]["uid"], ruleScope=o["rule"]["domain"]["domain-type"], obj=hostUid
                                 )
 
                             # Finally delete host.
-                            if currentDomain == "Global":
-                                HostRemoval.__deleteHost(currentDomain, host, hostUid)
-                            else:
-                                # On non-Global domains, remove only non-global hosts.
-                                if hostDetails["domain"]["domain-type"] != "global domain":
-                                    HostRemoval.__deleteHost(currentDomain, host, hostUid)
+                            HostRemoval.__deleteHost(currentDomain, host, hostUid, hostScope)
 
                             # Apply all the modifications (a global assignment is performed when on Global domain).
                             HostRemoval.__log(currentDomain, f"Publishing modifications")
@@ -119,23 +115,40 @@ class HostRemoval:
     # Private methods
     ####################################################################################################################
 
-    def __securityRuleManagement(self, ruleType: str, domain: str, layer: str, rule: str, obj: str) -> None:
+    def __securityRuleManagement(self, ruleType: str, domain: str, layer: str, rule: str, ruleScope: str, obj: str, objScope: str) -> None:
         autopublish = False
+        remove = False
+        unlink = False
         if domain == "Global":
             autopublish = True
 
         try:
             o = RuleObject.listObjectsInRule(self.sessionId, ruleType, self.assetId, domain, layer, rule)
-            if (obj in o["source"] and len(o["source"]) < 2) \
-                    or (obj in o["destination"] and len(o["destination"]) < 2):
 
+            if (obj in o["source"] and len(o["source"]) < 2) or (obj in o["destination"] and len(o["destination"]) < 2):
                 # Delete rule if no source or destination is to remain.
-                HostRemoval.__log(domain, f"Deleting orphaned rule '{layer}/{rule}'")
-                Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete(autoPublish=autopublish)
+                # While working on non-Global domains, remove only non-global objects.
+                if domain == "Global":
+                    remove = True
+                else:
+                    if ruleScope != "global domain":
+                        remove = True
+
+                if remove:
+                    HostRemoval.__log(domain, f"Deleting orphaned rule '{layer}/{rule}'")
+                    Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete(autoPublish=autopublish)
             else:
                 # Remove host in rule (within source and/or destination).
-                HostRemoval.__log(domain, f"Unlinking object '{obj}' from rule '{rule}'")
-                RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=autopublish)
+                # On non Global-domains, perform the action only if not both are global objects.
+                if domain == "Global":
+                    unlink = True
+                else:
+                    if ruleScope != "global domain" and objScope != "global domain":
+                        unlink = True
+
+                if unlink:
+                    HostRemoval.__log(domain, f"Unlinking object '{obj}' from rule '{rule}'")
+                    RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=autopublish)
 
             # @todo: installed-on [?].
         except KeyError:
@@ -145,41 +158,59 @@ class HostRemoval:
 
 
 
-    def __natRuleManagement(self, domain: str, package: str, rule: str, obj: str) -> None:
+    def __natRuleManagement(self, domain: str, package: str, rule: str, ruleScope: str, obj: str) -> None:
         autopublish = False
+        remove = False
         if domain == "Global":
             autopublish = True
 
-        try:
-            # If object is in one of the rule fields, remove the rule.
-            natRule = NatRule(self.sessionId, assetId=self.assetId, domain=domain, packageUid=package, uid=rule)
+        # If object is within one of the rule fields, remove the rule.
+        # While working on non-Global domains, remove only non-global objects.
+        if domain == "Global":
+            remove = True
+        else:
+            if ruleScope != "global domain":
+                remove = True
 
-            info = natRule.info()
-            for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
-                if info.get(f)["uid"] == obj:
-                    HostRemoval.__log(domain, f"Deleting orphaned NAT rule '{package}/{rule}'")
-                    natRule.delete(autoPublish=autopublish)
+        if remove:
+            try:
+                natRule = NatRule(self.sessionId, assetId=self.assetId, domain=domain, packageUid=package, uid=rule)
 
-                    break
+                info = natRule.info()
+                for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
+                    if info.get(f)["uid"] == obj:
+                        HostRemoval.__log(domain, f"Deleting orphaned NAT rule '{package}/{rule}'")
+                        natRule.delete(autoPublish=autopublish)
 
-            # @todo: installed-on [?].
-        except KeyError:
-            pass
-        except Exception as e:
-            raise e
+                        break
+
+                # @todo: installed-on [?].
+            except KeyError:
+                pass
+            except Exception as e:
+                raise e
 
 
 
-    def __groupHostUnlinking(self, domain: str, group: str, host: str):
+    def __groupHostUnlinking(self, domain: str, group: str, groupScope: str, host: str, hostScope: str):
         autopublish = False
+        unlink = False
         if domain == "Global":
             autopublish = True
 
-        try:
-            HostRemoval.__log(domain, f"Unlinking host '{host}' from group '{group}'")
-            GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove(autoPublish=autopublish)
-        except Exception as e:
-            raise e
+        # On non Global-domains, perform the action only if not both are global objects.
+        if domain == "Global":
+            unlink = True
+        else:
+            if groupScope != "global domain" and hostScope != "global domain":
+                unlink = True
+
+        if unlink:
+            try:
+                HostRemoval.__log(domain, f"Unlinking host '{host}' from group '{group}'")
+                GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove(autoPublish=autopublish)
+            except Exception as e:
+                raise e
 
 
 
@@ -187,7 +218,10 @@ class HostRemoval:
         whereUsed = dict()
 
         try:
-            groupUid = group.info()["uid"]
+            groupDetails = group.info()
+
+            groupUid = groupDetails["uid"]
+            groupScope = groupDetails["domain"]["domain-type"]
 
             w = group.whereUsed()
             for el in ("objects", "access-control-rules", "nat-rules", "threat-prevention-rules", "https-rules"):
@@ -196,12 +230,12 @@ class HostRemoval:
             for r in ("access-control-rules", "https-rules", "threat-prevention-rules"):
                 for o in whereUsed[r]:
                     self.__securityRuleManagement(
-                        domain=domain, ruleType=r.split("-")[0], layer=o["layer"]["uid"], rule=o["rule"]["uid"], obj=groupUid
+                        domain=domain, ruleType=r.split("-")[0], layer=o["layer"]["uid"], rule=o["rule"]["uid"], ruleScope=o["rule"]["domain"]["domain-type"], obj=groupUid, objScope=groupScope
                     )
 
             for o in whereUsed["nat-rules"]:
                 self.__natRuleManagement(
-                    domain=domain, package=o["package"]["uid"], rule=o["rule"]["uid"], obj=groupUid
+                    domain=domain, package=o["package"]["uid"], rule=o["rule"]["uid"], ruleScope=o["rule"]["domain"]["domain-type"], obj=groupUid
                 )
         except KeyError:
             pass
@@ -268,10 +302,12 @@ class HostRemoval:
     ####################################################################################################################
 
     @staticmethod
-    def __deleteHost(domain: str, host: Host, hostUid: str):
+    def __deleteHost(domain: str, host: Host, hostUid: str, hostScope: str):
         try:
-            HostRemoval.__log(domain, f"Deleting host '{hostUid}'")
-            host.delete(autoPublish=False)
+            if domain == "Global" or (domain != "Global" and hostScope != "global domain"):
+                # While working on non-Global domains, remove only non-global hosts.
+                HostRemoval.__log(domain, f"Deleting host '{hostUid}'")
+                host.delete(autoPublish=False)
         except Exception as e:
             raise e
 
