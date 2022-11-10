@@ -83,7 +83,7 @@ class HostRemoval:
                             # Finally delete host.
                             HostRemoval.__deleteHost(currentDomain, host, hostUid, hostScope)
 
-                            # Apply all the modifications (a global assignment is performed when on Global domain).
+                            # Apply all the modifications (a global assignment is also performed when on Global domain).
                             HostRemoval.__log(currentDomain, f"Publishing modifications")
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
                         except Exception as e:
@@ -116,39 +116,24 @@ class HostRemoval:
     ####################################################################################################################
 
     def __securityRuleManagement(self, ruleType: str, domain: str, layer: str, rule: str, ruleScope: str, obj: str, objScope: str) -> None:
-        autopublish = False
-        remove = False
-        unlink = False
-        if domain == "Global":
-            autopublish = True
-
         try:
             o = RuleObject.listObjectsInRule(self.sessionId, ruleType, self.assetId, domain, layer, rule)
+            if (obj in o["source"] and len(o["source"]) < 2) \
+                    or (obj in o["destination"] and len(o["destination"]) < 2):
 
-            if (obj in o["source"] and len(o["source"]) < 2) or (obj in o["destination"] and len(o["destination"]) < 2):
                 # Delete rule if no source or destination is to remain.
-                # While working on non-Global domains, remove only non-global objects.
-                if domain == "Global":
-                    remove = True
-                else:
-                    if ruleScope != "global domain":
-                        remove = True
-
-                if remove:
+                if HostRemoval.__objectRemovable(domain, ruleScope):
                     HostRemoval.__log(domain, f"Deleting orphaned rule '{layer}/{rule}'")
-                    Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete(autoPublish=autopublish)
+                    Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete(
+                        autoPublish=HostRemoval.__autopublish(domain)
+                    )
             else:
                 # Remove host in rule (within source and/or destination).
-                # On non Global-domains, perform the action only if not both are global objects.
-                if domain == "Global":
-                    unlink = True
-                else:
-                    if ruleScope != "global domain" and objScope != "global domain":
-                        unlink = True
-
-                if unlink:
+                if HostRemoval.__objectUnlinkable(domain, innerObjectScope=objScope, outerObjectScope=ruleScope):
                     HostRemoval.__log(domain, f"Unlinking object '{obj}' from rule '{rule}'")
-                    RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=autopublish)
+                    RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(
+                        autoPublish=HostRemoval.__autopublish(domain)
+                    )
 
             # @todo: installed-on [?].
         except KeyError:
@@ -159,20 +144,8 @@ class HostRemoval:
 
 
     def __natRuleManagement(self, domain: str, package: str, rule: str, ruleScope: str, obj: str) -> None:
-        autopublish = False
-        remove = False
-        if domain == "Global":
-            autopublish = True
-
         # If object is within one of the rule fields, remove the rule.
-        # While working on non-Global domains, remove only non-global objects.
-        if domain == "Global":
-            remove = True
-        else:
-            if ruleScope != "global domain":
-                remove = True
-
-        if remove:
+        if HostRemoval.__objectRemovable(domain, ruleScope):
             try:
                 natRule = NatRule(self.sessionId, assetId=self.assetId, domain=domain, packageUid=package, uid=rule)
 
@@ -180,7 +153,7 @@ class HostRemoval:
                 for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
                     if info.get(f)["uid"] == obj:
                         HostRemoval.__log(domain, f"Deleting orphaned NAT rule '{package}/{rule}'")
-                        natRule.delete(autoPublish=autopublish)
+                        natRule.delete(autoPublish=HostRemoval.__autopublish(domain))
 
                         break
 
@@ -193,22 +166,12 @@ class HostRemoval:
 
 
     def __groupHostUnlinking(self, domain: str, group: str, groupScope: str, host: str, hostScope: str):
-        autopublish = False
-        unlink = False
-        if domain == "Global":
-            autopublish = True
-
-        # On non Global-domains, perform the action only if not both are global objects.
-        if domain == "Global":
-            unlink = True
-        else:
-            if groupScope != "global domain" and hostScope != "global domain":
-                unlink = True
-
-        if unlink:
+        if HostRemoval.__objectUnlinkable(domain, innerObjectScope=hostScope, outerObjectScope=groupScope):
             try:
                 HostRemoval.__log(domain, f"Unlinking host '{host}' from group '{group}'")
-                GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove(autoPublish=autopublish)
+                GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove(
+                    autoPublish=HostRemoval.__autopublish(domain)
+                )
             except Exception as e:
                 raise e
 
@@ -245,22 +208,22 @@ class HostRemoval:
 
 
     def __groupsManagement(self, domain: str, group: str, host: str, sonGroup: str = "") -> None:
-        autopublish = False
-        if domain == "Global":
-            autopublish = True
-
         try:
             # If group is to remain empty on host deletion, delete also this group.
             g = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group)
 
-            members = g.info().get("members", [])
-
             if sonGroup:
                 # Always unlink son group (while in recursion).
-                HostRemoval.__log(domain, f"Unlinking group '{sonGroup}' from group '{group}'")
-                g.deleteInnerGroup(sonGroup, autoPublish=autopublish)
+                if HostRemoval.__objectUnlinkable(
+                        domain,
+                        innerObjectScope=g.info()["domain"]["domain-type"],
+                        outerObjectScope=Group(self.sessionId, assetId=self.assetId, domain=domain, uid=sonGroup).info()["domain"]["domain-type"]):
+                    HostRemoval.__log(domain, f"Unlinking group '{sonGroup}' from group '{group}'")
+                    g.deleteInnerGroup(sonGroup, autoPublish=HostRemoval.__autopublish(domain))
 
-            if len(members) == 0:
+            groupDetails = g.info()
+
+            if len(groupDetails["members"]) == 0:
                 # Group is deletable (empty).
                 # Recursively manage father groups.
                 fathers = g.listFatherGroups()
@@ -271,8 +234,9 @@ class HostRemoval:
                 # Delete group, but before unlink it from security/NAT rules, if any.
                 self.__groupRuleManagement(domain, g)
 
-                HostRemoval.__log(domain, f"Deleting lonely group '{group}'")
-                g.delete(autoPublish=autopublish)
+                if HostRemoval.__objectRemovable(domain, groupDetails["domain"]["domain-type"]):
+                    HostRemoval.__log(domain, f"Deleting lonely group '{group}'")
+                    g.delete(autoPublish=HostRemoval.__autopublish(domain))
         except KeyError:
             pass
         except CustomException as c:
@@ -304,12 +268,47 @@ class HostRemoval:
     @staticmethod
     def __deleteHost(domain: str, host: Host, hostUid: str, hostScope: str):
         try:
-            if domain == "Global" or (domain != "Global" and hostScope != "global domain"):
-                # While working on non-Global domains, remove only non-global hosts.
+            if HostRemoval.__objectRemovable(domain, hostScope):
                 HostRemoval.__log(domain, f"Deleting host '{hostUid}'")
-                host.delete(autoPublish=False)
+                host.delete(autoPublish=HostRemoval.__autopublish(domain))
         except Exception as e:
             raise e
+
+
+
+    @staticmethod
+    def __autopublish(domain: str) -> bool:
+        return bool(domain == "Global")
+
+
+
+    @staticmethod
+    def __objectRemovable(domain: str, objectScope: str):
+        removable = False
+
+        # While working on non-Global domains, only non-global objects are removable.
+        if domain == "Global":
+            removable = True
+        else:
+            if "global" not in objectScope:
+                removable = True
+
+        return removable
+
+
+
+    @staticmethod
+    def __objectUnlinkable(domain: str, innerObjectScope: str, outerObjectScope: str):
+        unlinkable = False
+
+        # While working on non-Global domains, only non-global objects are removable.
+        if domain == "Global":
+            unlinkable = True
+        else:
+            if outerObjectScope != "global domain" and innerObjectScope != "global domain":
+                unlinkable = True
+
+        return unlinkable
 
 
 
