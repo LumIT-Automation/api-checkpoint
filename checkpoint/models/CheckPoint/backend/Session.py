@@ -5,6 +5,7 @@ from django.conf import settings
 
 from checkpoint.helpers.ApiSupplicant import ApiSupplicant
 
+
 class Session:
 
     ####################################################################################################################
@@ -25,7 +26,6 @@ class Session:
             if domain == "Global":
                 # Do assign-global-assignment to all domains.
                 Session.__assign(sessionId, assetId)
-                time.sleep(10) # @todo: API show-task.
 
             return response
         except Exception as e:
@@ -103,21 +103,42 @@ class Session:
     ####################################################################################################################
 
     @staticmethod
-    def __assign(sessionId: str, assetId: int) -> dict:
+    def __assign(sessionId: str, assetId: int) -> None:
         from checkpoint.models.CheckPoint.Domain import Domain
+        from checkpoint.models.CheckPoint.Task import Task
+
         domains = list()
+        timeout = 120 # [second]
 
         try:
+            # Perform a global assignment on all domains.
             ds = Domain.listQuick(sessionId, assetId)
             for d in ds:
                 domains.append(d["name"])
 
-            return ApiSupplicant(sessionId, assetId).post(
+            response = ApiSupplicant(sessionId, assetId).post(
                 urlSegment="assign-global-assignment",
                 data={
                     "global-domains": "Global",
                     "dependent-domains": domains
                 }
             )
+
+            # Wait for async tasks' success or give up silently.
+            for task in response["tasks"]:
+                t0 = time.time()
+
+                while True:
+                    try:
+                        taskRunInfo = Task(sessionId, assetId, task["dependent-domain"]["name"], uid=task["task-id"]).info()
+                        if taskRunInfo["tasks"][0]["status"] == "succeeded":
+                            break
+                    except KeyError:
+                        pass
+
+                    if time.time() >= t0 + timeout: # timeout reached.
+                        break
+
+                    time.sleep(5)
         except Exception as e:
             raise e

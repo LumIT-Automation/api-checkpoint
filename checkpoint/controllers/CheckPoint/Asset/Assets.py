@@ -17,10 +17,26 @@ class CheckPointAssetsController(CustomControllerCheckPointGetList, CustomContro
 
 
     def get(self, request: Request) -> Response:
+        def actionCallback():
+            from checkpoint.models.Permission.Permission import Permission
+            from checkpoint.controllers.CustomControllerBase import CustomControllerBase
+
+            permittedAssets = []
+            user = CustomControllerBase.loggedUser(request)
+            assets = Asset.list()
+
+            # Filter each asset basing on actual permissions.
+            for a in assets:
+                if Permission.hasUserPermission(groups=user["groups"], action="assets_get", assetId=a["id"]) or user["authDisabled"]:
+                    permittedAssets.append(a)
+
+            return permittedAssets
+
+
         return self.getList(
             request=request,
             Serializer=AssetsSerializer,
-            actionCallback=lambda: Asset.list(),
+            actionCallback=actionCallback,
             permission={
                 "args": {
                 }

@@ -171,7 +171,7 @@ class ApiSupplicant:
                             checkpointError += str(el.get("message", ""))+" "
                     if "blocking-errors" in self.responsePayload:
                         checkpointError += ". "
-                        for el in self.responsePayload["errors"]:
+                        for el in self.responsePayload["blocking-errors"]:
                             checkpointError += str(el.get("message", ""))+" "
                 else:
                     checkpointError = self.responsePayload

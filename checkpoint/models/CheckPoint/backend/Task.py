@@ -2,8 +2,6 @@ from typing import List
 
 from django.conf import settings
 
-from checkpoint.models.CheckPoint.Session import Session
-
 from checkpoint.helpers.ApiSupplicant import ApiSupplicant
 from checkpoint.helpers.Log import Log
 
@@ -48,7 +46,6 @@ class Task:
                         "filter": filter
                     }
                 )
-                Log.log(o, '_')
 
                 if "tasks" in o and o["tasks"]:
                     out.extend(o["tasks"])

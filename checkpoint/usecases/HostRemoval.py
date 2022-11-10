@@ -207,28 +207,24 @@ class HostRemoval:
 
 
 
-    def __groupsManagement(self, domain: str, group: str, host: str, sonGroup: str = "") -> None:
+    def __groupsManagement(self, domain: str, group: str, host: str, groupScope: str = "", sonGroup: str = "", sonGroupScope: str = "") -> None:
         try:
             # If group is to remain empty on host deletion, delete also this group.
             g = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group)
 
             if sonGroup:
-                # Always unlink son group (while in recursion).
-                if HostRemoval.__objectUnlinkable(
-                        domain,
-                        innerObjectScope=g.info()["domain"]["domain-type"],
-                        outerObjectScope=Group(self.sessionId, assetId=self.assetId, domain=domain, uid=sonGroup).info()["domain"]["domain-type"]):
+                # Unlink son group (while in recursion).
+                if HostRemoval.__objectUnlinkable(domain, innerObjectScope=sonGroupScope, outerObjectScope=groupScope):
                     HostRemoval.__log(domain, f"Unlinking group '{sonGroup}' from group '{group}'")
                     g.deleteInnerGroup(sonGroup, autoPublish=HostRemoval.__autopublish(domain))
 
             groupDetails = g.info()
 
             if len(groupDetails["members"]) == 0:
-                # Group is deletable (empty).
-                # Recursively manage father groups.
+                # Group is deletable (empty). Recursively manage father groups.
                 fathers = g.listFatherGroups()
                 for f in fathers:
-                    self.__groupsManagement(domain=domain, group=f["uid"], host=host, sonGroup=group)
+                    self.__groupsManagement(domain=domain, group=f["uid"], host=host, groupScope=f["domain"]["domain-type"], sonGroup=group, sonGroupScope=groupDetails["domain"]["domain-type"])
 
                 # Apply from top-level to bottom.
                 # Delete group, but before unlink it from security/NAT rules, if any.
