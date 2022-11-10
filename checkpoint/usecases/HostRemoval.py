@@ -305,7 +305,7 @@ class HostRemoval:
         if domain == "Global":
             unlinkable = True
         else:
-            if outerObjectScope != "global domain" and innerObjectScope != "global domain":
+            if not (outerObjectScope == "global domain" and innerObjectScope == "global domain"):
                 unlinkable = True
 
         return unlinkable
