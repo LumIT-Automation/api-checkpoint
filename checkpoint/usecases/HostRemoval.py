@@ -120,15 +120,11 @@ class HostRemoval:
 
                 # Delete rule if no source or destination is to remain.
                 HostRemoval.__log(domain, f"Deleting orphaned rule '{layer}/{rule}'")
-                Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete(
-                    autoPublish=HostRemoval.__autopublish(domain)
-                )
+                Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete()
             else:
                 # Remove host in rule (within source and/or destination).
                 HostRemoval.__log(domain, f"Unlinking object '{obj}' from rule '{rule}'")
-                RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(
-                    autoPublish=HostRemoval.__autopublish(domain)
-                )
+                RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove()
 
             # @todo: installed-on [?].
         except KeyError:
@@ -152,7 +148,7 @@ class HostRemoval:
             for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
                 if info.get(f)["uid"] == obj:
                     HostRemoval.__log(domain, f"Try deleting orphaned NAT rule '{package}/{rule}'")
-                    natRule.delete(autoPublish=HostRemoval.__autopublish(domain))
+                    natRule.delete()
 
                     break
 
@@ -172,9 +168,7 @@ class HostRemoval:
     def __groupHostUnlinking(self, domain: str, group: str, host: str):
         try:
             HostRemoval.__log(domain, f"Try unlinking host '{host}' from group '{group}'")
-            GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove(
-                autoPublish=HostRemoval.__autopublish(domain)
-            )
+            GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove()
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
                 pass
@@ -220,7 +214,7 @@ class HostRemoval:
             if sonGroup:
                 # Unlink son group (while in recursion).
                 HostRemoval.__log(domain, f"Try unlinking group '{sonGroup}' from group '{group}'")
-                g.deleteInnerGroup(sonGroup, autoPublish=HostRemoval.__autopublish(domain))
+                g.deleteInnerGroup(sonGroup)
 
             groupDetails = g.info()
 
@@ -235,7 +229,7 @@ class HostRemoval:
                 self.__groupRuleManagement(domain, g)
 
                 HostRemoval.__log(domain, f"Try deleting lonely group '{group}'")
-                g.delete(autoPublish=HostRemoval.__autopublish(domain))
+                g.delete()
         except KeyError:
             pass
         except CustomException as c:
@@ -270,7 +264,7 @@ class HostRemoval:
     def __deleteHost(domain: str, host: Host, hostUid: str):
         try:
             HostRemoval.__log(domain, f"Try deleting host '{hostUid}'")
-            host.delete(autoPublish=HostRemoval.__autopublish(domain))
+            host.delete()
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
                 pass
@@ -278,12 +272,6 @@ class HostRemoval:
                 raise e
         except Exception as e:
             raise e
-
-
-
-    @staticmethod
-    def __autopublish(domain: str) -> bool:
-        return bool(domain == "Global")
 
 
 
