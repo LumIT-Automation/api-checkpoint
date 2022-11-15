@@ -119,11 +119,11 @@ class HostRemoval:
                     or (obj in o["destination"] and len(o["destination"]) < 2):
 
                 # Delete rule if no source or destination is to remain.
-                HostRemoval.__log(domain, f"Deleting orphaned rule '{layer}/{rule}'")
+                HostRemoval.__log(domain, f"Try deleting orphaned rule '{layer}/{rule}'")
                 Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete()
             else:
                 # Remove host in rule (within source and/or destination).
-                HostRemoval.__log(domain, f"Unlinking object '{obj}' from rule '{rule}'")
+                HostRemoval.__log(domain, f"Try unlinking object '{obj}' from rule '{rule}'")
                 RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove()
 
             # @todo: installed-on [?].
