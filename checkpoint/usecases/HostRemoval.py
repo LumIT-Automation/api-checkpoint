@@ -44,9 +44,11 @@ class HostRemoval:
                         hostUid = h["uid"]
                         host = Host(self.sessionId, assetId=self.assetId, domain=currentDomain, uid=hostUid)
 
-                        w = host.whereUsed()
+                        w = host.whereUsed(indirect=True)
                         for el in ("objects", "access-control-rules", "nat-rules", "threat-prevention-rules", "https-rules"):
                             whereUsed[el] = w["used-directly"].get(el, [])
+
+                        # @todo: used-indirectly.
 
                         try:
                             # Groups.
@@ -81,7 +83,6 @@ class HostRemoval:
                             HostRemoval.__deleteHost(currentDomain, host, hostUid)
 
                             # Apply all the modifications (a global assignment is also performed when on Global domain).
-                            HostRemoval.__log(currentDomain, f"Publishing modifications (if any)")
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
                         except Exception as e:
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).discard()

@@ -4,6 +4,7 @@ from typing import List
 from django.conf import settings
 
 from checkpoint.helpers.ApiSupplicant import ApiSupplicant
+from checkpoint.helpers.Exception import CustomException
 
 
 class Session:
@@ -124,21 +125,26 @@ class Session:
                 }
             )
 
-            # Wait for async tasks' success or give up silently.
+            # Monitor async tasks.
             for task in response["tasks"]:
                 t0 = time.time()
 
                 while True:
                     try:
-                        taskRunInfo = Task(sessionId, assetId, task["dependent-domain"]["name"], uid=task["task-id"]).info()
-                        if taskRunInfo["tasks"][0]["status"] == "succeeded":
+                        domain = task["dependent-domain"]["name"]
+                        taskRunInfo = Task(sessionId, assetId, domain, uid=task["task-id"]).info()
+                        taskStatus = taskRunInfo["tasks"][0]["status"]
+
+                        if taskStatus == "succeeded":
                             break
+                        elif taskStatus == "failed":
+                            raise CustomException(status=400, payload={"CheckPoint": f"Assign task failed for domain "+domain})
+
+                        if time.time() >= t0 + timeout: # timeout reached.
+                            raise CustomException(status=400, payload={"CheckPoint": f"Assign task timeout for domain "+domain})
+
+                        time.sleep(5)
                     except KeyError:
                         pass
-
-                    if time.time() >= t0 + timeout: # timeout reached.
-                        break
-
-                    time.sleep(5)
         except Exception as e:
             raise e

@@ -16,9 +16,9 @@ class Object:
     # Public methods
     ####################################################################################################################
 
-    def whereUsed(self) -> dict:
+    def whereUsed(self, indirect: bool = False) -> dict:
         try:
-            return Backend.whereUsed(self.sessionId, self.assetId, self.domain, self.uid)
+            return Backend.whereUsed(self.sessionId, self.assetId, self.domain, self.uid, indirect=indirect)
         except Exception as e:
             raise e
 
