@@ -1,3 +1,5 @@
+from typing import List
+
 from checkpoint.models.CheckPoint.Domain import Domain
 from checkpoint.models.CheckPoint.Host import Host
 from checkpoint.models.CheckPoint.Group import Group
@@ -18,6 +20,8 @@ class HostRemoval:
         self.sessionId = sessionId
         self.assetId: int = int(assetId)
         self.ipv4Address: str = ipv4Address
+
+        self.globalUndead: list = []
 
 
 
@@ -48,8 +52,6 @@ class HostRemoval:
                         for el in ("objects", "access-control-rules", "nat-rules", "threat-prevention-rules", "https-rules"):
                             whereUsed[el] = w["used-directly"].get(el, [])
 
-                        # @todo: used-indirectly.
-
                         try:
                             # Groups.
                             # Unlink host from all groups: a host could be linked to more than one group in the hierarchy.
@@ -61,7 +63,7 @@ class HostRemoval:
                             for o in whereUsed["objects"]:
                                 if o["type"] == "group":
                                     self.__groupsManagement(
-                                        domain=currentDomain, group=o["uid"], host=hostUid
+                                        domain=currentDomain, group=o["uid"]
                                     )
 
                             # Security rules.
@@ -89,6 +91,41 @@ class HostRemoval:
                             raise e
 
                         existentHost = True
+
+            # Global undead carnage.
+            # Try unlocking global objects which are in use for various reasons.
+            for domain in domains:
+                currentDomain = domain["name"]
+
+                try:
+                    for undead in self.globalUndead:
+                        if undead[0] == "group":
+                            # Delete lonely groups.
+                            self.__groupsManagement(
+                                domain=currentDomain, group=undead[1]
+                            )
+
+                    # # Security rules.
+                    # # Delete rule if no source or destination is to remain.
+                    # for r in ("access-control-rules", "https-rules", "threat-prevention-rules"):
+                    #     for o in whereUsed[r]:
+                    #         self.__securityRuleManagement(
+                    #             domain=currentDomain, ruleType=r.split("-")[0], layer=o["layer"]["uid"],
+                    #             rule=o["rule"]["uid"], obj=h["uid"]
+                    #         )
+                    #
+                    # # NAT rules.
+                    # # If host is in one of the rule fields, remove the rule.
+                    # for o in whereUsed["nat-rules"]:
+                    #     self.__natRuleManagement(
+                    #         domain=currentDomain, package=o["package"]["uid"], rule=o["rule"]["uid"], obj=hostUid
+                    #     )
+
+                    # Apply all the modifications (a global assignment is also performed when on Global domain).
+                    Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
+                except Exception as e:
+                    Session(self.sessionId, assetId=self.assetId, domain=currentDomain).discard()
+                    raise e
         except KeyError:
             pass
         except Exception as e:
@@ -132,7 +169,12 @@ class HostRemoval:
             pass
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
-                pass
+                if domain != "Global":
+                    pass # ignore global objects on local domains.
+                else:
+                    raise e
+            elif e.status == 400 and "is use" in str(e.payload):
+                self.globalUndead.append(("security", layer, rule))
             else:
                 raise e
         except Exception as e:
@@ -158,7 +200,12 @@ class HostRemoval:
             pass
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
-                pass
+                if domain != "Global":
+                    pass # ignore global objects on local domains.
+                else:
+                    raise e
+            elif e.status == 400 and "is use" in str(e.payload):
+                self.globalUndead.append(("nat", package, rule))
             else:
                 raise e
         except Exception as e:
@@ -172,7 +219,10 @@ class HostRemoval:
             HostRemoval.__log(domain, f"Unlinked host '{host}' from group '{group}'")
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
-                pass
+                if domain != "Global":
+                    pass # ignore global objects on local domains.
+                else:
+                    raise e
             else:
                 raise e
         except Exception as e:
@@ -207,7 +257,7 @@ class HostRemoval:
 
 
 
-    def __groupsManagement(self, domain: str, group: str, host: str, sonGroup: str = "") -> None:
+    def __groupsManagement(self, domain: str, group: str, sonGroup: str = "") -> None:
         try:
             # If group is to remain empty on host deletion, delete also this group.
             g = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group)
@@ -223,7 +273,7 @@ class HostRemoval:
                 # Group is deletable (empty). Recursively manage father groups.
                 fathers = g.listFatherGroups()
                 for f in fathers:
-                    self.__groupsManagement(domain=domain, group=f["uid"], host=host, sonGroup=group)
+                    self.__groupsManagement(domain=domain, group=f["uid"], sonGroup=group)
 
                 # Apply from top-level to bottom.
                 # Delete group, but before unlink it from security/NAT rules, if any.
@@ -233,13 +283,18 @@ class HostRemoval:
                 HostRemoval.__log(domain, f"Deleted lonely group '{group}'")
         except KeyError:
             pass
-        except CustomException as c:
-            if c.status == 404:
+        except CustomException as e:
+            if e.status == 404:
                 pass # ignore error if already removed.
-            elif c.status == 400 and "read-only" in str(c.payload):
-                pass
+            elif e.status == 400 and "read-only" in str(e.payload):
+                if domain != "Global":
+                    pass # ignore global objects on local domains.
+                else:
+                    raise e
+            elif e.status == 400 and "is use" in str(e.payload):
+                self.globalUndead.append(("group", group))
             else:
-                raise c
+                raise e
         except Exception as e:
             raise e
 
@@ -268,7 +323,10 @@ class HostRemoval:
             HostRemoval.__log(domain, f"Deleted host '{hostUid}'")
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
-                pass
+                if domain != "Global":
+                    pass # ignore global objects on local domains.
+                else:
+                    raise e
             else:
                 raise e
         except Exception as e:
