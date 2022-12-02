@@ -30,6 +30,7 @@ from .controllers.CheckPoint import NatRule, NatRulebase
 from .controllers.CheckPoint import NatRuleObjects
 from .controllers.CheckPoint import Roles as CheckPointRoles, Role as CheckPointRole
 from .controllers.CheckPoint import LayersAccess, LayersThreat, LayersHttps, LayerAccess, LayerThreat, LayerHttps
+from .controllers.History import History
 
 
 urlpatterns = [
@@ -168,4 +169,7 @@ urlpatterns = [
     # Use cases.
     # Remove host.
     path('<int:assetId>/remove-host/', RemoveHost.CheckPointRemoveHostController.as_view(), name='remove-host'),
+
+    # Log history.
+    path('history/', History.HistoryLogsController.as_view(), name='checkpoint-log-history'),
 ]
