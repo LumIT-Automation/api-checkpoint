@@ -31,7 +31,13 @@ class CheckPointRemoveHostController(CustomControllerBase):
         httpStatus = status.HTTP_500_INTERNAL_SERVER_ERROR
         user = CustomControllerBase.loggedUser(request)
         originalUsername = request.headers.get("workflowUser", "") # user who called the workflow, if any.
-        workflowId = request.headers.get("workflowId", "") # a correlation id.
+        workflowId = request.headers.get("workflowId", "")  # a correlation id.
+
+        # Direct requests to the api container should be logged also.
+        if not originalUsername:
+            originalUsername = user.get("username", "")
+        if not workflowId:
+            workflowId = 'DIRECT API'
 
         try:
             Log.actionLog("Host complete removal", user)
@@ -51,7 +57,7 @@ class CheckPointRemoveHostController(CustomControllerBase):
                         lockUseCase.lock()
                         lock.lock()
 
-                        HostRemoval(sessionId=self.sessionId, assetId=assetId, ipv4Address=data["ipv4-address"])()
+                        HostRemoval(sessionId=self.sessionId, assetId=assetId, ipv4Address=data["ipv4-address"], user=originalUsername, workflowId=workflowId)()
                         httpStatus = status.HTTP_200_OK
 
                         lockUseCase.release()

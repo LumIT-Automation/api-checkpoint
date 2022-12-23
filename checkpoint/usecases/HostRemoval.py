@@ -6,17 +6,20 @@ from checkpoint.models.CheckPoint.RuleObject import RuleObject
 from checkpoint.models.CheckPoint.Rule import Rule
 from checkpoint.models.CheckPoint.NatRule import NatRule
 from checkpoint.models.CheckPoint.Session import Session
+from checkpoint.models.History.History import History
 
 from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Log import Log
 
 
 class HostRemoval:
-    def __init__(self, sessionId: str, assetId: int, ipv4Address: str, *args, **kwargs):
+    def __init__(self, sessionId: str, assetId: int, ipv4Address: str, user: str, workflowId: str = "", *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.sessionId = sessionId
         self.assetId: int = int(assetId)
+        self.username = user
+        self.workflowId = workflowId
         self.ipv4Address: str = ipv4Address
 
         self.globalUndead: list = []
@@ -80,7 +83,7 @@ class HostRemoval:
                                 )
 
                             # Finally delete host.
-                            HostRemoval.__deleteHost(currentDomain, host, hostUid)
+                            self.__deleteHost(currentDomain, host, hostUid)
 
                             # Apply all the modifications (a global assignment is also performed when on Global domain).
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
@@ -140,11 +143,13 @@ class HostRemoval:
 
                 # Delete rule if no source or destination is to remain.
                 Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).delete(autoPublish=False)
-                HostRemoval.__log(domain, f"Deleted orphaned rule '{layer}/{rule}'")
+                self.__log(domain, f"Deleted orphaned rule '{layer}/{rule}'")
+                self.__historyLog(action=f"Deleted rule - domain: {domain}", object_type="rule", object=rule, status="deleted")
             else:
                 # Remove host in rule (within source and/or destination).
                 RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=False)
-                HostRemoval.__log(domain, f"Unlinked object '{obj}' from rule '{rule}'")
+                self.__log(domain, f"Unlinked object '{obj}' from rule '{rule}'")
+                self.__historyLog(action=f"Unlinked object from rule - domain: {domain}", object_type="object", object=obj, status="unlinked")
 
             # @todo: installed-on [?].
         except KeyError:
@@ -173,7 +178,8 @@ class HostRemoval:
             for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
                 if info.get(f)["uid"] == obj:
                     natRule.delete(autoPublish=False)
-                    HostRemoval.__log(domain, f"Deleted orphaned NAT rule '{package}/{rule}'")
+                    self.__log(domain, f"Deleted orphaned NAT rule '{package}/{rule}'")
+                    self.__historyLog(action=f"Deleted orphaned NAT rule - domain: {domain} package: {package}", object_type="nat_rule", object=rule, status="deleted")
 
                     break
 
@@ -198,7 +204,8 @@ class HostRemoval:
     def __groupHostUnlinking(self, domain: str, group: str, host: str):
         try:
             GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host).remove(autoPublish=False)
-            HostRemoval.__log(domain, f"Unlinked host '{host}' from group '{group}'")
+            self.__log(domain, f"Unlinked host '{host}' from group '{group}'")
+            self.__historyLog(action=f"Unlinked host from group {group}- domain: {domain} ", object_type="host", object=host, status="unlinked")
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
                 if domain != "Global":
@@ -247,7 +254,8 @@ class HostRemoval:
             if sonGroup:
                 # Unlink son group (while in recursion).
                 g.deleteInnerGroup(sonGroup, autoPublish=False)
-                HostRemoval.__log(domain, f"Unlinked group '{sonGroup}' from group '{group}'")
+                self.__log(domain, f"Unlinked group '{sonGroup}' from group '{group}'")
+                self.__historyLog(action=f"Unlinked group from group {group} - domain: {domain}", object_type="group", object=sonGroup, status="unlinked")
 
             groupDetails = g.info()
 
@@ -262,7 +270,8 @@ class HostRemoval:
                 self.__groupRuleManagement(domain, g)
 
                 g.delete(autoPublish=False)
-                HostRemoval.__log(domain, f"Deleted lonely group '{group}'")
+                self.__log(domain, f"Deleted lonely group '{group}'")
+                self.__historyLog(action=f"Deleted group - domain: {domain}", object_type="group", object=group, status="deleted")
         except KeyError:
             pass
         except CustomException as e:
@@ -294,15 +303,11 @@ class HostRemoval:
 
 
 
-    ####################################################################################################################
-    # Private static methods
-    ####################################################################################################################
-
-    @staticmethod
-    def __deleteHost(domain: str, host: Host, hostUid: str):
+    def __deleteHost(self, domain: str, host: Host, hostUid: str):
         try:
             host.delete(autoPublish=False)
-            HostRemoval.__log(domain, f"Deleted host '{hostUid}'")
+            self.__log(domain, f"Deleted host '{hostUid}'")
+            self.__historyLog(action=f"Deleted host - domain: {domain}", object_type="host", object=hostUid, status="deleted")
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
                 if domain != "Global":
@@ -316,6 +321,22 @@ class HostRemoval:
 
 
 
-    @staticmethod
-    def __log(domain: str, message: str):
-        Log.log(f"[WORKFLOW] [Domain: {domain}] "+str(message), "_")
+    def __log(self, domain: str, message: str):
+        Log.log(f"[WORKFLOW {self.workflowId}] [Domain: {domain}] [Username: {self.username}] "+str(message), "_")
+
+
+
+    def __historyLog(self, action: str, object_type: str, object: str, status: str) -> None:
+        try:
+            History.add({
+                "username": self.username,
+                "action": action,
+                "asset_id": self.assetId,
+                "workflow_id": self.workflowId,
+                "config_object_type": object_type,
+                "config_object": object,
+                "status": status
+            })
+
+        except Exception:
+            pass

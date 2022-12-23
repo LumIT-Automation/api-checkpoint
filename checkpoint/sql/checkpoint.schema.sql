@@ -76,6 +76,7 @@ CREATE TABLE `log` (
   `username` varchar(255) NOT NULL,
   `action` varchar(255) NOT NULL,
   `asset_id` int(11) NOT NULL,
+  `workflow_id` varchar(64) NOT NULL,
   `config_object_type` varchar(255) NOT NULL,
   `config_object` varchar(255) NOT NULL,
   `status` varchar(32) NOT NULL,
