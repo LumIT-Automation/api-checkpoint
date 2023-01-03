@@ -15,6 +15,7 @@ from checkpoint.serializers.CheckPoint.UseCases.RemoveHost import CheckPointRemo
 from checkpoint.controllers.CustomControllerBase import CustomControllerBase
 
 from checkpoint.helpers.Lock import Lock
+from checkpoint.helpers.Misc import Misc
 from checkpoint.helpers.Log import Log
 
 
@@ -37,7 +38,7 @@ class CheckPointRemoveHostController(CustomControllerBase):
         if not originalUsername:
             originalUsername = user.get("username", "")
         if not workflowId:
-            workflowId = 'DIRECT API'
+            workflowId = 'api_direct-' + Misc.getWorkflowCorrelationId()
 
         try:
             Log.actionLog("Host complete removal", user)
