@@ -38,7 +38,7 @@ class CheckPointRemoveHostController(CustomControllerBase):
         if not originalUsername:
             originalUsername = user.get("username", "")
         if not workflowId:
-            workflowId = 'api_direct-' + Misc.getWorkflowCorrelationId()
+            workflowId = 'api-remove_host-' + Misc.getWorkflowCorrelationId()
 
         try:
             Log.actionLog("Host complete removal", user)
