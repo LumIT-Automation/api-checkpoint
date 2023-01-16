@@ -14,7 +14,7 @@ class Session:
     ####################################################################################################################
 
     @staticmethod
-    def publish(sessionId: str, assetId: int, domain: str) -> dict:
+    def publish(sessionId: str, assetId: int, domain: str, inhibitReassign: bool = False) -> dict:
         try:
             response = ApiSupplicant(sessionId, assetId).post(
                 urlSegment="publish",
@@ -24,9 +24,10 @@ class Session:
 
             time.sleep(1)
 
-            if domain == "Global":
-                # Do assign-global-assignment to all domains.
-                Session.__assign(sessionId, assetId)
+            if not inhibitReassign:
+                if domain == "Global":
+                    # Do assign-global-assignment to all domains.
+                    Session.__assign(sessionId, assetId)
 
             return response
         except Exception as e:

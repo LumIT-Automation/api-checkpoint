@@ -19,10 +19,10 @@ class Session:
     # Public methods
     ####################################################################################################################
 
-    def publish(self) -> dict:
+    def publish(self, inhibitReassign: bool = False) -> dict:
         # Publish modifications for this session.
         try:
-            return Backend.publish(self.sessionId, self.assetId, self.domain)
+            return Backend.publish(self.sessionId, self.assetId, self.domain, inhibitReassign=inhibitReassign)
         except Exception as e:
             raise e
 
