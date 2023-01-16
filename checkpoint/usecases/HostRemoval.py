@@ -96,13 +96,12 @@ class HostRemoval:
                         existentHost = True
 
             # Global undead carnage.
-            # Try unlocking global objects which are in use for various reasons.
-
-            # DOMAIN:
-            # localGroup
-            #   globalGroup1 # -> marked as global undead.
-            #     globalGroup2
-            #       globalHost
+            # Try unlocking global objects which are in use for various reasons, for example:
+            #   DOMAIN:
+            #   localGroup
+            #       globalGroup1 # -> marked as global undead.
+            #       globalGroup2
+            #           globalHost
 
             for domain in domains:
                 currentDomain = domain["name"]
