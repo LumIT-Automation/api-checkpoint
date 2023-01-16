@@ -1,3 +1,5 @@
+from typing import List
+
 from checkpoint.models.CheckPoint.Domain import Domain
 from checkpoint.models.CheckPoint.Host import Host
 from checkpoint.models.CheckPoint.Group import Group
@@ -22,7 +24,7 @@ class HostRemoval:
         self.workflowId = workflowId
         self.ipv4Address: str = ipv4Address
 
-        self.globalUndead: list = []
+        self.globalUndead: List[tuple] = []
 
 
 
@@ -49,7 +51,7 @@ class HostRemoval:
                         hostUid = h["uid"]
                         host = Host(self.sessionId, assetId=self.assetId, domain=currentDomain, uid=hostUid)
 
-                        w = host.whereUsed(indirect=True)
+                        w = host.whereUsed(indirect=False)
                         for el in ("objects", "access-control-rules", "nat-rules", "threat-prevention-rules", "https-rules"):
                             whereUsed[el] = w["used-directly"].get(el, [])
 
@@ -95,6 +97,13 @@ class HostRemoval:
 
             # Global undead carnage.
             # Try unlocking global objects which are in use for various reasons.
+
+            # DOMAIN:
+            # localGroup
+            #   globalGroup1 # -> marked as global undead.
+            #     globalGroup2
+            #       globalHost
+
             for domain in domains:
                 currentDomain = domain["name"]
 
@@ -158,7 +167,7 @@ class HostRemoval:
                     pass # ignore global objects on local domains.
                 else:
                     raise e
-            elif (e.status == 400 or e.status == 409) and "use" in str(e.payload):
+            elif (e.status == 400 or e.status == 409) and "use" in str(e.payload): # (only when called on Global domain).
                 self.globalUndead.append(("security", layer, rule))
             else:
                 raise e
@@ -189,7 +198,7 @@ class HostRemoval:
                     pass # ignore global objects on local domains.
                 else:
                     raise e
-            elif (e.status == 400 or e.status == 409) and "use" in str(e.payload):
+            elif (e.status == 400 or e.status == 409) and "use" in str(e.payload): # (only when called on Global domain).
                 self.globalUndead.append(("nat", package, rule))
             else:
                 raise e
@@ -276,7 +285,7 @@ class HostRemoval:
                     pass # ignore global objects on local domains.
                 else:
                     raise e
-            elif (e.status == 400 or e.status == 409) and "use" in str(e.payload):
+            elif (e.status == 400 or e.status == 409) and "use" in str(e.payload): # (only when called on Global domain).
                 self.globalUndead.append(("group", group))
             else:
                 raise e
