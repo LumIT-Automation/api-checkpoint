@@ -95,30 +95,31 @@ class HostRemoval:
 
                         existentHost = True
 
-            # Global undead carnage.
-            # Try unlocking global objects which are in use for various reasons, for example:
-            #   DOMAIN:
-            #   localGroup
-            #       globalGroup1 # -> marked as global undead.
-            #       globalGroup2
-            #           globalHost
+            if self.globalUndead:
+                # Global undead carnage.
+                # Try unlocking global objects which are in use for various reasons, for example:
+                #   DOMAIN:
+                #   localGroup
+                #       globalGroup1 # -> marked as global undead.
+                #       globalGroup2
+                #           globalHost
 
-            for domain in domains:
-                currentDomain = domain["name"]
+                for domain in domains:
+                    currentDomain = domain["name"]
 
-                try:
-                    for undead in self.globalUndead:
-                        if undead[0] == "group":
-                            # Delete lonely groups.
-                            self.__groupsManagement(
-                                domain=currentDomain, group=undead[1]
-                            )
+                    try:
+                        for undead in self.globalUndead:
+                            if undead[0] == "group":
+                                # Delete lonely groups.
+                                self.__groupsManagement(
+                                    domain=currentDomain, group=undead[1]
+                                )
 
-                    # Apply all the modifications (a global assignment is also performed when on Global domain).
-                    Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
-                except Exception as e:
-                    Session(self.sessionId, assetId=self.assetId, domain=currentDomain).discard()
-                    raise e
+                        # Apply all the modifications (a global assignment is also performed when on Global domain).
+                        Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
+                    except Exception as e:
+                        Session(self.sessionId, assetId=self.assetId, domain=currentDomain).discard()
+                        raise e
         except KeyError:
             pass
         except Exception as e:
