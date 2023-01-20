@@ -49,6 +49,7 @@ class Asset:
 
     @staticmethod
     def modify(assetId: int, data: dict) -> None:
+        assetId = int(assetId)
         sql = ""
         values = []
         c = connection.cursor()
@@ -59,7 +60,7 @@ class Asset:
             values.append(strip_tags(v)) # no HTML allowed.
 
         try:
-            c.execute("UPDATE asset SET "+sql[:-1]+" WHERE id = "+str(assetId), values)
+            c.execute("UPDATE asset SET "+sql[:-1]+" WHERE id = "+str(assetId), values) # user data are filtered by the serializer.
         except Exception as e:
             if e.__class__.__name__ == "IntegrityError" \
                     and e.args and e.args[0] and e.args[0] == 1062:
@@ -119,7 +120,7 @@ class Asset:
 
         try:
             with transaction.atomic():
-                c.execute("INSERT INTO asset "+keys+" VALUES ("+s[:-1]+")", values)
+                c.execute("INSERT INTO asset "+keys+" VALUES ("+s[:-1]+")", values) # user data are filtered by the serializer.
 
                 return c.lastrowid
         except Exception as e:
