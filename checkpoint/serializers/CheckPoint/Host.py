@@ -1,33 +1,6 @@
 from rest_framework import serializers
+from checkpoint.helpers.Utils import CheckString
 from checkpoint.serializers.CheckPoint.CommonDataStruct import CheckPointNatSettingsSerializer
-
-
-class CheckPointAddRemoveSerializer(serializers.Serializer):
-    add = serializers.JSONField(required=False)
-    remove = serializers.JSONField(required=False)
-
-    def to_internal_value(self, data):
-        try:
-            # These fields can be a string or a list of string.
-            if "add" in data:
-                if isinstance(data["add"], str):
-                    self.fields["add"] = serializers.CharField(max_length=255, required=False)
-                elif isinstance(data["add"], list):
-                    self.fields["add"] = serializers.ListField(child=serializers.CharField(max_length=255, required=False), required=False)
-                else:
-                    raise ValueError('Invalid data. Expected a string or a list, but got '+str(type(data["add"])))
-            if "remove" in data:
-                if isinstance(data["remove"], str):
-                    self.fields["remove"] = serializers.CharField(max_length=255, required=False)
-                elif isinstance(data["remove"], list):
-                    self.fields["remove"] = serializers.ListField(child=serializers.CharField(max_length=255, required=False), required=False)
-                else:
-                    raise ValueError('Invalid data. Expected a string or a list, but got '+str(type(data["remove"])))
-
-            return super().to_internal_value(data)
-        except Exception as e:
-            raise e
-
 
 
 class CheckPointHostWebServerConfigSerializer(serializers.Serializer):
@@ -42,29 +15,44 @@ class CheckPointHostWebServerConfigSerializer(serializers.Serializer):
         self.fields["application-engines"] = serializers.JSONField(required=False)
 
     def to_internal_value(self, data):
+        def checkAddRemoveField(d: dict):
+            for k in d:
+                if k != "add" and k != "remove":
+                    raise ValueError('Invalid data. Expected key: "add" or "remove".')
+                if isinstance(d[k], str):
+                    d[k] = CheckString.check(d[k], 15)
+                elif isinstance(d[k], list):
+                    d[k] = [CheckString.check(el, 15) for el in d[k]]
+                else:
+                    raise serializers.ValidationError('Invalid data in "add" or "remove" field.')
+
         try:
             # These fields can be a string, a list of string or a dict.
             if "additional-ports" in data:
                 if isinstance(data["additional-ports"], str):
-                    self.fields["additional-ports"] = serializers.CharField(max_length=255, required=False)
+                    data["additional-ports"] = CheckString.allowedChars(data["additional-ports"], 15, "0123456789")
                 elif isinstance(data["additional-ports"], list):
-                    self.fields["additional-ports"] = serializers.ListField(child=serializers.CharField(max_length=255, required=False), required=False)
+                    data["additional-ports"] = [ CheckString.allowedChars(el, 15, "0123456789") for el in data["additional-ports"]]
                 elif isinstance(data["additional-ports"], dict):
-                    self.fields["additional-ports"] = CheckPointAddRemoveSerializer(required=False)
+                    data["additional-ports"] = checkAddRemoveField(data["additional-ports"])
                 else:
-                    raise ValueError('Invalid data. Expected a string or a list, but got '+str(type(data["additional-ports"])))
+                    msg = 'Incorrect type. Expected a string, list or a dict, but got %s'
+                    raise serializers.ValidationError(msg % type(data["additional-ports"]).__name__)
 
             if "application-engines" in data:
                 if isinstance(data["application-engines"], str):
-                    self.fields["application-engines"] = serializers.CharField(max_length=255, required=False)
+                    data["application-engines"] = CheckString.check(data["application-engines"], 15)
                 elif isinstance(data["application-engines"], list):
-                    self.fields["application-engines"] = serializers.ListField(child=serializers.CharField(max_length=255, required=False), required=False)
+                    data["application-engines"] = [CheckString.check(el, 15) for el in data["application-engines"]]
                 elif isinstance(data["application-engines"], dict):
-                    self.fields["application-engines"] = CheckPointAddRemoveSerializer(required=False)
+                    data["application-engines"] = checkAddRemoveField(data["application-engines"])
                 else:
-                    raise ValueError('Invalid data. Expected a string or a list, but got '+str(type(data["application-engines"])))
+                    msg = 'Incorrect type. Expected a string, list or a dict, but got %s'
+                    raise serializers.ValidationError(msg % type(data["application-engines"]).__name__)
 
-            return super().to_internal_value(data)
+            return data
+        except ValueError as v:
+            raise serializers.ValidationError from v
         except Exception as e:
             raise e
 
