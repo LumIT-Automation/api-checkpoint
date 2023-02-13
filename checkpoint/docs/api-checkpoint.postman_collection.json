@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7c614420-ec2e-4308-ad2b-82508a1214a3",
+		"_postman_id": "b7e79715-851f-47a0-aa18-01cec637adcc",
 		"name": "api-checkpoint",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1957,7 +1957,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"data\": {\n        \"hosts\": [\n            \"985223f6-e3d4-4325-9e52-73198aef8859\"\n        ]\n    }\n}",
+											"raw": "{\n    \"data\": {\n        \"hosts\": [\n            \"564adca9-bde7-4bb1-ae68-e7b6868fbd57\",\n            \"573f33bd-1e7c-487c-bfcd-378987990fe8\",\n            \"e0d8f346-43d3-4b8b-89f9-3a44f855847a\"\n        ]\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1965,7 +1965,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/group/a7312071-e2d2-4d9a-8f49-adb46c9be35d/hosts/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/group/1e131cd5-ccad-4238-9fee-dbcdc79d3a6e/hosts/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -1980,7 +1980,7 @@
 												"1",
 												"POLAND",
 												"group",
-												"a7312071-e2d2-4d9a-8f49-adb46c9be35d",
+												"1e131cd5-ccad-4238-9fee-dbcdc79d3a6e",
 												"hosts",
 												""
 											]
@@ -6045,7 +6045,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/access-roles/94e5579a-1b3c-4da0-9118-e538fa3b66f0/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/access-role/b96916e3-d3c2-487b-a77c-5233bdbe6d69/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -6059,8 +6059,8 @@
 												"checkpoint",
 												"1",
 												"SHARED-SERVICES",
-												"access-roles",
-												"94e5579a-1b3c-4da0-9118-e538fa3b66f0",
+												"access-role",
+												"b96916e3-d3c2-487b-a77c-5233bdbe6d69",
 												""
 											]
 										}

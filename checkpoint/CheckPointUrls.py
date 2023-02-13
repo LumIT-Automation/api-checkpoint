@@ -164,7 +164,7 @@ urlpatterns = [
 
     # Roles.
     path('<int:assetId>/<str:domain>/access-roles/', CheckPointRoles.CheckPointRolesController.as_view(), name='access-roles'),
-    path('<int:assetId>/<str:domain>/access-roles/<str:roleUid>/', CheckPointRole.CheckPointRoleController.as_view(), name='access-role'),
+    path('<int:assetId>/<str:domain>/access-role/<str:roleUid>/', CheckPointRole.CheckPointRoleController.as_view(), name='access-role'),
 
     # Use cases.
     # Remove host.

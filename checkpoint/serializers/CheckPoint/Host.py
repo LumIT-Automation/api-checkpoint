@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from checkpoint.helpers.Exception import CustomException
+
 from checkpoint.serializers.CheckPoint.CommonDataStruct import CheckPointNatSettingsSerializer
+
+from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Log import Log
 
 
@@ -33,34 +35,29 @@ class CheckPointHostWebServerConfigSerializer(serializers.Serializer):
         if "additional-ports" in kwargs["data"]:
             if isinstance(kwargs["data"]["additional-ports"], str):
                 self.fields["additional-ports"] =  serializers.CharField(max_length=255, required=False)
-
             elif isinstance(kwargs["data"]["additional-ports"], list):
                 self.fields["additional-ports"] = serializers.ListField(child=serializers.CharField(max_length=255, required=False), required=False)
-
             elif isinstance(kwargs["data"]["additional-ports"], dict):
                 AdditionalPortsAddRemoveFieldArgs = dict()
                 AdditionalPortsAddRemoveFieldArgs["data"] = kwargs.get("data", {}).get("additional-ports", {})
                 AdditionalPortsAddRemoveFieldArgs["required"] = False
-                self.fields["additional-ports"] = CheckPointHostAddRemoveFieldSerializer(**AdditionalPortsAddRemoveFieldArgs)
 
+                self.fields["additional-ports"] = CheckPointHostAddRemoveFieldSerializer(**AdditionalPortsAddRemoveFieldArgs)
             else:
                 msg = 'Incorrect type. Expected a string, list or a dict, but got %s'
                 raise serializers.ValidationError(msg % type(kwargs["data"]["additional-ports"]).__name__)
 
-
         if "application-engines" in kwargs["data"]:
             if isinstance(kwargs["data"]["application-engines"], str):
                 self.fields["application-engines"] = serializers.CharField(max_length=255, required=False)
-
             elif isinstance(kwargs["data"]["application-engines"], list):
                 self.fields["application-engines"] = serializers.ListField(child=serializers.CharField(max_length=255, required=False), required=False)
-
             elif isinstance(kwargs["data"]["application-engines"], dict):
                 ApplicationEnginesAddRemoveFieldArgs = dict()
                 ApplicationEnginesAddRemoveFieldArgs["data"] = kwargs.get("data", {}).get("application-engines", {})
                 ApplicationEnginesAddRemoveFieldArgs["required"] = False
-                self.fields["application-engines"] = CheckPointHostAddRemoveFieldSerializer(**ApplicationEnginesAddRemoveFieldArgs)
 
+                self.fields["application-engines"] = CheckPointHostAddRemoveFieldSerializer(**ApplicationEnginesAddRemoveFieldArgs)
             else:
                 msg = 'Incorrect type. Expected a string, list or a dict, but got %s'
                 raise serializers.ValidationError(msg % type(kwargs["data"]["application-engines"]).__name__)
@@ -103,7 +100,6 @@ class CheckPointHostSerializer(serializers.Serializer):
     uid = serializers.CharField(max_length=255, required=False)
     name = serializers.CharField(max_length=255, required=True)
     interfaces = serializers.JSONField(required=False)
-    # groups = serializers.JSONField(required=False)
     comments = serializers.CharField(max_length=255, required=False, allow_blank=True)
     color = serializers.CharField(max_length=64, required=False)
     tags = serializers.JSONField(required=False)

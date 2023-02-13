@@ -31,11 +31,10 @@ class DatacenterServer(Object):
 
     def modify(self, data: dict, autoPublish: bool = True) -> None:
         try:
-            o = Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
+            Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
         except Exception as e:
             raise e
-        return o
- 
+
 
 
     def delete(self, autoPublish: bool = True) -> None:
