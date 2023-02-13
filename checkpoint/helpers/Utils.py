@@ -1,6 +1,6 @@
 class CheckString:
     @staticmethod
-    def check(s: str, lenght: int, badCharsStringSet: str = " ',][}{\"/\\"):
+    def check(s: str, lenght: int, badCharsStringSet: str = " \"><`'%}{|\\^/][)("):
         if isinstance(s, str):
             if len(s) <= lenght:
                 if not 1 in [c in s for c in badCharsStringSet]:  # return 1 if there is at least one bad char in s.
