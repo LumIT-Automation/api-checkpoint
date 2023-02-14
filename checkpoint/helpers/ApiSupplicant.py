@@ -157,7 +157,7 @@ class ApiSupplicant:
             if self.responseStatus == 200 or self.responseStatus == 201: # ok / ok on POST.
                 pass
             elif self.responseStatus == 401:
-                raise CustomException(status=400, payload={"CheckPoint": "Wrong credentials for the asset."})
+                raise CustomException(status=400, payload={"CheckPoint": "wrong credentials for the asset"})
             else:
                 if "message" in self.responsePayload:
                     checkpointError = self.responsePayload["message"]

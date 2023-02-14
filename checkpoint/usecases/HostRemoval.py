@@ -126,7 +126,7 @@ class HostRemoval:
             raise e
 
         if not existentHost:
-            raise CustomException(status=404, payload={"CheckPoint": "Non existent IPv4 address (across all domains)."})
+            raise CustomException(status=404, payload={"CheckPoint": "non existent IPv4 address (across all domains)"})
 
 
 

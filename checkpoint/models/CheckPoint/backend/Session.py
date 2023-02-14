@@ -139,10 +139,10 @@ class Session:
                         if taskStatus == "succeeded":
                             break
                         elif taskStatus == "failed":
-                            raise CustomException(status=400, payload={"CheckPoint": f"Assign task failed for domain "+domain})
+                            raise CustomException(status=400, payload={"CheckPoint": f"assign task failed for domain "+domain})
 
                         if time.time() >= t0 + timeout: # timeout reached.
-                            raise CustomException(status=400, payload={"CheckPoint": f"Assign task timeout for domain "+domain})
+                            raise CustomException(status=400, payload={"CheckPoint": f"assign task timeout for domain "+domain})
 
                         time.sleep(5)
                     except KeyError:

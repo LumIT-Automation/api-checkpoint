@@ -29,30 +29,34 @@ class VpnToHost:
             # Find where the host is used within the domain.
             # More than one host can coexist with the same IPv4 address, but with different names.
             hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, self.domain, self.ipv4Address, localOnly=False)
-            for h in hostsWithIpv4:
-                if h:
-                    hostUid = h["uid"]
-                    host = Host(self.sessionId, assetId=self.assetId, domain=self.domain, uid=hostUid)
 
-                    w = host.whereUsed()
-                    if "used-directly" in w:
-                        for hostAcl in w["used-directly"].get("access-control-rules", []):
-                            hostAclInformation = dict()
+            if hostsWithIpv4:
+                for h in hostsWithIpv4:
+                    if h and "uid" in h:
+                        hostUid = h["uid"]
+                        host = Host(self.sessionId, assetId=self.assetId, domain=self.domain, uid=hostUid)
 
-                            # Access control rule information.
-                            for el in ("rule", "layer"):
-                                hostAclInformation[el] = {
-                                    "uid": hostAcl.get(str(el), {}).get("uid", ""),
-                                    "name": hostAcl.get(str(el), {}).get("name", ""),
-                                }
+                        w = host.whereUsed()
+                        if "used-directly" in w:
+                            for hostAcl in w["used-directly"].get("access-control-rules", []):
+                                hostAclInformation = dict()
 
-                            acl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=hostAclInformation["layer"]["uid"], uid=hostAclInformation["rule"]["uid"]).info()
-                            if "source" in acl:
-                                for j in acl["source"]:
-                                    aclInformation.append({
-                                        "uid": j.get("uid", ""),
-                                        "name": j.get("name", ""),
-                                    })
+                                # Access control rule information.
+                                for el in ("rule", "layer"):
+                                    hostAclInformation[el] = {
+                                        "uid": hostAcl.get(str(el), {}).get("uid", ""),
+                                        "name": hostAcl.get(str(el), {}).get("name", ""),
+                                    }
+
+                                acl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=hostAclInformation["layer"]["uid"], uid=hostAclInformation["rule"]["uid"]).info()
+                                if "source" in acl:
+                                    for j in acl["source"]:
+                                        aclInformation.append({
+                                            "uid": j.get("uid", ""),
+                                            "name": j.get("name", ""),
+                                        })
+            else:
+                raise CustomException(status=404, payload={"CheckPoint": "host not found"})
 
             return aclInformation
         except Exception as e:
