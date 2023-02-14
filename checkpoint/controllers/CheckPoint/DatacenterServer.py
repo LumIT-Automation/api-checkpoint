@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.DatacenterServer import DatacenterServer
 
-from checkpoint.serializers.CheckPoint.Host import CheckPointHostSerializer as Serializer
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
 from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
@@ -55,7 +53,6 @@ class CheckPointDatacenterServerController(CustomControllerCheckPointGetInfo, Cu
             assetId=assetId,
             domain=domain,
             objectUid=datacenterUid,
-            Serializer=Serializer,
             actionCallback=lambda data: DatacenterServer(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=datacenterUid).modify(data),
             permission={
                 "args": {

@@ -23,7 +23,6 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
 
 
     def create(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable = None, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
-        data = None
         Serializer = Serializer or None
 
         if self.subject[-1:] == "y":
@@ -38,6 +37,7 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
         #   action: hosts_post
         #   lockedObjectClass: host
 
+        data = None
         response = dict()
 
         try:
