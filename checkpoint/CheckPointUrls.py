@@ -12,7 +12,7 @@ from .controllers.CheckPoint import AddressRanges, AddressRange
 from .controllers.CheckPoint import DatacenterServers, DatacenterServer
 from .controllers.CheckPoint import Tasks, Task
 from .controllers.CheckPoint import Host, Hosts
-from .controllers.CheckPoint.UseCases import RemoveHost
+from .controllers.CheckPoint.UseCases import RemoveHost, VpnToHost
 from .controllers.CheckPoint import Group, Groups
 from .controllers.CheckPoint import GroupHosts, GroupHost
 from .controllers.CheckPoint import GroupGroups, GroupFatherGroups, GroupGroup
@@ -167,8 +167,8 @@ urlpatterns = [
     path('<int:assetId>/<str:domain>/access-role/<str:roleUid>/', CheckPointRole.CheckPointRoleController.as_view(), name='access-role'),
 
     # Use cases.
-    # Remove host.
-    path('<int:assetId>/remove-host/', RemoveHost.CheckPointRemoveHostController.as_view(), name='remove-host'),
+    path('<int:assetId>/remove-host/', RemoveHost.CheckPointRemoveHostController.as_view(), name='remove-host'), # completely remove host and related.
+    path('<int:assetId>/<str:domain>/vpn-to-host/', VpnToHost.CheckPointVpnProfilesToHostController.as_view(), name='vpn-to-host'), # which vpn profiles reach the host.
 
     # Log history.
     path('history/', History.HistoryLogsController.as_view(), name='checkpoint-log-history'),

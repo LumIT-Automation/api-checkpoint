@@ -844,7 +844,51 @@
 					"name": "Use cases",
 					"item": [
 						{
-							"name": "remove-host",
+							"name": "remove host",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{jwttoken}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"ipv4-address\": \"10.213.216.61\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.111.26/api/v1/checkpoint/1/remove-host/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"111",
+										"26"
+									],
+									"path": [
+										"api",
+										"v1",
+										"checkpoint",
+										"1",
+										"remove-host",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "vpn profiles to host",
 							"request": {
 								"auth": {
 									"type": "noauth"
@@ -867,7 +911,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://10.0.111.26/api/v1/checkpoint/1/remove-host/",
+									"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/vpn-to-host/",
 									"protocol": "http",
 									"host": [
 										"10",
@@ -880,7 +924,8 @@
 										"v1",
 										"checkpoint",
 										"1",
-										"remove-host",
+										"SHARED-SERVICES",
+										"vpn-to-host",
 										""
 									]
 								}
