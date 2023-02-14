@@ -44,9 +44,11 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
                 Log.actionLog(actionLog, user)
                 Log.actionLog("User data: " + str(request.data), user)
 
-                serializer = Serializer(data=request.data["data"])
-                if serializer.is_valid():
-                    data = serializer.validated_data
+                #serializer = Serializer(data=request.data["data"])
+                #if serializer.is_valid():
+                if True:
+                    #data = serializer.validated_data
+                    data = request.data["data"]
 
                     # Locking logic for a class of objects, for example: host:POST:1:DOMAIN = 'any'.
                     # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.

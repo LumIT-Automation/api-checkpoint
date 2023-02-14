@@ -41,9 +41,11 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
                 Log.actionLog(actionLog, user)
                 Log.actionLog("User data: " + str(request.data), user)
 
-                serializer = Serializer(data=request.data["data"], partial=True)
-                if serializer.is_valid():
-                    data = serializer.validated_data
+                #serializer = Serializer(data=request.data["data"], partial=True)
+                #if serializer.is_valid():
+                if True:
+                    #data = serializer.validated_data
+                    data = request.data["data"]
 
                     # Locking logic for a specific object, example: host:PATCH:1:DOMAIN = 'objectUid',
                     # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.

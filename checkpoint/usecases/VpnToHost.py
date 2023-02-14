@@ -1,13 +1,5 @@
-from typing import List
-
-from checkpoint.models.CheckPoint.Domain import Domain
 from checkpoint.models.CheckPoint.Host import Host
-from checkpoint.models.CheckPoint.Group import Group
-from checkpoint.models.CheckPoint.GroupHost import GroupHost
-from checkpoint.models.CheckPoint.RuleObject import RuleObject
 from checkpoint.models.CheckPoint.Rule import Rule
-from checkpoint.models.CheckPoint.NatRule import NatRule
-from checkpoint.models.CheckPoint.Session import Session
 
 from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Log import Log
@@ -62,7 +54,7 @@ class VpnToHost:
                                         "name": j.get("name", ""),
                                     })
 
-                            return aclInformation
+            return aclInformation
         except Exception as e:
             raise e
 
@@ -74,7 +66,7 @@ class VpnToHost:
 
     @staticmethod
     def usedModels() -> list:
-        return ["object", "host", "group", "rule_access", "rule_threat", "rule_https", "nat_rule"]
+        return ["object", "host", "ruleaccess", "roleaccess"]
 
 
 

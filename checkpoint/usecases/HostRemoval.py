@@ -136,7 +136,7 @@ class HostRemoval:
 
     @staticmethod
     def usedModels() -> list:
-        return ["object", "host", "group", "rule_access", "rule_threat", "rule_https", "nat_rule"]
+        return ["object", "host", "group", "ruleaccess", "rulethreat", "rulehttps", "natrule"]
 
 
 
