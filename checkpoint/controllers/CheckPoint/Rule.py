@@ -8,27 +8,6 @@ from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPo
 from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
 
 
-class RuleControllerFactory:
-    def __init__(self, ruleType):
-        self.ruleType = ruleType
-
-    def __call__(self, *args, **kwargs):
-        try:
-            if self.ruleType == "access":
-                from checkpoint.serializers.CheckPoint.RuleAccess import CheckPointRuleAccessSerializer as Serializer
-            elif self.ruleType == "threat":
-                from checkpoint.serializers.CheckPoint.RuleThreat import CheckPointRuleThreatSerializer as Serializer
-            elif self.ruleType == "https":
-                from checkpoint.serializers.CheckPoint.RuleHttps import CheckPointRuleHttpsSerializer as Serializer
-            else:
-                raise NotImplementedError
-
-            return Serializer
-        except Exception as e:
-            raise e
-
-
-
 class CheckPointRuleController(CustomControllerCheckPointGetInfo, CustomControllerCheckPointUpdate, CustomControllerCheckPointDelete):
     def __init__(self, ruleType: str, *args, **kwargs):
         CustomControllerCheckPointGetInfo.__init__(self, subject="rule", *args, **kwargs)
@@ -83,7 +62,6 @@ class CheckPointRuleController(CustomControllerCheckPointGetInfo, CustomControll
             domain=domain,
             objectUid=ruleUid,
             objectType=self.ruleType,
-            Serializer=RuleControllerFactory(self.ruleType)(), # get suitable Serializer.
             actionCallback=actionCallback,
             permission={
                 "args": {

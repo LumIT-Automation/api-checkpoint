@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Group import Group
 
-from checkpoint.serializers.CheckPoint.Group import CheckPointGroupSerializer as Serializer
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
 
@@ -43,7 +41,6 @@ class CheckPointGroupsController(CustomControllerCheckPointGetList, CustomContro
             request=request,
             assetId=assetId,
             domain=domain,
-            Serializer=Serializer,
             actionCallback=lambda data: Group.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
                 "args": {

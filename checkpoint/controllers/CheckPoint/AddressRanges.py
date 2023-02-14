@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.AddressRange import AddressRange
 
-from checkpoint.serializers.CheckPoint.AddressRange import CheckPointAddressRangeSerializer as Serializer
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
 
@@ -43,7 +41,6 @@ class CheckPointAddressRangesController(CustomControllerCheckPointGetList, Custo
             request=request,
             assetId=assetId,
             domain=domain,
-            Serializer=Serializer,
             actionCallback=lambda data: AddressRange.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
                 "args": {

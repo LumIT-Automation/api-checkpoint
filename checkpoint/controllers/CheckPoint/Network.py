@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Network import Network
 
-from checkpoint.serializers.CheckPoint.Network import CheckPointNetworkSerializer as Serializer
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
 from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
@@ -54,7 +52,6 @@ class CheckPointNetworkController(CustomControllerCheckPointGetInfo, CustomContr
             assetId=assetId,
             domain=domain,
             objectUid=networkUid,
-            Serializer=Serializer,
             actionCallback=lambda data: Network(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=networkUid).modify(data),
             permission={
                 "args": {

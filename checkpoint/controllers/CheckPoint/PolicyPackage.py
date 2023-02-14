@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.PolicyPackage import PolicyPackage
 
-from checkpoint.serializers.CheckPoint.PolicyPackage import CheckPointPolicyPackageSerializer as Serializer
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
 from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
@@ -55,7 +53,6 @@ class CheckPointPolicyPackageController(CustomControllerCheckPointGetInfo, Custo
             assetId=assetId,
             domain=domain,
             objectUid=packageUid,
-            Serializer=Serializer,
             actionCallback=lambda data: PolicyPackage(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=packageUid).modify(data),
             permission={
                 "args": {

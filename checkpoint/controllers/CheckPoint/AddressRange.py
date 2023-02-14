@@ -3,9 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.AddressRange import AddressRange
 
-from checkpoint.serializers.CheckPoint.AddressRange import CheckPointAddressRangeSerializer as Serializer
-
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
 from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
@@ -56,7 +53,6 @@ class CheckPointAddressRangeController(CustomControllerCheckPointGetInfo, Custom
             assetId=assetId,
             domain=domain,
             objectUid=rangeUid,
-            Serializer=Serializer,
             actionCallback=lambda data: AddressRange(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=rangeUid).modify(data),
             permission={
                 "args": {

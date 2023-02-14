@@ -7,28 +7,6 @@ from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPoin
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
 
 
-class LayerControllerFactory:
-    def __init__(self, layerType):
-        self.layerType = layerType
-
-    def __call__(self, *args, **kwargs):
-        try:
-            if self.layerType == "access":
-                from checkpoint.serializers.CheckPoint.LayerAccess import CheckPointLayerAccessSerializer as Serializer
-            elif self.layerType == "threat":
-                from checkpoint.serializers.CheckPoint.LayerThreat import CheckPointLayerThreatSerializer as Serializer
-            elif self.layerType == "https":
-                from checkpoint.serializers.CheckPoint.LayerHttps import CheckPointLayerHttpsSerializer as Serializer
-
-            else:
-                raise NotImplementedError
-
-            return Serializer
-        except Exception as e:
-            raise e
-
-
-
 class CheckPointLayersController(CustomControllerCheckPointGetList, CustomControllerCheckPointCreate):
     def __init__(self, layerType: str, *args, **kwargs):
         super().__init__(subject="layer", *args, **kwargs)
@@ -67,7 +45,6 @@ class CheckPointLayersController(CustomControllerCheckPointGetList, CustomContro
             assetId=assetId,
             domain=domain,
             objectType=self.layerType,
-            Serializer=LayerControllerFactory(self.layerType)(), # get suitable Serializer.
             actionCallback=lambda data: Layer.add(sessionId=self.sessionId, layerType=self.layerType, assetId=assetId, domain=domain, data=data),
             permission={
                 "args": {

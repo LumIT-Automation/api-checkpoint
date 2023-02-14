@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.DatacenterServer import DatacenterServer
 
-from checkpoint.serializers.CheckPoint.DatacenterServer import CheckPointDatacenterServersSerializer as Serializer
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
 
@@ -43,7 +41,6 @@ class CheckPointDatacenterServersController(CustomControllerCheckPointGetList, C
             request=request,
             assetId=assetId,
             domain=domain,
-            Serializer=Serializer,
             actionCallback=lambda data: DatacenterServer.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
                 "args": {

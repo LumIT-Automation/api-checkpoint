@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.NatRuleObject import NatRuleObject
 
-from checkpoint.serializers.CheckPoint.NatRule import CheckPointNatRuleSerializer as Serializer
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
 
@@ -36,7 +34,6 @@ class CheckPointNatRuleObjectsController(CustomControllerCheckPointGetList, Cust
             request=request,
             assetId=assetId,
             domain=domain,
-            Serializer=Serializer,
             actionCallback=lambda data: NatRuleObject.addObjectsToNatRule(sessionId=self.sessionId, assetId=assetId, domain=domain, packageUid=packageUid, natRuleUid=natRuleUid, data=data),
             permission={
                 "args": {

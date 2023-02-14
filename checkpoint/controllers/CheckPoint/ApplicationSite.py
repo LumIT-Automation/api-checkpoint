@@ -3,8 +3,6 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.ApplicationSite import ApplicationSite
 
-from checkpoint.serializers.CheckPoint.ApplicationSite import CheckPointApplicationSiteSerializer as Serializer
-
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPointUpdate
 from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
@@ -55,7 +53,6 @@ class CheckPointApplicationSiteController(CustomControllerCheckPointGetInfo, Cus
             assetId=assetId,
             domain=domain,
             objectUid=appSiteUid,
-            Serializer=Serializer,
             actionCallback=lambda data: ApplicationSite(sessionId=self.sessionId, assetId=assetId, domain=domain, uid=appSiteUid).modify(data),
             permission={
                 "args": {

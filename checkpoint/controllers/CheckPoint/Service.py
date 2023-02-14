@@ -8,25 +8,6 @@ from checkpoint.controllers.CustomControllerPatch import CustomControllerCheckPo
 from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckPointDelete
 
 
-class ServiceControllerFactory:
-    def __init__(self, serviceType):
-        self.serviceType = serviceType
-
-    def __call__(self, *args, **kwargs):
-        try:
-            if self.serviceType == "tcp":
-                from checkpoint.serializers.CheckPoint.ServiceTcp import CheckPointServiceTcpSerializer as Serializer
-            elif self.serviceType == "udp":
-                from checkpoint.serializers.CheckPoint.ServiceUdp import CheckPointServiceUdpSerializer as Serializer
-            else:
-                raise NotImplementedError
-
-            return Serializer
-        except Exception as e:
-            raise e
-
-
-
 class CheckPointServiceController(CustomControllerCheckPointGetInfo, CustomControllerCheckPointUpdate, CustomControllerCheckPointDelete):
     def __init__(self, serviceType: str, *args, **kwargs):
         CustomControllerCheckPointGetInfo.__init__(self, subject="service", *args, **kwargs)
@@ -81,7 +62,6 @@ class CheckPointServiceController(CustomControllerCheckPointGetInfo, CustomContr
             domain=domain,
             objectUid=serviceUid,
             objectType=self.serviceType,
-            Serializer=ServiceControllerFactory(self.serviceType)(), # get suitable Serializer.
             actionCallback=actionCallback,
             permission={
                 "args": {
