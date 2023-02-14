@@ -23,6 +23,8 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
 
 
     def modify(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable, objectUid: str, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
+        Serializer = Serializer or None
+
         action = self.subject + "_patch"
         actionLog = f"{self.subject.capitalize()} {objectType} - modification: {domain} {objectUid}".replace("  ", " ")
         lockedObjectClass = self.subject + objectType
@@ -32,6 +34,7 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
         #   action: host_patch
         #   lockedObjectClass: host
 
+        data = None
         response = None
 
         try:
@@ -41,12 +44,22 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
                 Log.actionLog(actionLog, user)
                 Log.actionLog("User data: " + str(request.data), user)
 
-                #serializer = Serializer(data=request.data["data"], partial=True)
-                #if serializer.is_valid():
-                if True:
-                    #data = serializer.validated_data
+                if Serializer:
+                    serializer = Serializer(data=request.data["data"])
+                    if serializer.is_valid():
+                        data = serializer.validated_data
+                    else:
+                        httpStatus = status.HTTP_400_BAD_REQUEST
+                        response = {
+                            "CheckPoint": {
+                                "error": str(serializer.errors)
+                            }
+                        }
+                        Log.actionLog("User data incorrect: " + str(response), user)
+                else:
                     data = request.data["data"]
 
+                if data:
                     # Locking logic for a specific object, example: host:PATCH:1:DOMAIN = 'objectUid',
                     # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.
 
@@ -60,14 +73,6 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
                         lock.release()
                     else:
                         httpStatus = status.HTTP_423_LOCKED
-                else:
-                    httpStatus = status.HTTP_400_BAD_REQUEST
-                    response = {
-                        "CheckPoint": {
-                            "error": str(serializer.errors)
-                        }
-                    }
-                    Log.actionLog("User data incorrect: " + str(response), user)
             else:
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:

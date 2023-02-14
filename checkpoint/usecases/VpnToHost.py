@@ -74,7 +74,6 @@ class VpnToHost:
     # Private methods
     ####################################################################################################################
 
-
     # def __log(self, domain: str, message: str, object_type: str, object: str, status: str) -> None:
     #     try:
     #         Log.log(f"[WORKFLOW {self.workflowId}] [Domain: {domain}] [Username: {self.username}] " + str(message), "_")
