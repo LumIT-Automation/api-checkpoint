@@ -27,9 +27,10 @@ class CheckPointVpnProfilesToHostController(CustomControllerBase):
 
 
     def put(self, request: Request, assetId: int, domain: str) -> Response:
-        response = None
+        response = {"data": dict()}
         httpStatus = status.HTTP_500_INTERNAL_SERVER_ERROR
         user = CustomControllerBase.loggedUser(request)
+
         originalUsername = request.headers.get("workflowUser", "") # user who called the workflow, if any.
         workflowId = request.headers.get("workflowId", "") # a correlation id.
 
@@ -57,7 +58,7 @@ class CheckPointVpnProfilesToHostController(CustomControllerBase):
                         lockUseCase.lock()
                         lock.lock()
 
-                        VpnToHost(sessionId=self.sessionId, assetId=assetId, domain=domain, ipv4Address=data["ipv4-address"], user=originalUsername, workflowId=workflowId)()
+                        response["data"]["items"] = VpnToHost(sessionId=self.sessionId, assetId=assetId, domain=domain, ipv4Address=data["ipv4-address"], user=originalUsername, workflowId=workflowId)()
                         httpStatus = status.HTTP_200_OK
 
                         lockUseCase.release()
@@ -73,6 +74,7 @@ class CheckPointVpnProfilesToHostController(CustomControllerBase):
                     }
                     Log.actionLog("User data incorrect: "+str(response), user)
             else:
+                response = None
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:
             if "serializer" in locals():

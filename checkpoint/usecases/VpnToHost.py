@@ -8,7 +8,6 @@ from checkpoint.models.CheckPoint.RuleObject import RuleObject
 from checkpoint.models.CheckPoint.Rule import Rule
 from checkpoint.models.CheckPoint.NatRule import NatRule
 from checkpoint.models.CheckPoint.Session import Session
-from checkpoint.models.History.History import History
 
 from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Log import Log
@@ -31,8 +30,41 @@ class VpnToHost:
     # Public methods
     ####################################################################################################################
 
-    def __call__(self, *args, **kwargs) -> None:
-        pass
+    def __call__(self, *args, **kwargs) -> list:
+        try:
+            aclInformation = list()
+
+            # Find where the host is used within the domain.
+            # More than one host can coexist with the same IPv4 address, but with different names.
+            hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, self.domain, self.ipv4Address, localOnly=False)
+            for h in hostsWithIpv4:
+                if h:
+                    hostUid = h["uid"]
+                    host = Host(self.sessionId, assetId=self.assetId, domain=self.domain, uid=hostUid)
+
+                    w = host.whereUsed()
+                    if "used-directly" in w:
+                        for hostAcl in w["used-directly"].get("access-control-rules", []):
+                            hostAclInformation = dict()
+
+                            # Access control rule information.
+                            for el in ("rule", "layer"):
+                                hostAclInformation[el] = {
+                                    "uid": hostAcl.get(str(el), {}).get("uid", ""),
+                                    "name": hostAcl.get(str(el), {}).get("name", ""),
+                                }
+
+                            acl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=hostAclInformation["layer"]["uid"], uid=hostAclInformation["rule"]["uid"]).info()
+                            if "source" in acl:
+                                for j in acl["source"]:
+                                    aclInformation.append({
+                                        "uid": j.get("uid", ""),
+                                        "name": j.get("name", ""),
+                                    })
+
+                            return aclInformation
+        except Exception as e:
+            raise e
 
 
 
@@ -54,19 +86,5 @@ class VpnToHost:
     # def __log(self, domain: str, message: str, object_type: str, object: str, status: str) -> None:
     #     try:
     #         Log.log(f"[WORKFLOW {self.workflowId}] [Domain: {domain}] [Username: {self.username}] " + str(message), "_")
-    #     except Exception:
-    #         pass
-    #
-    #     try:
-    #         History.add({
-    #             "username": self.username,
-    #             "action": message,
-    #             "asset_id": self.assetId,
-    #             "workflow_id": self.workflowId,
-    #             "config_object_type": object_type,
-    #             "config_object": object,
-    #             "domain": domain,
-    #             "status": status
-    #         })
     #     except Exception:
     #         pass
