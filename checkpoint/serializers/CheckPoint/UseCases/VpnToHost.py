@@ -6,3 +6,4 @@ class CheckPointVpnToHostSerializer(serializers.Serializer):
         super().__init__(*args, **kwargs)
 
         self.fields["ipv4-address"] = serializers.IPAddressField(protocol='IPv4', required=True)
+        self.fields["rule-package"] = serializers.CharField(max_length=255, required=False)

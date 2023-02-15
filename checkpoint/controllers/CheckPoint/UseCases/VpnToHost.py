@@ -58,7 +58,7 @@ class CheckPointVpnProfilesToHostController(CustomControllerBase):
                         lockUseCase.lock()
                         lock.lock()
 
-                        response["data"]["items"] = VpnToHost(sessionId=self.sessionId, assetId=assetId, domain=domain, ipv4Address=data["ipv4-address"], user=originalUsername, workflowId=workflowId)()
+                        response["data"]["items"] = VpnToHost(sessionId=self.sessionId, assetId=assetId, domain=domain, package=data["rule-package"], ipv4Address=data["ipv4-address"], user=originalUsername, workflowId=workflowId)()
                         httpStatus = status.HTTP_200_OK
 
                         lockUseCase.release()

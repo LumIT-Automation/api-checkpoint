@@ -483,6 +483,54 @@
 					"response": []
 				},
 				{
+					"name": "add access role",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "",
+								"disabled": true
+							},
+							{
+								"key": "X-chkp-sid",
+								"value": "13JNHg3QRXhUVHjcrfvS_1gfb_DzaZV36UFK4tQQ8nE",
+								"description": "domain token",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"package\": \"DCPL-FWKR-PKG\",\n    \"uid\": \"f23c1a7d-d05f-4dc3-a87b-c6723f8bd7b3\",\n    \"install-on\": \"985223f6-e3d4-4325-9e52-73198aef8859\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://172.25.0.100/web_api/v1.8/set-nat-rule",
+							"protocol": "https",
+							"host": [
+								"172",
+								"25",
+								"0",
+								"100"
+							],
+							"path": [
+								"web_api",
+								"v1.8",
+								"set-nat-rule"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "add access rule",
 					"request": {
 						"auth": {
@@ -903,7 +951,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"data\": {\n        \"ipv4-address\": \"10.213.214.3\"\n    }\n}",
+									"raw": "{\n    \"data\": {\n        \"ipv4-address\": \"172.17.0.7\",\n        \"rule-package\": \"FWRAVPN_PKG\"\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
