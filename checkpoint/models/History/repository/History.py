@@ -18,6 +18,8 @@ class History:
     #   `config_object` varchar(255) NOT NULL,
     #   `config_object_name` varchar(255) NOT NULL,
     #   `config_object_description` varchar(255) NOT NULL,
+    #   `parent_object` varchar(255) NOT NULL,
+    #   `parent_object_name` varchar(255) NOT NULL,
     #   `status` varchar(32) NOT NULL,
     #   `date` datetime NOT NULL DEFAULT current_timestamp()
 
@@ -34,9 +36,9 @@ class History:
 
         try:
             if allUsersHistory:
-                c.execute("SELECT username, action, asset_id, config_object_type, config_object, config_object_name, config_object_description, status, date FROM log ORDER BY date DESC")
+                c.execute("SELECT * FROM log ORDER BY date DESC")
             else:
-                c.execute("SELECT username, action, asset_id, config_object_type, config_object, config_object_name, config_object_description, status, date FROM log WHERE username = %s ORDER BY date DESC", [
+                c.execute("SELECT * FROM log WHERE username = %s ORDER BY date DESC", [
                     username
                 ])
 

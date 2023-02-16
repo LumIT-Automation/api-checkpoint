@@ -81,6 +81,8 @@ CREATE TABLE `log` (
   `config_object` varchar(255) NOT NULL,
   `config_object_name` varchar(255) NOT NULL,
   `config_object_description` varchar(255) NOT NULL,
+  `parent_object` varchar(255) NOT NULL,
+  `parent_object_name` varchar(255) NOT NULL,
   `domain` varchar(64) NOT NULL,
   `status` varchar(32) NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp()

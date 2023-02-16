@@ -13,6 +13,8 @@ class History:
         self.config_object = ""
         self.config_object_name = ""
         self.config_object_description = ""
+        self.parent_object = ""
+        self.parent_object_name = ""
         self.status = ""
         self.date = ""
 
