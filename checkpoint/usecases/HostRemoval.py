@@ -60,13 +60,13 @@ class HostRemoval:
                             # Unlink host from all groups: a host could be linked to more than one group in the hierarchy.
                             for o in whereUsed["objects"]:
                                 if o["type"] == "group":
-                                    self.__groupHostUnlinking(domain=currentDomain, group=o["uid"], host=hostUid)
+                                    self.__groupHostUnlinking(domain=currentDomain, groupUid=o["uid"], hostUid=hostUid)
 
                             # Delete lonely groups.
                             for o in whereUsed["objects"]:
                                 if o["type"] == "group":
                                     self.__groupsManagement(
-                                        domain=currentDomain, group=o["uid"]
+                                        domain=currentDomain, groupUid=o["uid"]
                                     )
 
                             # Security rules.
@@ -81,7 +81,7 @@ class HostRemoval:
                             # If host is in one of the rule fields, remove the rule.
                             for o in whereUsed["nat-rules"]:
                                 self.__natRuleManagement(
-                                    domain=currentDomain, package=o["package"]["uid"], rule=o["rule"]["uid"], obj=hostUid
+                                    domain=currentDomain, package=o["package"]["uid"], ruleUid=o["rule"]["uid"], objUid=hostUid
                                 )
 
                             # Finally delete host.
@@ -112,7 +112,7 @@ class HostRemoval:
                             if undead[0] == "group":
                                 # Delete lonely groups.
                                 self.__groupsManagement(
-                                    domain=currentDomain, group=undead[1]
+                                    domain=currentDomain, groupUid=undead[1]
                                 )
 
                         # Apply all the modifications (a global assignment is also performed when on Global domain).
@@ -152,8 +152,9 @@ class HostRemoval:
 
                 # Delete rule if no source or destination is to remain.
                 r = Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule)
+                ruleName = r.info()["name"]
                 r.delete(autoPublish=False)
-                self.__log(domain=domain, message=f"Deleted orphaned rule '{layer}/{rule}'", object_type="rule", object=rule, object_name=r.info()["name"], status="deleted")
+                self.__log(domain=domain, message=f"Deleted orphaned rule '{layer}/{rule}'", object_type="rule", object=rule, object_name=ruleName, status="deleted")
             else:
                 # Remove host in rule (within source and/or destination).
                 RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=False)
@@ -177,16 +178,17 @@ class HostRemoval:
 
 
 
-    def __natRuleManagement(self, domain: str, package: str, rule: str, obj: str) -> None:
+    def __natRuleManagement(self, domain: str, package: str, ruleUid: str, objUid: str) -> None:
         # If object is within one of the rule fields, remove the rule.
         try:
-            natRule = NatRule(self.sessionId, assetId=self.assetId, domain=domain, packageUid=package, uid=rule)
+            natRule = NatRule(self.sessionId, assetId=self.assetId, domain=domain, packageUid=package, uid=ruleUid)
             info = natRule.info()
 
             for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
-                if info.get(f)["uid"] == obj:
+                if info.get(f)["uid"] == objUid:
+                    natRuleName = natRule.info()["name"]
                     natRule.delete(autoPublish=False)
-                    self.__log(domain=domain, message=f"Deleted orphaned NAT rule '{package}/{rule}'", object_type="nat_rule", object=rule, object_name="", status="deleted", parent_object=rule, parent_object_name=natRule.info()["name"])
+                    self.__log(domain=domain, message=f"Deleted orphaned NAT rule '{package}/{ruleUid}'", object_type="nat_rule", object=ruleUid, object_name=natRuleName, status="deleted")
 
                     break
 
@@ -200,7 +202,7 @@ class HostRemoval:
                 else:
                     raise e
             elif (e.status == 400 or e.status == 409) and "use" in str(e.payload): # (only when called on Global domain).
-                self.globalUndead.append(("nat", package, rule))
+                self.globalUndead.append(("nat", package, ruleUid))
             else:
                 raise e
         except Exception as e:
@@ -208,12 +210,12 @@ class HostRemoval:
 
 
 
-    def __groupHostUnlinking(self, domain: str, group: str, host: str):
+    def __groupHostUnlinking(self, domain: str, groupUid: str, hostUid: str):
         try:
-            g = GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host)
+            g = GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=groupUid, hostUid=hostUid)
 
             g.remove(autoPublish=False)
-            self.__log(domain=domain, message=f"Unlinked host '{host}' from group '{group}'", object_type="host", object=host, object_name="", status="unlinked", parent_object=group, parent_object_name=Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group).info()["name"])
+            self.__log(domain=domain, message=f"Unlinked host '{hostUid}' from group '{groupUid}'", object_type="host", object=hostUid, object_name="", status="unlinked", parent_object=groupUid, parent_object_name=Group(self.sessionId, assetId=self.assetId, domain=domain, uid=groupUid).info()["name"])
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
                 if domain != "Global":
@@ -245,7 +247,7 @@ class HostRemoval:
 
             for o in whereUsed["nat-rules"]:
                 self.__natRuleManagement(
-                    domain=domain, package=o["package"]["uid"], rule=o["rule"]["uid"], obj=groupUid
+                    domain=domain, package=o["package"]["uid"], ruleUid=o["rule"]["uid"], objUid=groupUid
                 )
         except KeyError:
             pass
@@ -254,15 +256,18 @@ class HostRemoval:
 
 
 
-    def __groupsManagement(self, domain: str, group: str, sonGroup: str = "") -> None:
+    def __groupsManagement(self, domain: str, groupUid: str, sonGroupUid: str = "") -> None:
         try:
             # If group is to remain empty on host deletion, delete also this group.
-            g = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group)
+            g = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=groupUid)
+            groupName = g.info()["name"]
 
-            if sonGroup:
+            if sonGroupUid:
                 # Unlink son group (while in recursion).
-                g.deleteInnerGroup(sonGroup, autoPublish=False)
-                self.__log(domain=domain, message=f"Unlinked group '{sonGroup}' from group '{group}'", object_type="group", object=sonGroup, object_name=Group(self.sessionId, assetId=self.assetId, domain=domain, uid=sonGroup).info()["name"], status="unlinked", parent_object=group, parent_object_name=g.info()["name"])
+                sonGroupName = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=sonGroupUid).info()["name"]
+
+                g.deleteInnerGroup(sonGroupUid, autoPublish=False)
+                self.__log(domain=domain, message=f"Unlinked group '{sonGroupUid}' from group '{groupUid}'", object_type="group", object=sonGroupUid, object_name=sonGroupName, status="unlinked", parent_object=groupUid, parent_object_name=groupName)
 
             groupDetails = g.info()
 
@@ -270,14 +275,14 @@ class HostRemoval:
                 # Group is deletable (empty). Recursively manage father groups.
                 fathers = g.listFatherGroups()
                 for f in fathers:
-                    self.__groupsManagement(domain=domain, group=f["uid"], sonGroup=group)
+                    self.__groupsManagement(domain=domain, groupUid=f["uid"], sonGroupUid=groupUid)
 
                 # Apply from top-level to bottom.
                 # Delete group, but before unlink it from security/NAT rules, if any.
                 self.__groupRuleManagement(domain, g)
 
                 g.delete(autoPublish=False)
-                self.__log(domain=domain, message=f"Deleted lonely group '{group}'", object_type="group", object=group, object_name=g.info()["name"], status="deleted")
+                self.__log(domain=domain, message=f"Deleted lonely group '{groupUid}'", object_type="group", object=groupUid, object_name=groupName, status="deleted")
         except KeyError:
             pass
         except CustomException as e:
@@ -289,7 +294,7 @@ class HostRemoval:
                 else:
                     raise e
             elif (e.status == 400 or e.status == 409) and "use" in str(e.payload): # (only when called on Global domain).
-                self.globalUndead.append(("group", group))
+                self.globalUndead.append(("group", groupUid))
             else:
                 raise e
         except Exception as e:
