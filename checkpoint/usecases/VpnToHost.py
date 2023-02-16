@@ -75,10 +75,11 @@ class VpnToHost:
                     if "source" in ruleAcl:
                         for j in ruleAcl["source"]:
                             if j.get("type", "") == "access-role":
-                                rolesToIpv4.append({
-                                    "uid": j.get("uid", ""),
-                                    "name": j.get("name", ""),
-                                })
+                                if "uid" in j and "name" in j:
+                                    rolesToIpv4.append({
+                                        "uid": j["uid"],
+                                        "name": j["name"],
+                                    })
 
             # @todo: Network "any".
 
