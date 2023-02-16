@@ -1,11 +1,12 @@
 from typing import List
 
+from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.backend.Network import Network as Backend
 
 
-class Network:
+class Network(Object):
     def __init__(self, sessionId: str, assetId: int, domain: str = "", name: str = "", uid: str = "", subnet4: str = "", *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(sessionId, assetId, domain, uid, *args, **kwargs)
 
         self.sessionId = sessionId
         self.assetId: int = int(assetId)
