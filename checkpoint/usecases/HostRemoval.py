@@ -156,10 +156,8 @@ class HostRemoval:
                 self.__log(domain=domain, message=f"Deleted orphaned rule '{layer}/{rule}'", object_type="rule", object=rule, object_name=r.info()["name"], status="deleted")
             else:
                 # Remove host in rule (within source and/or destination).
-                ruleName = Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).info()["name"]
-                r = RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj)
-                r.remove(autoPublish=False)
-                self.__log(domain=domain, message=f"Unlinked object '{obj}' from rule '{rule}'", object_type="object", object=obj, object_name="", status="unlinked", parent_object=rule, parent_object_name=ruleName)
+                RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=False)
+                self.__log(domain=domain, message=f"Unlinked object '{obj}' from rule '{rule}'", object_type="object", object=obj, object_name="", status="unlinked", parent_object=rule, parent_object_name=Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).info()["name"])
 
             # @todo: installed-on [?].
         except KeyError:
@@ -184,9 +182,10 @@ class HostRemoval:
         try:
             natRule = NatRule(self.sessionId, assetId=self.assetId, domain=domain, packageUid=package, uid=rule)
             info = natRule.info()
+
             for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
                 if info.get(f)["uid"] == obj:
-                    n = natRule.delete(autoPublish=False)
+                    natRule.delete(autoPublish=False)
                     self.__log(domain=domain, message=f"Deleted orphaned NAT rule '{package}/{rule}'", object_type="nat_rule", object=rule, object_name="", status="deleted", parent_object=rule, parent_object_name=natRule.info()["name"])
 
                     break
@@ -212,9 +211,9 @@ class HostRemoval:
     def __groupHostUnlinking(self, domain: str, group: str, host: str):
         try:
             g = GroupHost(self.sessionId, assetId=self.assetId, domain=domain, groupUid=group, hostUid=host)
-            groupName = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group).info()["name"]
+
             g.remove(autoPublish=False)
-            self.__log(domain=domain, message=f"Unlinked host '{host}' from group '{group}'", object_type="host", object=host, object_name="", status="unlinked", parent_object=group, parent_object_name=groupName)
+            self.__log(domain=domain, message=f"Unlinked host '{host}' from group '{group}'", object_type="host", object=host, object_name="", status="unlinked", parent_object=group, parent_object_name=Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group).info()["name"])
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
                 if domain != "Global":
@@ -259,14 +258,11 @@ class HostRemoval:
         try:
             # If group is to remain empty on host deletion, delete also this group.
             g = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=group)
-            objName = g.info()["name"]
 
             if sonGroup:
-                sG = Group(self.sessionId, assetId=self.assetId, domain=domain, uid=sonGroup) # Todo: so group can be in different domain.
-                sgName = sG.info()["name"]
                 # Unlink son group (while in recursion).
                 g.deleteInnerGroup(sonGroup, autoPublish=False)
-                self.__log(domain=domain, message=f"Unlinked group '{sonGroup}' from group '{group}'", object_type="group", object=sonGroup, object_name=sgName, status="unlinked", parent_object=group, parent_object_name=objName)
+                self.__log(domain=domain, message=f"Unlinked group '{sonGroup}' from group '{group}'", object_type="group", object=sonGroup, object_name=Group(self.sessionId, assetId=self.assetId, domain=domain, uid=sonGroup).info()["name"], status="unlinked", parent_object=group, parent_object_name=g.info()["name"])
 
             groupDetails = g.info()
 
@@ -281,7 +277,7 @@ class HostRemoval:
                 self.__groupRuleManagement(domain, g)
 
                 g.delete(autoPublish=False)
-                self.__log(domain=domain, message=f"Deleted lonely group '{group}'", object_type="group", object=group, object_name=objName, status="deleted")
+                self.__log(domain=domain, message=f"Deleted lonely group '{group}'", object_type="group", object=group, object_name=g.info()["name"], status="deleted")
         except KeyError:
             pass
         except CustomException as e:
@@ -336,9 +332,9 @@ class HostRemoval:
         try:
             logString = f"[WORKFLOW {self.workflowId}] [Domain: {domain}] [Username: {self.username}] [ip address: {self.ipv4Address}] [object name: {object_name}] "
             if parent_object:
-                logString + f"[parent object: {parent_object}] "
+                logString += f" [parent object: {parent_object}] "
             if parent_object_name:
-                logString + f"[parent object name: {parent_object_name}] "
+                logString += f" [parent object name: {parent_object_name}] "
             Log.log(logString + str(message), "_")
         except Exception:
             pass
