@@ -1,11 +1,12 @@
 from typing import List
 
+from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.backend.Role import Role as Backend
 
 
-class Role:
+class Role(Object):
     def __init__(self, sessionId: str, assetId: int, domain: str = "", name: str = "", uid: str = "", *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(sessionId, assetId, domain, uid, *args, **kwargs)
 
         self.sessionId = sessionId
         self.assetId: int = int(assetId)
@@ -32,7 +33,7 @@ class Role:
     ####################################################################################################################
 
     @staticmethod
-    def listQuick(sessionId: str, assetId: int, domain: str, localOnly: bool = False) -> List[dict]:
+    def listQuick(sessionId: str, assetId: int, domain: str, localOnly: bool = False, filter: str = "") -> List[dict]:
         try:
             out = list()
 
@@ -43,8 +44,21 @@ class Role:
                         if el["domain"]["domain-type"] != "global domain":
                             out.append(el)
             else:
-                out = Backend.list(sessionId, assetId, domain)
+                out = Backend.list(sessionId, assetId, domain, filter=filter)
 
             return out
+        except Exception as e:
+            raise e
+
+
+
+    @staticmethod
+    def searchByName(sessionId: str, assetId: int, domain: str, name: str, localOnly: bool = False) -> dict:
+        try:
+            l = Role.listQuick(sessionId, assetId, domain, localOnly=localOnly, filter=name) # oh gosh, no exact match available.
+            for el in l:
+                if "name" in el:
+                    if el["name"] == name:
+                        return el
         except Exception as e:
             raise e

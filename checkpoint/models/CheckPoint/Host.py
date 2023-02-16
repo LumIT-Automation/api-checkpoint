@@ -79,7 +79,6 @@ class Host(Object):
                 if "ipv4-address" in el:
                     if el["ipv4-address"] == ipv4:
                         out.append(el) # more than one IPv4 address can coexist (with different names).
-
         except Exception as e:
             raise e
 

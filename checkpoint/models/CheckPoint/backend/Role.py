@@ -28,7 +28,7 @@ class Role:
 
 
     @staticmethod
-    def list(sessionId: str, assetId: int, domain: str, details: str = "standard") -> list:
+    def list(sessionId: str, assetId: int, domain: str, details: str = "standard", filter: str = "") -> list:
         out = list()
         limit = 500
 
@@ -41,7 +41,8 @@ class Role:
                     data={
                         "details-level": details,
                         "limit": limit,
-                        "offset": limit * n
+                        "offset": limit * n,
+                        "filter": filter
                     }
                 )
 

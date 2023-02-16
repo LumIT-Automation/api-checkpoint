@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b7e79715-851f-47a0-aa18-01cec637adcc",
+		"_postman_id": "d0e21799-1d2b-48ae-9b0d-4aa45502d263",
 		"name": "api-checkpoint",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -974,6 +974,51 @@
 										"1",
 										"SHARED-SERVICES",
 										"vpn-to-host",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "vpn profiles to services",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{jwttoken}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"name\": \"172.17.0.7\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/vpn-to-services/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"111",
+										"26"
+									],
+									"path": [
+										"api",
+										"v1",
+										"checkpoint",
+										"1",
+										"SHARED-SERVICES",
+										"vpn-to-services",
 										""
 									]
 								}
@@ -5371,7 +5416,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/layer/98e853be-a51d-4833-99fa-11ea30cba3be/access-rule/82be4beb-feb5-4dde-9b30-6251a57ab172/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/layer/44f814d0-e1c3-4c94-a711-42298f63c956/access-rule/b401b019-6a0d-4387-aaf2-cfdf9e027f92/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -5384,11 +5429,11 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"layer",
-												"98e853be-a51d-4833-99fa-11ea30cba3be",
+												"44f814d0-e1c3-4c94-a711-42298f63c956",
 												"access-rule",
-												"82be4beb-feb5-4dde-9b30-6251a57ab172",
+												"b401b019-6a0d-4387-aaf2-cfdf9e027f92",
 												""
 											]
 										}
@@ -5450,7 +5495,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"data\": {\n        \"new-name\": \"Blocking Something Random4\"\n    }\n}",
+											"raw": "{\n    \"data\": {\n        \"source\": [\n            \"9bca6fdd-dfc9-407e-8450-e9e6e9184528\"\n        ],\n        \"destination\": [\n            \"7985d099-2ad2-48ab-b819-daf484e5425e\"\n        ]\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -5458,7 +5503,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/layer/98e853be-a51d-4833-99fa-11ea30cba3be/access-rule/e4f980a1-03f6-458f-8fb0-608513dac619/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/layer/44f814d0-e1c3-4c94-a711-42298f63c956/access-rule/b401b019-6a0d-4387-aaf2-cfdf9e027f92/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -5471,11 +5516,11 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"layer",
-												"98e853be-a51d-4833-99fa-11ea30cba3be",
+												"44f814d0-e1c3-4c94-a711-42298f63c956",
 												"access-rule",
-												"e4f980a1-03f6-458f-8fb0-608513dac619",
+												"b401b019-6a0d-4387-aaf2-cfdf9e027f92",
 												""
 											]
 										}

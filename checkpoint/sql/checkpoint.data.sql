@@ -109,7 +109,8 @@ INSERT INTO `privilege` (`id`, `privilege`, `privilege_type`, `description`) VAL
 (81, 'roles_get', 'object', NULL),
 (82, 'role_get', 'object', NULL),
 (83, 'checkpoint_gateways_get', 'object', NULL),
-(84, 'vpn_to_host', 'asset', NULL);
+(84, 'vpn_to_host', 'asset', NULL),
+(85, 'vpn_to_services', 'asset', NULL);
 
 --
 -- Dump dei dati per la tabella `role`
@@ -209,6 +210,7 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (1, 82),
 (1, 83),
 (1, 84),
+(1, 85),
 (2, 3),
 (2, 10),
 (2, 11),
@@ -281,6 +283,7 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (2, 82),
 (2, 83),
 (2, 84),
+(2, 85),
 (3, 3),
 (3, 10),
 (3, 11),
@@ -316,6 +319,7 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (3, 82),
 (3, 83),
 (3, 84),
+(3, 85),
 (4, 3),
 (4, 10),
 (4, 11),
@@ -391,7 +395,8 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (4, 81),
 (4, 82),
 (4, 83),
-(4, 84);
+(4, 84),
+(4, 85);
 
 -- Dump dei dati per la tabella `identity_group`
 -- (Workflow system group)
