@@ -326,7 +326,7 @@ class HostRemoval:
 
     def __log(self, domain: str, message: str, object_type: str, object: str, status: str) -> None:
         try:
-            Log.log(f"[WORKFLOW {self.workflowId}] [Domain: {domain}] [Username: {self.username}] " + str(message), "_")
+            Log.log(f"[WORKFLOW {self.workflowId}] [Domain: {domain}] [Username: {self.username}] [ip address: {self.ipv4Address}] " + str(message), "_")
         except Exception:
             pass
 
@@ -338,6 +338,7 @@ class HostRemoval:
                 "workflow_id": self.workflowId,
                 "config_object_type": object_type,
                 "config_object": object,
+                "config_object_label": self.ipv4Address,
                 "domain": domain,
                 "status": status
             })

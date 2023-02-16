@@ -79,6 +79,7 @@ CREATE TABLE `log` (
   `workflow_id` varchar(256) NOT NULL,
   `config_object_type` varchar(255) NOT NULL,
   `config_object` varchar(255) NOT NULL,
+  `config_object_label` varchar(255) NOT NULL,
   `domain` varchar(64) NOT NULL,
   `status` varchar(32) NOT NULL,
   `date` datetime NOT NULL DEFAULT current_timestamp()
