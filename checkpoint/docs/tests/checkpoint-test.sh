@@ -9,7 +9,7 @@
 #       hostUid
 
 
-authBearer='Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjczOTUwMjEyLCJpYXQiOjE2NzM4NjM4MTIsImp0aSI6IjI2NWFiMGVmNjU1MTQ3OTQ5M2YzOGFkZTk3YWU3YmJjIiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJhZG1pbkBhdXRvbWF0aW9uLmxvY2FsIiwidXVpZCI6IjE2Y2Y3ZiIsImdyb3VwcyI6WyJhdXRvbWF0aW9uLmxvY2FsIl19.pmG6LF7qWBHpdN01v5XJ3R1QJ0XvZ-x4_GQPaG82UCRPz3MGOUe0kR-6HOOAeS-o4iCdXzPEjNq1UgZE3i4J-UEMzh1ty4c99gctlMT7_cWE3W1zEOfrQNbea76eihnPa3zJU1k4CUjbu-dvrC6T4pAAA4Q6gnAyzWf5Rbcd3ld7svpCKUvBZZdvUtIYZPxDQ3-V30UQetkyip7rn_LOSCZyf5QDdlRScaVMiMQAyAE5GtWmoa8UBuZi-V6q8RutTe_hPbNNzhHLrmGIA_Q5MCg1ukZTLFDZVkI8oCJuHtRjD-UXT6oWcXe6ACOnHAb8i7tCQomL5EVs82d3IUB-Og'
+authBearer='Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc2NjM4OTAzLCJpYXQiOjE2NzY1NTI1MDMsImp0aSI6ImMyMWMwNTgxMTU0MjQ3MWZiZjVmN2U5ODQ1NTM5MDQ2IiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJhZG1pbkBhdXRvbWF0aW9uLmxvY2FsIiwidXVpZCI6IjEzZGU2NSIsImdyb3VwcyI6WyJhdXRvbWF0aW9uLmxvY2FsIl19.CdnzTKaLLRPwoi7L-UiQql7S0_yrdfZi71DwN-QpuLak2HfVtmjdW76aLdoHg_j57TshppFVTOQPFen12hwZ5oz5_b_EtMzK1WSLX_atWLiLrvjmHOSAa5YMEuxbS9ltAv5f3-dq5zdgtD9WOF9voYyM1VN8by0_wazu9wNaZi6jDveLfcr8x2KFCfgDE9fOx2XmaKrZuktwL5ayUHeINGrQGfJX8RBv2MwxZotXK45Ne0RDXxiJ_5StAh3NpSiMUEUl27vRjOwwQdW_Cy8mSftvlcVShO75B4-G0fHNEEI-W54DlYUR74X3vLhEDzv62K9r6Sjrf8GxaGPV1Uc_1A'
 
 export authBearer
 
@@ -33,7 +33,7 @@ out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/POLA
 --header 'Content-Type: application/json' \
 --data-raw '{
     "data": {
-        "name": "localGroupC21",
+        "name": "localGroupC31",
         "color": "black"
     }
 }'`
@@ -46,7 +46,7 @@ out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/Glob
 --header 'Content-Type: application/json' \
 --data-raw '{
     "data": {
-        "name": "globalGroupC21",
+        "name": "globalGroupC31",
         "color": "black"
     }
 }'`
@@ -57,7 +57,7 @@ out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/Glob
 --header 'Content-Type: application/json' \
 --data-raw '{
     "data": {
-        "name": "globalGroupC22",
+        "name": "globalGroupC32",
         "color": "black"
     }
 }'`

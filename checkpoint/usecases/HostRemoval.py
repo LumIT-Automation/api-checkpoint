@@ -152,12 +152,11 @@ class HostRemoval:
 
                 # Delete rule if no source or destination is to remain.
                 r = Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule)
-                ruleName = r.info["name"]
                 r.delete(autoPublish=False)
-                self.__log(domain=domain, message=f"Deleted orphaned rule '{layer}/{rule}'", object_type="rule", object=rule, object_name=ruleName, status="deleted")
+                self.__log(domain=domain, message=f"Deleted orphaned rule '{layer}/{rule}'", object_type="rule", object=rule, object_name=r.info()["name"], status="deleted")
             else:
                 # Remove host in rule (within source and/or destination).
-                ruleName = Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).info["name"]
+                ruleName = Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).info()["name"]
                 r = RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj)
                 r.remove(autoPublish=False)
                 self.__log(domain=domain, message=f"Unlinked object '{obj}' from rule '{rule}'", object_type="object", object=obj, object_name="", status="unlinked", parent_object=rule, parent_object_name=ruleName)
@@ -184,13 +183,11 @@ class HostRemoval:
         # If object is within one of the rule fields, remove the rule.
         try:
             natRule = NatRule(self.sessionId, assetId=self.assetId, domain=domain, packageUid=package, uid=rule)
-            ruleName = natRule.info["name"]
-
             info = natRule.info()
             for f in ("original-destination", "translated-destination", "original-source", "translated-source"):
                 if info.get(f)["uid"] == obj:
                     n = natRule.delete(autoPublish=False)
-                    self.__log(domain=domain, message=f"Deleted orphaned NAT rule '{package}/{rule}'", object_type="nat_rule", object=rule, object_name="", status="deleted", parent_object=rule, parent_object_name=ruleName)
+                    self.__log(domain=domain, message=f"Deleted orphaned NAT rule '{package}/{rule}'", object_type="nat_rule", object=rule, object_name="", status="deleted", parent_object=rule, parent_object_name=natRule.info()["name"])
 
                     break
 
