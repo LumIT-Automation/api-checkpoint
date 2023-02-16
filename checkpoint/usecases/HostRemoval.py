@@ -316,7 +316,7 @@ class HostRemoval:
 
     def __deleteHost(self, domain: str, host: Host, hostUid: str):
         try:
-            objName = "host.name"
+            objName = host.info()["name"]
             host.delete(autoPublish=False)
             self.__log(domain=domain, message=f"Deleted host '{hostUid}'", object_type="host", object=hostUid, object_name=objName, status="deleted")
 

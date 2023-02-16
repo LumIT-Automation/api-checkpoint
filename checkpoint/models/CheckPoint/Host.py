@@ -29,15 +29,6 @@ class Host(Object):
 
 
 
-    @staticmethod
-    def infoStatic(sessionId, assetId, domain, uid) -> dict:
-        try:
-            return Backend.info(sessionId, assetId, domain, uid)
-        except Exception as e:
-            raise e
-
-
-
     def modify(self, data: dict, autoPublish: bool = True) -> None:
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
