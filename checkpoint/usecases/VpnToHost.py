@@ -28,8 +28,10 @@ class VpnToHost:
 
     def __call__(self, *args, **kwargs) -> list:
         try:
-            aclInformation = list()
+            rolesToIpv4 = list()
+            acls = list()
 
+            # Security rules which directly or indirectly reach the host.
             hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, self.domain, self.ipv4Address, localOnly=False)
             if hostsWithIpv4:
                 for h in hostsWithIpv4:
@@ -37,38 +39,11 @@ class VpnToHost:
                         hostUid = h["uid"]
                         host = Host(self.sessionId, assetId=self.assetId, domain=self.domain, uid=hostUid)
 
-                        # Security rules (and related roles) which directly or indirectly reach the host.
-                        # Find where the host is used within the domain.       
                         w = host.whereUsed(indirect=True)
-                        hostAcls = list()
+                        for j in ("used-directly", "used-indirectly"):
+                            acls.extend(w[j].get("access-control-rules", []))
 
-                        if "used-directly" in w:
-                            hostAcls.extend(w["used-directly"].get("access-control-rules", []))
-
-                        if "used-indirectly" in w:
-                            hostAcls.extend(w["used-indirectly"].get("access-control-rules", []))
-
-                        for hostAcl in hostAcls:
-                            hostAclInformation = dict()
-
-                            # Access control rule information.
-                            if hostAcl.get("package", {}).get("name", "") == self.package:
-                                for el in ("rule", "layer"):
-                                    hostAclInformation[el] = {
-                                        "uid": hostAcl.get(str(el), {}).get("uid", ""),
-                                        "name": hostAcl.get(str(el), {}).get("name", ""),
-                                    }
-
-                                acl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=hostAclInformation["layer"]["uid"], uid=hostAclInformation["rule"]["uid"]).info()
-                                if "source" in acl:
-                                    for j in acl["source"]:
-                                        if j.get("type", "") == "access-role":
-                                            aclInformation.append({
-                                                "uid": j.get("uid", ""),
-                                                "name": j.get("name", ""),
-                                            })
-
-            # Security rules (and related roles) which reach the network(s) containing the IPv4.
+            # Security rules which reach the network(s) containing the IPv4.
             networks = Network.listQuick(self.sessionId, self.assetId, self.domain, localOnly=False)
             for network in networks:
                 if "subnet4" in network and "mask-length4" in network:
@@ -78,40 +53,36 @@ class VpnToHost:
 
                         try:
                             w = oNetwork.whereUsed(indirect=True)
-                            networkAcls = list()
-
-                            if "used-directly" in w:
-                                networkAcls.extend(w["used-directly"].get("access-control-rules", []))
-
-                            if "used-indirectly" in w:
-                                networkAcls.extend(w["used-indirectly"].get("access-control-rules", []))
-
-                            for networkAcl in networkAcls:
-                                networkAclInformation = dict()
-
-                                # Access control rule information.
-                                if networkAcl.get("package", {}).get("name", "") == self.package:
-                                    for el in ("rule", "layer"):
-                                        networkAclInformation[el] = {
-                                            "uid": networkAcl.get(str(el), {}).get("uid", ""),
-                                            "name": networkAcl.get(str(el), {}).get("name", ""),
-                                        }
-
-                                    acl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=networkAclInformation["layer"]["uid"], uid=networkAclInformation["rule"]["uid"]).info()
-                                    if "source" in acl:
-                                        for j in acl["source"]:
-                                            if j.get("type", "") == "access-role":
-                                                aclInformation.append({
-                                                    "uid": j.get("uid", ""),
-                                                    "name": j.get("name", ""),
-                                                })
+                            for j in ("used-directly", "used-indirectly"):
+                                acls.extend(w[j].get("access-control-rules", []))
                         except CustomException as e:
                             if e.status == 404:
                                 pass
 
+            # Get roles from security rules.
+            for acl in acls:
+                aclInfo = dict()
+
+                # Access control rule information.
+                if acl.get("package", {}).get("name", "") == self.package:
+                    for el in ("rule", "layer"):
+                        aclInfo[el] = {
+                            "uid": acl.get(str(el), {}).get("uid", ""),
+                            "name": acl.get(str(el), {}).get("name", ""),
+                        }
+
+                    ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=aclInfo["layer"]["uid"], uid=aclInfo["rule"]["uid"]).info()
+                    if "source" in ruleAcl:
+                        for j in ruleAcl["source"]:
+                            if j.get("type", "") == "access-role":
+                                rolesToIpv4.append({
+                                    "uid": j.get("uid", ""),
+                                    "name": j.get("name", ""),
+                                })
+
             # @todo: Network "any".
 
-            return aclInformation
+            return rolesToIpv4
         except Exception as e:
             raise e
 
