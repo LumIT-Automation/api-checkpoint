@@ -11,7 +11,8 @@ class History:
         self.asset_id = 0
         self.config_object_type = ""
         self.config_object = ""
-        self.config_object_label = ""
+        self.config_object_name = ""
+        self.config_object_description = ""
         self.status = ""
         self.date = ""
 
