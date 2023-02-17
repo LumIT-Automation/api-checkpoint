@@ -28,6 +28,8 @@ class GroupNetwork:
                     }
                 }
             )
+
+            del self
         except Exception as e:
             raise e
 

@@ -33,6 +33,8 @@ class RuleObject:
                     }
                 },
                 autoPublish=autoPublish)
+
+            del self
         except Exception as e:
             raise e
 

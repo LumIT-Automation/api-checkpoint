@@ -41,6 +41,8 @@ class Session:
         try:
             Backend.logout(self.sessionId, self.assetId, self.domain)
             Session.deleteTokens(self.sessionId, self.assetId, self.domain)
+
+            del self
         except Exception as e:
             raise e
 

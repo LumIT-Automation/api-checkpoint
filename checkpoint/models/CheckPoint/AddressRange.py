@@ -2,6 +2,8 @@ from typing import List
 
 from checkpoint.models.CheckPoint.backend.AddressRange import AddressRange as Backend
 
+from checkpoint.helpers.Misc import Misc
+
 
 class AddressRange:
     def __init__(self, sessionId: str, assetId: int, domain: str = "", name: str = "", uid: str = "", subnet4: str = "", *args, **kwargs):
@@ -31,6 +33,9 @@ class AddressRange:
     def modify(self, data: dict, autoPublish: bool = True) -> None:
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
+
+            for k, v in Misc.toDict(data).items():
+                setattr(self, k, v)
         except Exception as e:
             raise e
  
@@ -39,6 +44,7 @@ class AddressRange:
     def delete(self, autoPublish: bool = True) -> None:
         try:
             Backend.delete(self.sessionId, self.assetId, self.domain, self.uid, autoPublish)
+            del self
         except Exception as e:
             raise e
 
