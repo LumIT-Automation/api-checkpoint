@@ -101,7 +101,7 @@ echo "globalGroup2Uid: $globalGroup2Uid"
 export globalGroup2Uid
 
 
-# Create an access rule in $layerUid with $hostUid as source. Without destination param, the destination is "any".
+# Create an access rule in $layerUid with $hostUid and localGroupUid as source. Without destination param, the destination is "any".
 out=`curl --no-progress-meter --location "http://${apiCheckPointIp}/api/v1/checkpoint/1/${domain}/access-layer/${layerUid}/rules/" \
 --header "$authBearer" \
 --header 'Content-Type: application/json' \
@@ -113,8 +113,10 @@ out=`curl --no-progress-meter --location "http://${apiCheckPointIp}/api/v1/check
             \"HTTP\",
             \"SMTP\"
         ],
-        \"source\": \"${hostUid}\"
-
+        \"source\": [
+            \"${hostUid}\",
+            \"${localGroupUid}\"
+        ]
     }
 }"`
 ruleUid=`echo $out | jq '.data.uid' | sed -r -e 's/^"//' -e's/"$//'`

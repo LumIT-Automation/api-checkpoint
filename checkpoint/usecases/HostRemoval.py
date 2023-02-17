@@ -74,7 +74,7 @@ class HostRemoval:
                             for r in ("access-control-rules", "https-rules", "threat-prevention-rules"):
                                 for o in whereUsed[r]:
                                     self.__securityRuleManagement(
-                                        domain=currentDomain, ruleType=r.split("-")[0], layer=o["layer"]["uid"], rule=o["rule"]["uid"], obj=h["uid"]
+                                        domain=currentDomain, ruleType=r.split("-")[0], layerUid=o["layer"]["uid"], ruleUid=o["rule"]["uid"], objUid=hostUid, objType="host"
                                     )
 
                             # NAT rules.
@@ -85,7 +85,7 @@ class HostRemoval:
                                 )
 
                             # Finally delete host.
-                            self.__deleteHost(currentDomain, host, hostUid)
+                            self.__deleteHost(currentDomain, host)
 
                             # Apply all the modifications (a global assignment is also performed when on Global domain).
                             Session(self.sessionId, assetId=self.assetId, domain=currentDomain).publish()
@@ -144,21 +144,21 @@ class HostRemoval:
     # Private methods
     ####################################################################################################################
 
-    def __securityRuleManagement(self, ruleType: str, domain: str, layer: str, rule: str, obj: str) -> None:
+    def __securityRuleManagement(self, ruleType: str, domain: str, layerUid: str, ruleUid: str, objUid: str, objType: str = "") -> None:
         try:
-            o = RuleObject.listObjectsInRule(self.sessionId, ruleType, self.assetId, domain, layer, rule)
-            if (obj in o["source"] and len(o["source"]) < 2) \
-                    or (obj in o["destination"] and len(o["destination"]) < 2):
+            o = RuleObject.listObjectsInRule(self.sessionId, ruleType, self.assetId, domain, layerUid, ruleUid)
+            if (objUid in o["source"] and len(o["source"]) < 2) \
+                    or (objUid in o["destination"] and len(o["destination"]) < 2):
 
                 # Delete rule if no source or destination is to remain.
-                r = Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule)
+                r = Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layerUid, uid=ruleUid)
                 ruleName = r.info()["name"]
                 r.delete(autoPublish=False)
-                self.__log(domain=domain, message=f"Deleted orphaned rule '{layer}/{rule}'", object_type="rule", object=rule, object_name=ruleName, status="deleted")
+                self.__log(domain=domain, message=f"Deleted orphaned rule '{layerUid}/{ruleUid}'", object_type="rule", object=ruleUid, object_name=ruleName, status="deleted", parent_object=layerUid)
             else:
                 # Remove host in rule (within source and/or destination).
-                RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, ruleUid=rule, objectUid=obj).remove(autoPublish=False)
-                self.__log(domain=domain, message=f"Unlinked object '{obj}' from rule '{rule}'", object_type="object", object=obj, object_name="", status="unlinked", parent_object=rule, parent_object_name=Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layer, uid=rule).info()["name"])
+                RuleObject(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layerUid, ruleUid=ruleUid, objectUid=objUid).remove(autoPublish=False)
+                self.__log(domain=domain, message=f"Unlinked object '{objUid}' from rule '{ruleUid}'", object_type=objType, object=objUid, object_name="", status="unlinked", parent_object=ruleUid, parent_object_name=Rule(self.sessionId, ruleType=ruleType, assetId=self.assetId, domain=domain, layerUid=layerUid, uid=ruleUid).info()["name"])
 
             # @todo: installed-on [?].
         except KeyError:
@@ -170,7 +170,7 @@ class HostRemoval:
                 else:
                     raise e
             elif (e.status == 400 or e.status == 409) and "use" in str(e.payload): # (only when called on Global domain).
-                self.globalUndead.append(("security", layer, rule))
+                self.globalUndead.append(("security", layerUid, ruleUid))
             else:
                 raise e
         except Exception as e:
@@ -242,7 +242,7 @@ class HostRemoval:
             for r in ("access-control-rules", "https-rules", "threat-prevention-rules"):
                 for o in whereUsed[r]:
                     self.__securityRuleManagement(
-                        domain=domain, ruleType=r.split("-")[0], layer=o["layer"]["uid"], rule=o["rule"]["uid"], obj=groupUid
+                        domain=domain, ruleType=r.split("-")[0], layerUid=o["layer"]["uid"], ruleUid=o["rule"]["uid"], objUid=groupUid, objType="group"
                     )
 
             for o in whereUsed["nat-rules"]:
@@ -314,11 +314,11 @@ class HostRemoval:
 
 
 
-    def __deleteHost(self, domain: str, host: Host, hostUid: str):
+    def __deleteHost(self, domain: str, host: Host):
         try:
-            objName = host.info()["name"]
+            hostInfo = host.info()
             host.delete(autoPublish=False)
-            self.__log(domain=domain, message=f"Deleted host '{hostUid}'", object_type="host", object=hostUid, object_name=objName, status="deleted")
+            self.__log(domain=domain, message='Deleted host ' + hostInfo["uid"], object_type="host", object=hostInfo["uid"], object_name=hostInfo["name"], status="deleted")
 
         except CustomException as e:
             if e.status == 400 and "read-only" in str(e.payload):
