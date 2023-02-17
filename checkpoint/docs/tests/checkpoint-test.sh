@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # POLAND:
 
 # localGroupUid
@@ -8,27 +7,59 @@
 #     globalGroup1Ui2
 #       hostUid
 
+apiCheckPointIp=10.0.111.26
+ssoIp=10.0.111.100
 
-authBearer='Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjc2NjM4OTAzLCJpYXQiOjE2NzY1NTI1MDMsImp0aSI6ImMyMWMwNTgxMTU0MjQ3MWZiZjVmN2U5ODQ1NTM5MDQ2IiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJhZG1pbkBhdXRvbWF0aW9uLmxvY2FsIiwidXVpZCI6IjEzZGU2NSIsImdyb3VwcyI6WyJhdXRvbWF0aW9uLmxvY2FsIl19.CdnzTKaLLRPwoi7L-UiQql7S0_yrdfZi71DwN-QpuLak2HfVtmjdW76aLdoHg_j57TshppFVTOQPFen12hwZ5oz5_b_EtMzK1WSLX_atWLiLrvjmHOSAa5YMEuxbS9ltAv5f3-dq5zdgtD9WOF9voYyM1VN8by0_wazu9wNaZi6jDveLfcr8x2KFCfgDE9fOx2XmaKrZuktwL5ayUHeINGrQGfJX8RBv2MwxZotXK45Ne0RDXxiJ_5StAh3NpSiMUEUl27vRjOwwQdW_Cy8mSftvlcVShO75B4-G0fHNEEI-W54DlYUR74X3vLhEDzv62K9r6Sjrf8GxaGPV1Uc_1A'
+domain=POLAND
+hostIp=10.213.216.61
 
+if ! which jq > /dev/null; then
+    echo "jq not found: install jq package."
+    exit 1
+fi
+
+export hostIp ssoIp apiCheckPointIp
+# SSO login
+token=`curl --no-progress-meter --location "http://${ssoIp}/api/v1/token/" \
+--header 'Content-Type: application/json' \
+--data-raw "{
+    \"username\": \"admin@automation.local\",
+    \"password\": \"password\"
+}" | jq '.access' | sed -e 's/^"//' -e 's/"$//'`
+
+authBearer="Authorization: Bearer $token"
 export authBearer
 
 
+# Get the uid of the first access layer in $domain (and check if it exists).
+out=`curl --no-progress-meter --location "http://${apiCheckPointIp}/api/v1/checkpoint/1/${domain}/access-layers/?local=null" \
+--header "$authBearer"`
+layerUid=`echo $out | jq '.data.items[0].uid' | sed -r -e 's/^"//' -e's/"$//'`
+if [ -z "$layerUid" ]; then
+    echo "Cannot find an access layer in domain, create an access layer first."
+    exit 1
+fi
+echo "layerUid: $layerUid"
+export layerUid
+
+###################
 # Create global host
-out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/Global/hosts/' \
+out=`curl --no-progress-meter --location --request POST "http://${apiCheckPointIp}/api/v1/checkpoint/1/Global/hosts/" \
 --header "$authBearer" \
 --header 'Content-Type: application/json' \
---data-raw '{
-    "data": {
-        "name": "10.213.216.61",
-        "ipv4-address": "10.213.216.61"
+--data-raw "{
+    \"data\": {
+        \"name\": \"$hostIp\",
+        \"ipv4-address\": \"$hostIp\"
     }
-}'`
+}"`
 hostUid=`echo $out | jq '.data.uid' | sed -r -e 's/^"//' -e's/"$//'`
+echo "hostUid: $hostUid"
+export hostUid
 
 
 # Create local group
-out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/POLAND/groups/' \
+out=`curl --no-progress-meter --location --request POST "http://${apiCheckPointIp}/api/v1/checkpoint/1/${domain}/groups/" \
 --header "$authBearer" \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -38,10 +69,12 @@ out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/POLA
     }
 }'`
 localGroupUid=`echo $out | jq '.data.uid' | sed -r -e 's/^"//' -e's/"$//'`
+echo "localGroupUid: $localGroupUid"
+export localGroupUid
 
 
 # Create global groups
-out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/Global/groups/' \
+out=`curl --no-progress-meter --location --request POST "http://${apiCheckPointIp}/api/v1/checkpoint/1/Global/groups/" \
 --header "$authBearer" \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -51,8 +84,10 @@ out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/Glob
     }
 }'`
 globalGroup1Uid=`echo $out | jq '.data.uid' | sed -r -e 's/^"//' -e's/"$//'`
+echo "globalGroup1Uid: $globalGroup1Uid"
+export globalGroup1Uid
 
-out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/Global/groups/' \
+out=`curl --no-progress-meter --location --request POST "http://${apiCheckPointIp}/api/v1/checkpoint/1/Global/groups/" \
 --header "$authBearer" \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -62,10 +97,33 @@ out=`curl --location --request POST 'http://10.0.111.26/api/v1/checkpoint/1/Glob
     }
 }'`
 globalGroup2Uid=`echo $out | jq '.data.uid' | sed -r -e 's/^"//' -e's/"$//'`
+echo "globalGroup2Uid: $globalGroup2Uid"
+export globalGroup2Uid
+
+
+# Create an access rule in $layerUid with $hostUid as source. Without destination param, the destination is "any".
+out=`curl --no-progress-meter --location "http://${apiCheckPointIp}/api/v1/checkpoint/1/${domain}/access-layer/${layerUid}/rules/" \
+--header "$authBearer" \
+--header 'Content-Type: application/json' \
+--data-raw "{
+    \"data\": {
+        \"name\": \"Pasa su tous cos\",
+        \"position\": 1,
+        \"service\": [
+            \"HTTP\",
+            \"SMTP\"
+        ],
+        \"source\": \"${hostUid}\"
+
+    }
+}"`
+ruleUid=`echo $out | jq '.data.uid' | sed -r -e 's/^"//' -e's/"$//'`
+echo "ruleUid: $ruleUid"
+export ruleUid
 
 
 # Place globalGroup1 in localGroup
-curl --location --request POST "http://10.0.111.26/api/v1/checkpoint/1/POLAND/group/${localGroupUid}/groups/" \
+curl --no-progress-meter --location --request POST "http://${apiCheckPointIp}/api/v1/checkpoint/1/${domain}/group/${localGroupUid}/groups/" \
 --header "$authBearer" \
 --header 'Content-Type: application/json' \
 --data-raw "{
@@ -78,7 +136,7 @@ curl --location --request POST "http://10.0.111.26/api/v1/checkpoint/1/POLAND/gr
 
 
 # Place globalGroup2 in globalGroup1
-curl --location --request POST "http://10.0.111.26/api/v1/checkpoint/1/Global/group/${globalGroup1Uid}/groups/" \
+curl --no-progress-meter --location --request POST "http://${apiCheckPointIp}/api/v1/checkpoint/1/Global/group/${globalGroup1Uid}/groups/" \
 --header "$authBearer" \
 --header 'Content-Type: application/json' \
 --data-raw "{
@@ -91,7 +149,7 @@ curl --location --request POST "http://10.0.111.26/api/v1/checkpoint/1/Global/gr
 
 
 # Place host in globalGroup2
-curl --location --request POST "http://10.0.111.26/api/v1/checkpoint/1/Global/group/${globalGroup2Uid}/hosts/" \
+curl --no-progress-meter --location --request POST "http://${apiCheckPointIp}/api/v1/checkpoint/1/Global/group/${globalGroup2Uid}/hosts/" \
 --header "$authBearer" \
 --header 'Content-Type: application/json' \
 --data-raw "{
@@ -105,19 +163,20 @@ curl --location --request POST "http://10.0.111.26/api/v1/checkpoint/1/Global/gr
 
 echo
 echo "Groups in localGroup":
-curl --location --request GET "http://10.0.111.26/api/v1/checkpoint/1/POLAND/group/${localGroupUid}/groups/" \
---header "$authBearer"
+curl --no-progress-meter --location --request GET "http://${apiCheckPointIp}/api/v1/checkpoint/1/${domain}/group/${localGroupUid}/groups/" \
+--header "$authBearer" | jq '.data.items[] | "{uid: \(.uid), name: \(.name)}"'
+
 
 echo
 
 echo "Groups in globalGroup1":
-curl --location --request GET "http://10.0.111.26/api/v1/checkpoint/1/Global/group/${globalGroup1Uid}/groups/" \
---header "$authBearer"
+curl --no-progress-meter --location --request GET "http://${apiCheckPointIp}/api/v1/checkpoint/1/Global/group/${globalGroup1Uid}/groups/" \
+--header "$authBearer" | jq '.data.items[] | "{uid: \(.uid), name: \(.name)}"'
 
 echo
 
 echo "Hosts in globalGroup2":
-curl --location --request GET "http://10.0.111.26/api/v1/checkpoint/1/Global/group/${globalGroup2Uid}/hosts/" \
---header "$authBearer"
+curl --no-progress-meter --location --request GET "http://${apiCheckPointIp}/api/v1/checkpoint/1/Global/group/${globalGroup2Uid}/hosts/" \
+--header "$authBearer" | jq '.data.items[] | "{uid: \(.uid), name: \(.name)}"'
 
 echo 
