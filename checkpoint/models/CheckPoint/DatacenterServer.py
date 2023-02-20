@@ -75,10 +75,8 @@ class DatacenterServer(Object):
 
 
     @staticmethod
-    def add(sessionId: str, assetId: int, domain: str, data: dict, autoPublish: bool = True) -> dict:
+    def add(sessionId: str, assetId: int, domain: str, data: dict, autoPublish: bool = True) -> None:
         try:
-            o = Backend.add(sessionId, assetId, domain, data, autoPublish)
+            Backend.add(sessionId, assetId, domain, data, autoPublish)
         except Exception as e:
             raise e
-
-        return o

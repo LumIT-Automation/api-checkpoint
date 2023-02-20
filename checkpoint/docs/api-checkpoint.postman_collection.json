@@ -3892,7 +3892,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/datacenter-servers/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/datacenter-servers/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -3905,7 +3905,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"datacenter-servers",
 												""
 											]
@@ -3929,7 +3929,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"data\": {\n        \"name\": \"Coso\",\n        \"type\": \"aws\",\n        \"authentication-method\": \"user-authentication\",\n        \"access-key-id\": \"AKIAI4EMUXLDYNO3KFGQ\",\n        \"secret-access-key\": \"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\",\n        \"region\": \"eu-west-1\",\n        \"tags\": [\n            \"prova\",\n            \"provolone\"\n        ],\n        \"color\": \"orange\",\n        \"comments\": \"proviamo\",\n        \"details-level\": \"standard\",\n        \"ignore-warnings\": false,\n        \"hostname\": \"CosoHost\"\n    }\n}",
+											"raw": "{\n    \"data\": {\n        \"name\": \"Coso\",\n        \"type\": \"aws\",\n        \"authentication-method\": \"user-authentication\",\n        \"access-key-id\": \"AKIAI4EMUXLDYNO3KFGQ\",\n        \"secret-access-key\": \"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\",\n        \"region\": \"eu-west-1\",\n        \"tags\": [\n            \"prova\",\n            \"provolone\"\n        ],\n        \"color\": \"orange\",\n        \"comments\": \"proviamo\",\n        \"details-level\": \"standard\",\n        \"ignore-warnings\": true\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3937,7 +3937,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/datacenter-servers/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/datacenter-servers/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -3950,7 +3950,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"datacenter-servers",
 												""
 											]
@@ -3973,7 +3973,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/datacenter-server/01234567-89ab-cdef-965e-6d21d1146363/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/datacenter-server/80540d42-bc1d-4e29-8981-bcdf434bf44d/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -3986,9 +3986,9 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"datacenter-server",
-												"01234567-89ab-cdef-965e-6d21d1146363",
+												"80540d42-bc1d-4e29-8981-bcdf434bf44d",
 												""
 											]
 										}
@@ -6372,7 +6372,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/task/01234567-89ab-cdef-acc4-630b80f4aa4a/",
+							"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/task/01234567-89ab-cdef-b254-e87514387b19/",
 							"protocol": "http",
 							"host": [
 								"10",
@@ -6385,9 +6385,9 @@
 								"v1",
 								"checkpoint",
 								"1",
-								"POLAND",
+								"SHARED-SERVICES",
 								"task",
-								"01234567-89ab-cdef-acc4-630b80f4aa4a",
+								"01234567-89ab-cdef-b254-e87514387b19",
 								""
 							]
 						}

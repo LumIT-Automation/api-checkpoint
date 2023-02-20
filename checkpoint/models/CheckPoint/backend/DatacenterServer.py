@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 from django.conf import settings
@@ -5,6 +6,7 @@ from django.conf import settings
 from checkpoint.models.CheckPoint.Session import Session
 
 from checkpoint.helpers.ApiSupplicant import ApiSupplicant
+from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Log import Log
 
 
@@ -90,7 +92,6 @@ class DatacenterServer:
                         "filter": filter
                     }
                 )
-                Log.log(o, '_')
 
                 if "objects" in o and o["objects"]:
                     out.extend(o["objects"])
@@ -106,17 +107,40 @@ class DatacenterServer:
 
 
     @staticmethod
-    def add(sessionId: str, assetId: int, domain: str, data: dict, autoPublish: bool = True) -> dict:
+    def add(sessionId: str, assetId: int, domain: str, data: dict, autoPublish: bool = True) -> None:
+        timeout = 120 # [second]
+        from checkpoint.models.CheckPoint.Task import Task
+
         try:
-            o = ApiSupplicant(sessionId, assetId).post(
+            response = ApiSupplicant(sessionId, assetId).post(
                 urlSegment="add-data-center-server",
                 domain=domain,
                 data=data
             )
+
+            # Monitor async tasks.
+            t0 = time.time()
+
+            while True:
+                try:
+                    taskRunInfo = Task(sessionId, assetId, domain, uid=response["task-id"]).info()["tasks"][0]
+
+                    if taskRunInfo["status"] == "succeeded":
+                        break
+                    elif taskRunInfo["status"] == "failed":
+                        raise CustomException(status=400, payload={"CheckPoint": taskRunInfo.get("task-details", [])[0].get("fault-message", "unknown error")})
+
+                    if time.time() >= t0 + timeout: # timeout reached.
+                        raise CustomException(status=400, payload={"CheckPoint": f"task timeout reached"})
+
+                    time.sleep(5)
+                except KeyError:
+                    pass
+                except IndexError:
+                    pass
+
             if autoPublish:
                 Session(sessionId=sessionId, assetId=assetId, domain=domain).publish()
-
-            return o
         except Exception as e:
             if autoPublish:
                 Session(sessionId=sessionId, assetId=assetId, domain=domain).discard()
