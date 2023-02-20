@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d0e21799-1d2b-48ae-9b0d-4aa45502d263",
+		"_postman_id": "11dcf738-4a8b-4433-bee3-da2bd8dd9209",
 		"name": "api-checkpoint",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -996,7 +996,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"data\": {\n        \"name\": \"172.17.0.7\"\n    }\n}",
+									"raw": "{\n    \"data\": {\n        \"name\": \"NETWORK_LOCAL Access Role\"\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
