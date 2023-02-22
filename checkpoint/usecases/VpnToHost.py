@@ -58,6 +58,10 @@ class VpnToHost:
                             if e.status == 404:
                                 pass
 
+            # @todo: ranges.
+
+            # @todo: output port.
+
             # [
             #     {
             #         "rule": {

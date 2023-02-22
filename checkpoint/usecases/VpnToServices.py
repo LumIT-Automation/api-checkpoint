@@ -50,6 +50,8 @@ class VpnToServices:
             else:
                 raise CustomException(status=404, payload={"CheckPoint": "role not found"})
 
+            # @todo: more information for each entry.
+
             return services
         except Exception as e:
             raise e
