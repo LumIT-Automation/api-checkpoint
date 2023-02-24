@@ -134,7 +134,7 @@ class VpnToHost:
 
                                         no += 1
 
-            # @todo: Network "any".
+            # @todo: role -> AnyNetwork.
 
             return rolesToIpv4
         except Exception as e:

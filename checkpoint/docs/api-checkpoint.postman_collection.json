@@ -1637,7 +1637,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/hosts/?local",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/hosts/?local",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -1650,7 +1650,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"hosts",
 												""
 											],
@@ -3227,7 +3227,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/address-ranges/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/address-ranges/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -3240,7 +3240,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"address-ranges",
 												""
 											]
@@ -3929,7 +3929,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"data\": {\n        \"name\": \"Coso\",\n        \"type\": \"aws\",\n        \"authentication-method\": \"user-authentication\",\n        \"access-key-id\": \"AKIAI4EMUXLDYNO3KFGQ\",\n        \"secret-access-key\": \"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\",\n        \"region\": \"eu-west-1\",\n        \"tags\": [\n            \"testone\"\n        ],\n        \"color\": \"orange\",\n        \"comments\": \"proviamo\",\n        \"details-level\": \"standard\",\n        \"ignore-warnings\": true\n    }\n}",
+											"raw": "{\n    \"data\": {\n        \"name\": \"Coso\",\n        \"type\": \"aws\",\n        \"authentication-method\": \"user-authentication\",\n        \"access-key-id\": \"AKIAI4EMUXLDYNO3KFGQ\",\n        \"secret-access-key\": \"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\",\n        \"region\": \"eu-west-1\",\n        \"tags\": [\n            \"testone\"\n        ],\n        \"color\": \"orange\",\n        \"comments\": \"proviamo\",\n        \"details-level\": \"standard\",\n        \"ignore-warnings\": true,\n        \"enable-sts-assume-role\": true,\n        \"sts-role\": \"STS\"\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -4010,7 +4010,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/datacenter-server/01234567-89ab-cdef-965e-6d21d1146363/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/datacenter-server/b74e9680-c085-4b58-ac16-406be29f8521/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -4023,9 +4023,9 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"datacenter-server",
-												"01234567-89ab-cdef-965e-6d21d1146363",
+												"b74e9680-c085-4b58-ac16-406be29f8521",
 												""
 											]
 										}
@@ -5331,7 +5331,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/access-layer/d04e4578-088a-463f-b467-fa4e8f6fd0f8/rules/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/access-layer/d04e4578-088a-463f-b467-fa4e8f6fd0f8/rules/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -5344,7 +5344,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"SHARED-SERVICES",
 												"access-layer",
 												"d04e4578-088a-463f-b467-fa4e8f6fd0f8",
 												"rules",
@@ -6409,7 +6409,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/object/e3e06c81-ed07-4d45-90ba-6ed858369f1b/where-used/",
+							"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/object/c221bbd9-b01b-42cb-8a1a-f40e84aa1e43/where-used/",
 							"protocol": "http",
 							"host": [
 								"10",
@@ -6422,9 +6422,9 @@
 								"v1",
 								"checkpoint",
 								"1",
-								"POLAND",
+								"SHARED-SERVICES",
 								"object",
-								"e3e06c81-ed07-4d45-90ba-6ed858369f1b",
+								"c221bbd9-b01b-42cb-8a1a-f40e84aa1e43",
 								"where-used",
 								""
 							]

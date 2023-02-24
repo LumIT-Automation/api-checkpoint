@@ -38,7 +38,7 @@ class Role(Object):
             out = list()
 
             if localOnly and domain != "Global":
-                o = Backend.list(sessionId, assetId, domain)
+                o = Backend.list(sessionId, assetId, domain, filter=filter)
                 for el in o:
                     if "domain" in el and "domain-type" in el["domain"]:
                         if el["domain"]["domain-type"] != "global domain":
