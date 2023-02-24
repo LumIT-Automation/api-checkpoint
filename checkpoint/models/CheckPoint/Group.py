@@ -3,7 +3,7 @@ from typing import List
 from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.backend.Group import Group as Backend
 
-from checkpoint.helpers.Misc import Misc
+from checkpoint.helpers.Lang import Lang
 
 
 class Group(Object):
@@ -69,7 +69,7 @@ class Group(Object):
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
 
-            for k, v in Misc.toDict(data).items():
+            for k, v in Lang.toDict(data).items():
                 setattr(self, k, v)
         except Exception as e:
             raise e

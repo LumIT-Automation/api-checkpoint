@@ -1,6 +1,6 @@
 from checkpoint.models.CheckPoint.backend.ApplicationSite import ApplicationSite as Backend
 
-from checkpoint.helpers.Misc import Misc
+from checkpoint.helpers.Lang import Lang
 
 
 class ApplicationSite:
@@ -32,7 +32,7 @@ class ApplicationSite:
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
 
-            for k, v in Misc.toDict(data).items():
+            for k, v in Lang.toDict(data).items():
                 setattr(self, k, v)
         except Exception as e:
             raise e

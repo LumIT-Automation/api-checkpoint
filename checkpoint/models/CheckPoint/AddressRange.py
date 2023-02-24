@@ -1,13 +1,14 @@
 from typing import List
 
+from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.backend.AddressRange import AddressRange as Backend
 
-from checkpoint.helpers.Misc import Misc
+from checkpoint.helpers.Lang import Lang
 
 
-class AddressRange:
+class AddressRange(Object):
     def __init__(self, sessionId: str, assetId: int, domain: str = "", name: str = "", uid: str = "", subnet4: str = "", *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(sessionId, assetId, domain, uid, *args, **kwargs)
 
         self.sessionId = sessionId
         self.assetId: int = int(assetId)
@@ -34,7 +35,7 @@ class AddressRange:
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
 
-            for k, v in Misc.toDict(data).items():
+            for k, v in Lang.toDict(data).items():
                 setattr(self, k, v)
         except Exception as e:
             raise e

@@ -3,8 +3,10 @@ import ipaddress
 from checkpoint.models.CheckPoint.Host import Host
 from checkpoint.models.CheckPoint.Rule import Rule
 from checkpoint.models.CheckPoint.Network import Network
+from checkpoint.models.CheckPoint.AddressRange import AddressRange
 
 from checkpoint.helpers.Exception import CustomException
+from checkpoint.helpers.Network import Network as NetworkHelper
 from checkpoint.helpers.Log import Log
 
 
@@ -59,7 +61,21 @@ class VpnToHost:
                             if e.status == 404:
                                 pass
 
-            # @todo: ranges.
+            # Security rules which reach the address range(s) containing the IPv4.
+            ranges = AddressRange.listQuick(self.sessionId, self.assetId, self.domain, localOnly=False)
+            for r in ranges:
+                if "ipv4-address-first" in r and "ipv4-address-last" in r:
+                    # If Ipv4 within address range.
+                    if NetworkHelper.ipv4InRange(self.ipv4Address, r["ipv4-address-first"], r["ipv4-address-last"]):
+                        oAddressRange = AddressRange(self.sessionId, self.assetId, domain=self.domain, uid=r["uid"])
+
+                        try:
+                            w = oAddressRange.whereUsed(indirect=True)
+                            for j in ("used-directly", "used-indirectly"):
+                                acls.extend(w[j].get("access-control-rules", []))
+                        except CustomException as e:
+                            if e.status == 404:
+                                pass
 
             # [
             #     {
@@ -93,8 +109,6 @@ class VpnToHost:
                         }
 
                     ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=aclInfo["layer"]["uid"], uid=aclInfo["rule"]["uid"]).info()
-
-                    Log.log(ruleAcl, "_")
 
                     # Collect information for all source (active) access roles.
                     if ruleAcl.get("enabled", False):

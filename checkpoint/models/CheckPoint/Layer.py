@@ -1,6 +1,6 @@
 from typing import List
 
-from checkpoint.helpers.Misc import Misc
+from checkpoint.helpers.Lang import Lang
 
 
 class LayerBackendFactory:
@@ -54,7 +54,7 @@ class Layer:
         try:
             self.Backend(self.sessionId, self.assetId, self.domain, self.uid).modify(data, autoPublish)
 
-            for k, v in Misc.toDict(data).items():
+            for k, v in Lang.toDict(data).items():
                 setattr(self, k, v)
         except Exception as e:
             raise e
