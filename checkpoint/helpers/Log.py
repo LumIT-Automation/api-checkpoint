@@ -1,9 +1,6 @@
+import json
 import logging
 import traceback
-
-from django.utils.html import strip_tags
-from django.db import connection
-
 
 
 class Log:
@@ -17,7 +14,7 @@ class Log:
                     title = title + "_"
             log.debug(title)
 
-        log.debug(o)
+        log.debug(json.dumps(o))
 
         if title:
             log.debug(title)

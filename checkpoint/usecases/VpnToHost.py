@@ -28,6 +28,7 @@ class VpnToHost:
 
     def __call__(self, *args, **kwargs) -> list:
         try:
+            no = 0
             rolesToIpv4 = list()
             acls = list()
 
@@ -59,8 +60,6 @@ class VpnToHost:
                                 pass
 
             # @todo: ranges.
-
-            # @todo: output port.
 
             # [
             #     {
@@ -95,6 +94,8 @@ class VpnToHost:
 
                     ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=aclInfo["layer"]["uid"], uid=aclInfo["rule"]["uid"]).info()
 
+                    Log.log(ruleAcl, "_")
+
                     # Collect information for all source (active) access roles.
                     if ruleAcl.get("enabled", False):
                         if "source" in ruleAcl:
@@ -102,9 +103,22 @@ class VpnToHost:
                                 if j.get("type", "") == "access-role":
                                     if "uid" in j and "name" in j:
                                         rolesToIpv4.append({
-                                            "uid": j["uid"],
-                                            "name": j["name"],
+                                            j["uid"]: {
+                                                "name": j["name"]
+                                            }
                                         })
+
+                                        if "service" in ruleAcl:
+                                            for s in ruleAcl["service"]:
+                                                if "port" in s and "protocol" in s:
+                                                    rolesToIpv4[no].update({
+                                                        "port": s["port"],
+                                                        "protocol": s["protocol"],
+                                                    })
+                                                if "type" in s:
+                                                    rolesToIpv4[no].update({"type": s["type"]})
+
+                                        no += 1
 
             # @todo: Network "any".
 
