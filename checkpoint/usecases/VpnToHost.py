@@ -61,6 +61,23 @@ class VpnToHost:
                             if e.status == 404:
                                 pass
 
+            # @todo: AnyNetwork:
+            # find all layers within asset, domain, package.
+            # find all ac rules with filter:
+            # data = {
+            #     "details-level": "full",
+            #     "filter-settings": {
+            #         "search-mode": "packet",
+            #         "packet-search-settings": {"match-on-any": True}
+            #     },
+            #     "filter": "dst:172.17.0.122",
+            #     "limit": limit,
+            #     "offset": limit * n,
+            #     "uid": self.uid  # layer uid.
+            # }
+            # list all security rules within all layers (in package).
+            # layer/listRules --> "filter": "dst:172.17.0.122",
+
             # Security rules which reach the address range(s) containing the IPv4.
             ranges = AddressRange.listQuick(self.sessionId, self.assetId, self.domain, localOnly=False)
             for r in ranges:
@@ -133,8 +150,6 @@ class VpnToHost:
                                                     rolesToIpv4[no].update({"type": s["type"]})
 
                                         no += 1
-
-            # @todo: role -> AnyNetwork.
 
             return rolesToIpv4
         except Exception as e:
