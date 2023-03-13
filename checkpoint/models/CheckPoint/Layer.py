@@ -113,14 +113,15 @@ class Layer:
 
 
     @staticmethod
-    def listRules(sessionId: str, layerType: str, assetId: int, domain: str, accessLayerUid: str, localOnly: bool = False) -> List[dict]:
+    def listRules(sessionId: str, layerType: str, assetId: int, domain: str, accessLayerUid: str, localOnly: bool = False, filter: str = "", filterSettings: dict = None) -> List[dict]:
+        filterSettings = filterSettings or {}
         out = list()
 
         try:
             Backend = LayerBackendFactory(layerType)()
 
             if localOnly and domain != "Global":
-                l = Backend(sessionId, assetId, domain, accessLayerUid).listRules()
+                l = Backend(sessionId, assetId, domain, accessLayerUid).listRules(filter, filterSettings)
                 for el in l:
                     if "rulebase" in el:
                         for elm in el["rulebase"]:
@@ -128,7 +129,7 @@ class Layer:
                                 if elm["domain"]["domain-type"] != "global domain":
                                     out.append(el)
             else:
-                out = Backend(sessionId, assetId, domain, accessLayerUid).listRules()
+                out = Backend(sessionId, assetId, domain, accessLayerUid).listRules(filter, filterSettings)
         except Exception as e:
             raise e
 

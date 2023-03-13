@@ -132,22 +132,31 @@ class Layer:
 
 
 
-    def listRules(self) -> List[dict]:
+    def listRules(self, filter: str = "", filterSettings: dict = None) -> List[dict]:
+        filterSettings = filterSettings or {}
+
         out = list()
         limit = 500
 
         try:
             # Collect all data (serial requests).
             for n in range(0, settings.MAX_REQUESTS):
-                o = ApiSupplicant(self.sessionId, self.assetId).post(
-                    urlSegment="show-"+self.type+"-rulebase",
-                    domain=self.domain,
-                    data={
+                data = {
                         "details-level": "standard",
                         "limit": limit,
                         "offset": limit * n,
                         "uid": self.uid # layer uid.
                     }
+
+                if filter:
+                    data["filter"] = filter
+                if filterSettings:
+                    data["filter-settings"] = filterSettings
+
+                o = ApiSupplicant(self.sessionId, self.assetId).post(
+                    urlSegment="show-"+self.type+"-rulebase",
+                    domain=self.domain,
+                    data=data
                 )
 
                 if "rulebase" in o and o["rulebase"]:
