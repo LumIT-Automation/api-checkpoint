@@ -4,7 +4,6 @@ from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.backend.DatacenterQuery import DatacenterQuery as Backend
 
 from checkpoint.helpers.Lang import Lang
-from checkpoint.helpers.Log import Log
 
 
 class DatacenterQuery(Object):
