@@ -10,6 +10,7 @@ from .controllers.CheckPoint import Object, Objects
 from .controllers.CheckPoint import Network, Networks
 from .controllers.CheckPoint import AddressRanges, AddressRange
 from .controllers.CheckPoint import DatacenterServers, DatacenterServer
+from .controllers.CheckPoint import DatacenterQueries, DatacenterQuery
 from .controllers.CheckPoint import Tasks, Task
 from .controllers.CheckPoint import Host, Hosts
 from .controllers.CheckPoint.UseCases import RemoveHost, VpnToHost, VpnToServices
@@ -106,8 +107,12 @@ urlpatterns = [
     path('<int:assetId>/<str:domain>/service-udp/<str:serviceUid>/', ServiceUdp.CheckPointServiceUdpController.as_view(), name='service-udp'),
 
     # Datacenter servers.
-    path('<int:assetId>/<str:domain>/datacenter-servers/', DatacenterServers.CheckPointDatacenterServersController.as_view(), name='application-sites'),
-    path('<int:assetId>/<str:domain>/datacenter-server/<str:datacenterUid>/', DatacenterServer.CheckPointDatacenterServerController.as_view(), name='application-site'),
+    path('<int:assetId>/<str:domain>/datacenter-servers/', DatacenterServers.CheckPointDatacenterServersController.as_view(), name='datacenter-servers'),
+    path('<int:assetId>/<str:domain>/datacenter-server/<str:datacenterUid>/', DatacenterServer.CheckPointDatacenterServerController.as_view(), name='datacenter-server'),
+
+    # Datacenter queries.
+    path('<int:assetId>/<str:domain>/datacenter-queries/', DatacenterQueries.CheckPointDatacenterQueriesController.as_view(), name='datacenter-queries'),
+    path('<int:assetId>/<str:domain>/datacenter-query/<str:datacenterUid>/', DatacenterQuery.CheckPointDatacenterQueryController.as_view(), name='datacenter-query'),
 
     # Tasks.
     path('<int:assetId>/<str:domain>/tasks/', Tasks.CheckPointTasksController.as_view(), name='taks'),

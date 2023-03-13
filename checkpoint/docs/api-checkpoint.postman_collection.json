@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "11dcf738-4a8b-4433-bee3-da2bd8dd9209",
+		"_postman_id": "ff6b7805-1139-41b8-95f3-3528a4b3d6cf",
 		"name": "api-checkpoint",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -4072,6 +4072,212 @@
 												"SHARED-SERVICES",
 												"datacenter-server",
 												"80540d42-bc1d-4e29-8981-bcdf434bf44d",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "datacenter query",
+							"item": [
+								{
+									"name": "datacenter queries",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/datacenter-queries/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"SHARED-SERVICES",
+												"datacenter-queries",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "datacenter queries",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\": {\n        \"name\": \"pongo-una-domanda\",\n        \"query-rules\": {\n            \"key-type\": \"predefined\",\n            \"key\": \"ip-address\",\n            \"values\": [\n                \"10.8.5.3\"\n            ]\n        }\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/datacenter-queries/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"datacenter-queries",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "datacenter query",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/datacenter-query/aba1c91e-f0d2-46da-8019-f570f46df300/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"datacenter-query",
+												"aba1c91e-f0d2-46da-8019-f570f46df300",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "datacenter query",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/datacenter-query/5db14884-c094-44c6-afa4-38fc6e9dcea8/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"datacenter-query",
+												"5db14884-c094-44c6-afa4-38fc6e9dcea8",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "datacenter server",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\": {\n        \"color\": \"blue\",\n        \"comments\": \"proviamo\",\n        \"details-level\": \"standard\",\n        \"ignore-warnings\": false\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/datacenter-query/aba1c91e-f0d2-46da-8019-f570f46df300/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"datacenter-query",
+												"aba1c91e-f0d2-46da-8019-f570f46df300",
 												""
 											]
 										}
