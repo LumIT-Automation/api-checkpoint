@@ -16,6 +16,14 @@ class Object:
     # Public methods
     ####################################################################################################################
 
+    def info(self) -> dict:
+        try:
+            return Backend.info(self.sessionId, self.assetId, self.domain, self.uid)
+        except Exception as e:
+            raise e
+
+
+
     def whereUsed(self, indirect: bool = False) -> dict:
         try:
             return Backend.whereUsed(self.sessionId, self.assetId, self.domain, self.uid, indirect=indirect)

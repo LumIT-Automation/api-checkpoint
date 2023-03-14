@@ -3,6 +3,7 @@ from checkpoint.models.CheckPoint.Rule import Rule
 
 from checkpoint.models.CheckPoint.Host import Host
 from checkpoint.models.CheckPoint.Group import Group
+from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.AddressRange import AddressRange
 from checkpoint.models.CheckPoint.Network import Network
 
@@ -57,20 +58,18 @@ class VpnToServices:
                                             ipv4s = {
                                                 "address": h["ipv4-address"]
                                             }
-
                                         if j["type"] == "group":
-                                            g = Group(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
+                                            l = []
+                                            VpnToServices.__groupIpv4Addresses(self.sessionId, self.assetId, self.domain, groupUid=j["uid"], l=l)
                                             ipv4s = {
-                                                "addresses": [ m.get("ipv4-address", "") for m in g["members"] ]
+                                                "addresses": l
                                             }
-
                                         if j["type"] == "address-range":
                                             r = AddressRange(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
                                             ipv4s = {
                                                 "ipv4-address-first": r["ipv4-address-first"],
                                                 "ipv4-address-last": r["ipv4-address-last"]
                                             }
-
                                         if j["type"] == "network":
                                             n = Network(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
                                             ipv4s = {
@@ -114,3 +113,27 @@ class VpnToServices:
     @staticmethod
     def usedModels() -> list:
         return ["object", "host", "ruleaccess", "roleaccess"]
+
+
+
+    ####################################################################################################################
+    # Private static methods
+    ####################################################################################################################
+
+    @staticmethod
+    def __groupIpv4Addresses(sessionId: str, assetId: int, domain: str, groupUid: str, l: list) -> None: # l: list.
+        group = Group(sessionId, assetId, domain, uid=groupUid).info()
+
+        for member in group["members"]:
+            if member["type"] == "group":
+                for m in member["members"]:
+                    o = Object(sessionId, assetId, domain, uid=m).info()
+
+                    if o["object"]["type"] == "host":
+                        l.append(o["object"]["ipv4-address"])
+
+                    if o["object"]["type"] == "group":
+                        VpnToServices.__groupIpv4Addresses(sessionId, assetId, domain, groupUid=m, l=l) # recurse.
+
+            if member["type"] == "host":
+                l.append(member["ipv4-address"])

@@ -142,8 +142,9 @@ class VpnToHost:
             #                                 "name": r["name"]
             #                             }
             #                         })
-            #             except CustomException:
-            #                 pass
+            #             except CustomException as e:
+            #                 if e.status == 400:
+            #                     pass
             #     except KeyError:
             #         pass
 
