@@ -1,6 +1,11 @@
 from checkpoint.models.CheckPoint.Role import Role
 from checkpoint.models.CheckPoint.Rule import Rule
 
+from checkpoint.models.CheckPoint.Host import Host
+from checkpoint.models.CheckPoint.Group import Group
+from checkpoint.models.CheckPoint.AddressRange import AddressRange
+from checkpoint.models.CheckPoint.Network import Network
+
 from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Log import Log
 
@@ -24,6 +29,7 @@ class VpnToServices:
 
     def __call__(self, *args, **kwargs) -> list:
         try:
+            no = 0
             services = list()
             rules = list()
 
@@ -32,25 +38,68 @@ class VpnToServices:
                 role = Role(self.sessionId, self.assetId, self.domain, uid=roleInformation["uid"])
                 w = role.whereUsed(indirect=True)
 
+                # Access control rules where role is used.
                 for j in ("used-directly", "used-indirectly"):
                     rules.extend(w[j].get("access-control-rules", []))
 
-                # Get roles from security rules.
                 for rule in rules:
                     if "layer" in rule and "rule" in rule:
                         ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=rule["layer"].get("uid", ""), uid=rule["rule"].get("uid", "")).info()
+
                         if "destination" in ruleAcl:
                             for j in ruleAcl["destination"]:
                                 if "uid" in j and "name" in j and "type" in j:
+                                    ipv4s = {}
+
+                                    try:
+                                        if j["type"] == "host":
+                                            h = Host(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
+                                            ipv4s = {
+                                                "address": h["ipv4-address"]
+                                            }
+
+                                        if j["type"] == "group":
+                                            g = Group(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
+                                            ipv4s = {
+                                                "addresses": [ m.get("ipv4-address", "") for m in g["members"] ]
+                                            }
+
+                                        if j["type"] == "address-range":
+                                            r = AddressRange(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
+                                            ipv4s = {
+                                                "ipv4-address-first": r["ipv4-address-first"],
+                                                "ipv4-address-last": r["ipv4-address-last"]
+                                            }
+
+                                        if j["type"] == "network":
+                                            n = Network(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
+                                            ipv4s = {
+                                                "network": n["subnet4"] + "/" + n["mask-length4"]
+                                            }
+                                    except KeyError:
+                                        pass
+
                                     services.append({
-                                        "uid": j["uid"],
-                                        "name": j["name"],
-                                        "type": j["type"],
+                                        j["uid"]: {
+                                            "name": j["name"],
+                                            "type": j["type"],
+                                            "ipv4": ipv4s
+                                        }
                                     })
+
+                                    if "service" in ruleAcl:
+                                        for s in ruleAcl["service"]:
+                                            if "port" in s and "protocol" in s:
+                                                services[no].update({
+                                                    "port": s["port"],
+                                                    "protocol": s["protocol"],
+                                                })
+                                            if "type" in s:
+                                                services[no].update({"type": s["type"]})
+
+                                    no += 1
             else:
                 raise CustomException(status=404, payload={"CheckPoint": "role not found"})
-
-            # @todo: more information for each entry.
 
             return services
         except Exception as e:
