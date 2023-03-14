@@ -101,19 +101,18 @@ class VpnToHost:
                                         if "NETWORK_LOCAL" not in j["name"]:
                                             rolesToIpv4.append({
                                                 j["uid"]: {
-                                                    "name": j["name"]
+                                                    "name": j["name"],
+                                                    "services": list()
                                                 }
                                             })
 
                                             if "service" in ruleAcl:
                                                 for s in ruleAcl["service"]:
-                                                    if "port" in s and "protocol" in s:
-                                                        rolesToIpv4[no].update({
-                                                            "port": s["port"],
-                                                            "protocol": s["protocol"],
-                                                        })
-                                                    if "type" in s:
-                                                        rolesToIpv4[no].update({"type": s["type"]})
+                                                    rolesToIpv4[no][j["uid"]]["services"].append({
+                                                        "type": s.get("type", ""),
+                                                        "port": s.get("port", ""),
+                                                        "protocol": s.get("protocol", ""),
+                                                    })
 
                                             no += 1
 

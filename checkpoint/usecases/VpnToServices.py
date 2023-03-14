@@ -43,60 +43,69 @@ class VpnToServices:
                 for j in ("used-directly", "used-indirectly"):
                     rules.extend(w[j].get("access-control-rules", []))
 
+                # Get destination information for each rule.
                 for rule in rules:
-                    if "layer" in rule and "rule" in rule:
-                        ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=rule["layer"].get("uid", ""), uid=rule["rule"].get("uid", "")).info()
+                    ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=rule.get("layer", {}).get("uid", ""), uid=rule.get("rule", {}).get("uid", "")).info()
+                    for j in ruleAcl.get("destination", []):
+                        try:
+                            ipv4s = {}
 
-                        if "destination" in ruleAcl:
-                            for j in ruleAcl["destination"]:
-                                if "uid" in j and "name" in j and "type" in j:
-                                    ipv4s = {}
+                            # Get Ipv4 addresses depending on destination type.
+                            if j["type"] == "host":
+                                h = Host(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
+                                ipv4s = {
+                                    "address": h["ipv4-address"]
+                                }
+                            if j["type"] == "group":
+                                l = []
+                                VpnToServices.__groupIpv4Addresses(self.sessionId, self.assetId, self.domain, groupUid=j["uid"], l=l)
+                                ipv4s = {
+                                    "addresses": l
+                                }
+                            if j["type"] == "address-range":
+                                r = AddressRange(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
+                                ipv4s = {
+                                    "ipv4-address-first": r["ipv4-address-first"],
+                                    "ipv4-address-last": r["ipv4-address-last"]
+                                }
+                            if j["type"] == "network":
+                                n = Network(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
+                                ipv4s = {
+                                    "network": n["subnet4"] + "/" + n["mask-length4"]
+                                }
 
-                                    try:
-                                        if j["type"] == "host":
-                                            h = Host(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
-                                            ipv4s = {
-                                                "address": h["ipv4-address"]
-                                            }
-                                        if j["type"] == "group":
-                                            l = []
-                                            VpnToServices.__groupIpv4Addresses(self.sessionId, self.assetId, self.domain, groupUid=j["uid"], l=l)
-                                            ipv4s = {
-                                                "addresses": l
-                                            }
-                                        if j["type"] == "address-range":
-                                            r = AddressRange(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
-                                            ipv4s = {
-                                                "ipv4-address-first": r["ipv4-address-first"],
-                                                "ipv4-address-last": r["ipv4-address-last"]
-                                            }
-                                        if j["type"] == "network":
-                                            n = Network(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
-                                            ipv4s = {
-                                                "network": n["subnet4"] + "/" + n["mask-length4"]
-                                            }
-                                    except KeyError:
-                                        pass
+                            services.append({
+                                j["uid"]: {
+                                    "name": j["name"],
+                                    "type": j["type"],
+                                    "ipv4": ipv4s,
+                                    "services": list()
+                                }
+                            })
 
-                                    services.append({
-                                        j["uid"]: {
-                                            "name": j["name"],
-                                            "type": j["type"],
-                                            "ipv4": ipv4s
-                                        }
-                                    })
-
-                                    if "service" in ruleAcl:
-                                        for s in ruleAcl["service"]:
-                                            if "port" in s and "protocol" in s:
-                                                services[no].update({
-                                                    "port": s["port"],
-                                                    "protocol": s["protocol"],
+                            # Add port/protocol information to services data structure.
+                            if "service" in ruleAcl:
+                                for s in ruleAcl["service"]:
+                                    if "type" in s:
+                                        if s["type"] == "service-group":
+                                            for member in s["members"]:
+                                                o = Object(self.sessionId, self.assetId, self.domain, uid=member).info()["object"]
+                                                services[no][j["uid"]]["services"].append({
+                                                    "type": o.get("type", ""),
+                                                    "port": o.get("port", ""),
+                                                    "protocol": o.get("protocol", ""),
                                                 })
-                                            if "type" in s:
-                                                services[no].update({"type": s["type"]})
+                                        else:
+                                            services[no][j["uid"]]["services"].append({
+                                                "type": s.get("type", ""),
+                                                "port": s.get("port", ""),
+                                                "protocol": s.get("protocol", ""),
+                                            })
 
-                                    no += 1
+
+                            no += 1
+                        except KeyError:
+                            pass
             else:
                 raise CustomException(status=404, payload={"CheckPoint": "role not found"})
 
