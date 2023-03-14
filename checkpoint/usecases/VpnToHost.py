@@ -3,6 +3,7 @@ import ipaddress
 from checkpoint.models.CheckPoint.Host import Host
 from checkpoint.models.CheckPoint.Layer import Layer
 from checkpoint.models.CheckPoint.Rule import Rule
+from checkpoint.models.CheckPoint.Role import Role
 from checkpoint.models.CheckPoint.Network import Network
 from checkpoint.models.CheckPoint.AddressRange import AddressRange
 
@@ -78,17 +79,6 @@ class VpnToHost:
                             if e.status == 404:
                                 pass
 
-            # layers = Layer.listQuick(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain)
-            # for l in layers:
-            #     acls.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
-            #         filter="dst:" + self.ipv4Address,
-            #         filterSettings={
-            #         "search-mode": "packet",
-            #         "packet-search-settings": {
-            #             "match-on-any": True
-            #         }
-            #     }))
-
             # Information from collected security rules (if belonging to the package self.package).
             for acl in acls:
                 aclInfo = dict()
@@ -125,6 +115,35 @@ class VpnToHost:
                                                     rolesToIpv4[no].update({"type": s["type"]})
 
                                         no += 1
+
+            # Alternative approach.
+            # layers = Layer.listQuick(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain)
+            # for l in layers:
+            #     acls.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
+            #         filter="dst:" + self.ipv4Address,
+            #         filterSettings={
+            #         "search-mode": "packet",
+            #         "packet-search-settings": {
+            #             "match-on-any": True
+            #         }
+            #     }))
+            #
+            # for rb in acls:
+            #     try:
+            #         for el in rb["rulebase"]:
+            #             try:
+            #                 for s in el["source"]:
+            #                     r = Role(sessionId=self.sessionId, assetId=self.assetId, domain=self.domain, uid=s).info()
+            #                     if "uid" in r and "name" in r:
+            #                         rolesToIpv4.append({
+            #                             r["uid"]: {
+            #                                 "name": r["name"]
+            #                             }
+            #                         })
+            #             except CustomException:
+            #                 pass
+            #     except KeyError:
+            #         pass
 
             return rolesToIpv4
         except Exception as e:
