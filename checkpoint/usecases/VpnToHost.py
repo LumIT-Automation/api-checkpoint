@@ -98,25 +98,27 @@ class VpnToHost:
                             for j in ruleAcl["source"]:
                                 if j.get("type", "") == "access-role":
                                     if "uid" in j and "name" in j:
-                                        rolesToIpv4.append({
-                                            j["uid"]: {
-                                                "name": j["name"]
-                                            }
-                                        })
+                                        if "NETWORK_LOCAL" not in j["name"]:
+                                            rolesToIpv4.append({
+                                                j["uid"]: {
+                                                    "name": j["name"]
+                                                }
+                                            })
 
-                                        if "service" in ruleAcl:
-                                            for s in ruleAcl["service"]:
-                                                if "port" in s and "protocol" in s:
-                                                    rolesToIpv4[no].update({
-                                                        "port": s["port"],
-                                                        "protocol": s["protocol"],
-                                                    })
-                                                if "type" in s:
-                                                    rolesToIpv4[no].update({"type": s["type"]})
+                                            if "service" in ruleAcl:
+                                                for s in ruleAcl["service"]:
+                                                    if "port" in s and "protocol" in s:
+                                                        rolesToIpv4[no].update({
+                                                            "port": s["port"],
+                                                            "protocol": s["protocol"],
+                                                        })
+                                                    if "type" in s:
+                                                        rolesToIpv4[no].update({"type": s["type"]})
 
-                                        no += 1
+                                            no += 1
 
             # Alternative approach.
+            # Find all access control rules with self.ipv4Address as destination.
             # layers = Layer.listQuick(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain)
             # for l in layers:
             #     acls.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
