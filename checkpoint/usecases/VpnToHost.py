@@ -130,7 +130,7 @@ class VpnToHost:
                                     pass
 
             # Alternative approach.
-            # Find all access control rules with self.ipv4Address as destination.
+            # Find all access control rules (of all layers) with self.ipv4Address as destination.
             # layers = Layer.listQuick(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain)
             # for l in layers:
             #     acls.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],

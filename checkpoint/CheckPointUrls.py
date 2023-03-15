@@ -6,7 +6,7 @@ from .controllers.CheckPoint import CheckPointGateways
 from .controllers.Permission import Authorizations, IdentityGroups, IdentityGroup, Roles, Permission, Permissions
 from .controllers.CheckPoint import Domain, Domains
 from .controllers.CheckPoint import Sessions
-from .controllers.CheckPoint import Object, Objects
+from .controllers.CheckPoint import Object, ObjectUsed, ObjectsUnused
 from .controllers.CheckPoint import Network, Networks
 from .controllers.CheckPoint import AddressRanges, AddressRange
 from .controllers.CheckPoint import DatacenterServers, DatacenterServer
@@ -62,8 +62,9 @@ urlpatterns = [
     path('<int:assetId>/<str:domain>/sessions/', Sessions.CheckPointSessionsController.as_view(), name='sessions'),
 
     # Objects.
-    path('<int:assetId>/<str:domain>/object/<str:objectUid>/where-used/', Object.CheckPointObjectWhereUsedController.as_view(), name='object-where-used'),
-    path('<int:assetId>/<str:domain>/objects/unused/', Objects.CheckPointObjectsUnusedController.as_view(), name='objects-unused'),
+    path('<int:assetId>/<str:domain>/object/<str:objectUid>/', Object.CheckPointObjectController.as_view(), name='object'),
+    path('<int:assetId>/<str:domain>/object/<str:objectUid>/where-used/', ObjectUsed.CheckPointObjectWhereUsedController.as_view(), name='object-where-used'),
+    path('<int:assetId>/<str:domain>/objects/unused/', ObjectsUnused.CheckPointObjectsUnusedController.as_view(), name='objects-unused'),
 
     # Networks.
     path('<int:assetId>/<str:domain>/networks/', Networks.CheckPointNetworksController.as_view(), name='networks'),

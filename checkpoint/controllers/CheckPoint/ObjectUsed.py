@@ -6,7 +6,7 @@ from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
 
 
-class CheckPointObjectController(CustomControllerCheckPointGetInfo):
+class CheckPointObjectWhereUsedController(CustomControllerCheckPointGetInfo):
     def __init__(self, *args, **kwargs):
         CustomControllerCheckPointGetInfo.__init__(self, subject="object", *args, **kwargs)
 
@@ -17,7 +17,7 @@ class CheckPointObjectController(CustomControllerCheckPointGetInfo):
             assetId=assetId,
             domain=domain,
             objectUid=objectUid,
-            actionCallback=lambda: Object(sessionId="", assetId=assetId, domain=domain, uid=objectUid).info(),
+            actionCallback=lambda: Object(sessionId="", assetId=assetId, domain=domain, uid=objectUid).whereUsed(),
             permission={
                 "args": {
                     "assetId": assetId,

@@ -996,7 +996,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"data\": {\n        \"name\": \"NETWORK_LOCAL Access Role\"\n    }\n}",
+									"raw": "{\n    \"data\": {\n        \"name\": \"VPN_CONS_HD Access Role\"\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -6636,6 +6636,43 @@
 								"SHARED-SERVICES",
 								"task",
 								"01234567-89ab-cdef-b254-e87514387b19",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "object",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{jwttoken}}"
+							}
+						],
+						"url": {
+							"raw": "http://10.0.111.26/api/v1/checkpoint/1/SHARED-SERVICES/object/aace093d-631c-4c8d-9257-9fc3da0c2d69/",
+							"protocol": "http",
+							"host": [
+								"10",
+								"0",
+								"111",
+								"26"
+							],
+							"path": [
+								"api",
+								"v1",
+								"checkpoint",
+								"1",
+								"SHARED-SERVICES",
+								"object",
+								"aace093d-631c-4c8d-9257-9fc3da0c2d69",
 								""
 							]
 						}
