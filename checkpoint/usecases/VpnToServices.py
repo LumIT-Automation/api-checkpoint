@@ -102,7 +102,6 @@ class VpnToServices:
                                                 "protocol": s.get("protocol", ""),
                                             })
 
-
                             no += 1
                         except KeyError:
                             pass
@@ -121,7 +120,7 @@ class VpnToServices:
 
     @staticmethod
     def usedModels() -> list:
-        return ["object", "host", "ruleaccess", "roleaccess"]
+        return ["object", "host", "address_range", "network", "group", "ruleaccess", "roleaccess"]
 
 
 

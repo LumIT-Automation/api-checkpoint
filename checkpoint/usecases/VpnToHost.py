@@ -1,5 +1,6 @@
 import ipaddress
 
+from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.Host import Host
 from checkpoint.models.CheckPoint.Layer import Layer
 from checkpoint.models.CheckPoint.Rule import Rule
@@ -92,29 +93,41 @@ class VpnToHost:
 
                     ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=aclInfo["layer"]["uid"], uid=aclInfo["rule"]["uid"]).info()
 
-                    # Collect information for all source (active) access roles.
+                    # Collect information for all (active) source access roles.
                     if ruleAcl.get("enabled", False):
-                        if "source" in ruleAcl:
-                            for j in ruleAcl["source"]:
-                                if j.get("type", "") == "access-role":
-                                    if "uid" in j and "name" in j:
-                                        if "NETWORK_LOCAL" not in j["name"]:
-                                            rolesToIpv4.append({
-                                                j["uid"]: {
-                                                    "name": j["name"],
-                                                    "services": list()
+                        for j in ruleAcl.get("source", []):
+                            if j.get("type", "") == "access-role":
+                                try:
+                                    # Output only access roles related to a domain.
+                                    output = False
+                                    for u in j.get("users", []):
+                                        o = Object(self.sessionId, self.assetId, self.domain, uid=u).info()["object"]
+                                        if "dn" in o:
+                                            output = True
+                                            break
+
+                                    if output:
+                                        rolesToIpv4.append({
+                                            j["uid"]: {
+                                                "name": j["name"],
+                                                "services": list()
+                                            }
+                                        })
+
+                                        if "service" in ruleAcl:
+                                            for s in ruleAcl["service"]:
+                                                info = {
+                                                    "type": s.get("type", ""),
+                                                    "port": s.get("port", ""),
                                                 }
-                                            })
+                                                if "protocol" in s:
+                                                    info["protocol"] = s["protocol"]
 
-                                            if "service" in ruleAcl:
-                                                for s in ruleAcl["service"]:
-                                                    rolesToIpv4[no][j["uid"]]["services"].append({
-                                                        "type": s.get("type", ""),
-                                                        "port": s.get("port", ""),
-                                                        "protocol": s.get("protocol", ""),
-                                                    })
+                                                rolesToIpv4[no][j["uid"]]["services"].append(info)
 
-                                            no += 1
+                                        no += 1
+                                except KeyError:
+                                    pass
 
             # Alternative approach.
             # Find all access control rules with self.ipv4Address as destination.
