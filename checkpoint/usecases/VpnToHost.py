@@ -82,16 +82,8 @@ class VpnToHost:
 
             # Information from collected security rules (if belonging to the package self.package).
             for acl in acls:
-                aclInfo = dict()
-
                 if acl.get("package", {}).get("name", "") == self.package:
-                    for el in ("rule", "layer"):
-                        aclInfo[el] = {
-                            "uid": acl.get(str(el), {}).get("uid", ""),
-                            "name": acl.get(str(el), {}).get("name", ""),
-                        }
-
-                    ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=aclInfo["layer"]["uid"], uid=aclInfo["rule"]["uid"]).info()
+                    ruleAcl = Object(self.sessionId, self.assetId, self.domain, uid=acl["rule"]["uid"]).info()["object"]
 
                     # Collect information for all (active) source access roles.
                     if ruleAcl.get("enabled", False):
@@ -129,11 +121,12 @@ class VpnToHost:
                                 except KeyError:
                                     pass
 
-            # Alternative approach.
-            # Find all access control rules (of all layers) with self.ipv4Address as destination.
+            # # Alternative approach.
+            # # Find all access control rules (of all layers) with self.ipv4Address as destination.
+            # accessSections = list()
             # layers = Layer.listQuick(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain)
             # for l in layers:
-            #     acls.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
+            #     accessSections.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
             #         filter="dst:" + self.ipv4Address,
             #         filterSettings={
             #         "search-mode": "packet",
@@ -142,23 +135,53 @@ class VpnToHost:
             #         }
             #     }))
             #
-            # for rb in acls:
-            #     try:
-            #         for el in rb["rulebase"]:
-            #             try:
-            #                 for s in el["source"]:
-            #                     r = Role(sessionId=self.sessionId, assetId=self.assetId, domain=self.domain, uid=s).info()
-            #                     if "uid" in r and "name" in r:
-            #                         rolesToIpv4.append({
-            #                             r["uid"]: {
-            #                                 "name": r["name"]
-            #                             }
-            #                         })
-            #             except CustomException as e:
-            #                 if e.status == 400:
-            #                     pass
-            #     except KeyError:
-            #         pass
+            # for ac in accessSections:
+            #     if "rulebase" in ac:
+            #         acls.extend(ac["rulebase"])
+            #
+            # # Information from collected security rules (if belonging to the package self.package).
+            # for acl in acls:
+            #     aclInfo = dict()
+            #
+            #     #if acl.get("package", {}).get("name", "") == self.package:
+            #     if True:
+            #         ruleAcl = Object(self.sessionId, self.assetId, self.domain, uid=acl["uid"]).info()["object"]
+            #
+            #         # Collect information for all (active) source access roles.
+            #         if ruleAcl.get("enabled", False):
+            #             for j in ruleAcl.get("source", []):
+            #                 if j.get("type", "") == "access-role":
+            #                     try:
+            #                         # Output only access roles related to a domain.
+            #                         output = False
+            #                         for u in j.get("users", []):
+            #                             o = Object(self.sessionId, self.assetId, self.domain, uid=u).info()["object"]
+            #                             if "dn" in o:
+            #                                 output = True
+            #                                 break
+            #
+            #                         if output:
+            #                             rolesToIpv4.append({
+            #                                 j["uid"]: {
+            #                                     "name": j["name"],
+            #                                     "services": list()
+            #                                 }
+            #                             })
+            #
+            #                             if "service" in ruleAcl:
+            #                                 for s in ruleAcl["service"]:
+            #                                     info = {
+            #                                         "type": s.get("type", ""),
+            #                                         "port": s.get("port", ""),
+            #                                     }
+            #                                     if "protocol" in s:
+            #                                         info["protocol"] = s["protocol"]
+            #
+            #                                     rolesToIpv4[no][j["uid"]]["services"].append(info)
+            #
+            #                             no += 1
+            #                     except KeyError:
+            #                         pass
 
             return rolesToIpv4
         except Exception as e:
