@@ -2,6 +2,7 @@ import ipaddress
 
 from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.Host import Host
+from checkpoint.models.CheckPoint.PolicyPackage import PolicyPackage
 from checkpoint.models.CheckPoint.Layer import Layer
 from checkpoint.models.CheckPoint.Network import Network
 from checkpoint.models.CheckPoint.AddressRange import AddressRange
@@ -32,69 +33,75 @@ class VpnToHost:
     def __call__(self, *args, **kwargs) -> list:
         try:
             no = 0
+            accessSections = list()
             rolesToIpv4 = list()
             acls = list()
 
-            # Security rules which directly or indirectly reach the host.
-            hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, self.domain, self.ipv4Address, localOnly=False)
-            if hostsWithIpv4:
-                for h in hostsWithIpv4:
-                    if "uid" in h and h["uid"]:
-                        host = Host(self.sessionId, assetId=self.assetId, domain=self.domain, uid=h["uid"])
-
-                        w = host.whereUsed(indirect=True)
-                        for j in ("used-directly", "used-indirectly"):
-                            acls.extend(w[j].get("access-control-rules", []))
-
-            # Security rules which reach the network(s) containing the IPv4.
-            networks = Network.listQuick(self.sessionId, self.assetId, self.domain, localOnly=False)
-            for network in networks:
-                if "subnet4" in network and "mask-length4" in network:
-                    # If Ipv4 within network.
-                    if ipaddress.ip_address(self.ipv4Address) in ipaddress.ip_network(network["subnet4"] + "/" + str(network["mask-length4"])):
-                        oNetwork = Network(self.sessionId, self.assetId, self.domain, uid=network["uid"])
-
-                        try:
-                            w = oNetwork.whereUsed(indirect=True)
-                            for j in ("used-directly", "used-indirectly"):
-                                acls.extend(w[j].get("access-control-rules", []))
-                        except CustomException as e:
-                            if e.status == 404:
-                                pass
-
-            # Security rules which reach the address range(s) containing the IPv4.
-            ranges = AddressRange.listQuick(self.sessionId, self.assetId, self.domain, localOnly=False)
-            for r in ranges:
-                if "ipv4-address-first" in r and "ipv4-address-last" in r:
-                    # If Ipv4 within address range.
-                    if NetworkHelper.ipv4InRange(self.ipv4Address, r["ipv4-address-first"], r["ipv4-address-last"]):
-                        oAddressRange = AddressRange(self.sessionId, self.assetId, domain=self.domain, uid=r["uid"])
-
-                        try:
-                            w = oAddressRange.whereUsed(indirect=True)
-                            for j in ("used-directly", "used-indirectly"):
-                                acls.extend(w[j].get("access-control-rules", []))
-                        except CustomException as e:
-                            if e.status == 404:
-                                pass
-
-            # # Alternative approach for collecting acls.
-            # # Find all access control rules (of all layers) with self.ipv4Address as destination.
-            # accessSections = list()
-            # layers = Layer.listQuick(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain)
-            # for l in layers:
-            #     accessSections.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
-            #         filter="dst:" + self.ipv4Address,
-            #         filterSettings={
-            #         "search-mode": "packet",
-            #         "packet-search-settings": {
-            #             "match-on-any": True
-            #         }
-            #     }))
+            # # Security rules which directly or indirectly reach the host.
+            # hostsWithIpv4 = Host.searchByIpv4Addresses(self.sessionId, self.assetId, self.domain, self.ipv4Address, localOnly=False)
+            # if hostsWithIpv4:
+            #     for h in hostsWithIpv4:
+            #         if "uid" in h and h["uid"]:
+            #             host = Host(self.sessionId, assetId=self.assetId, domain=self.domain, uid=h["uid"])
             #
-            # for ac in accessSections:
-            #     if "rulebase" in ac:
-            #         acls.extend(ac["rulebase"])
+            #             w = host.whereUsed(indirect=True)
+            #             for j in ("used-directly", "used-indirectly"):
+            #                 acls.extend(w[j].get("access-control-rules", []))
+            #
+            # # Security rules which reach the network(s) containing the IPv4.
+            # networks = Network.listQuick(self.sessionId, self.assetId, self.domain, localOnly=False)
+            # for network in networks:
+            #     if "subnet4" in network and "mask-length4" in network:
+            #         # If Ipv4 within network.
+            #         if ipaddress.ip_address(self.ipv4Address) in ipaddress.ip_network(network["subnet4"] + "/" + str(network["mask-length4"])):
+            #             oNetwork = Network(self.sessionId, self.assetId, self.domain, uid=network["uid"])
+            #
+            #             try:
+            #                 w = oNetwork.whereUsed(indirect=True)
+            #                 for j in ("used-directly", "used-indirectly"):
+            #                     acls.extend(w[j].get("access-control-rules", []))
+            #             except CustomException as e:
+            #                 if e.status == 404:
+            #                     pass
+            #
+            # # Security rules which reach the address range(s) containing the IPv4.
+            # ranges = AddressRange.listQuick(self.sessionId, self.assetId, self.domain, localOnly=False)
+            # for r in ranges:
+            #     if "ipv4-address-first" in r and "ipv4-address-last" in r:
+            #         # If Ipv4 within address range.
+            #         if NetworkHelper.ipv4InRange(self.ipv4Address, r["ipv4-address-first"], r["ipv4-address-last"]):
+            #             oAddressRange = AddressRange(self.sessionId, self.assetId, domain=self.domain, uid=r["uid"])
+            #
+            #             try:
+            #                 w = oAddressRange.whereUsed(indirect=True)
+            #                 for j in ("used-directly", "used-indirectly"):
+            #                     acls.extend(w[j].get("access-control-rules", []))
+            #             except CustomException as e:
+            #                 if e.status == 404:
+            #                     pass
+
+            # Alternative approach for collecting acls.
+            # Find all access control rules of the layers corresponding to self.package with self.ipv4Address as destination.
+            policyPackageUid = list(filter(
+                lambda pp: pp.get("name", "") == self.package,
+                PolicyPackage.listQuick(sessionId=self.sessionId, assetId=self.assetId, domain=self.domain)
+            ))
+
+            layers = Object(self.sessionId, self.assetId, self.domain, uid=policyPackageUid[0]["uid"]).info().get("object", {}).get("access-layers", [])
+            for l in layers:
+                accessSections.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
+                    filter="dst:" + self.ipv4Address,
+                    filterSettings={
+                        "search-mode": "packet",
+                        "packet-search-settings": {
+                            "match-on-any": True
+                        }
+                    }
+                ))
+
+            for ac in accessSections:
+                if "rulebase" in ac:
+                    acls.extend(ac["rulebase"])
 
             # Information from collected security rules (if belonging to the package self.package).
             for acl in acls:
@@ -127,8 +134,10 @@ class VpnToHost:
                                             for s in ruleAcl["service"]:
                                                 info = {
                                                     "type": s.get("type", ""),
-                                                    "port": s.get("port", ""),
                                                 }
+
+                                                if "port" in s:
+                                                    info["port"] = s["port"]
                                                 if "protocol" in s:
                                                     info["protocol"] = s["protocol"]
 
