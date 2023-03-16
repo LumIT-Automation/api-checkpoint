@@ -71,7 +71,7 @@ class VpnToServices:
                             if j["type"] == "network":
                                 n = Network(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
                                 ipv4s = {
-                                    "network": n["subnet4"] + "/" + n["mask-length4"]
+                                    "network": str(n["subnet4"]) + "/" + str(n["mask-length4"])
                                 }
 
                             services.append({
