@@ -113,7 +113,7 @@ class VpnToServices:
                 for k, v in service.items():
                     services[j] = dict()
 
-                    services[j]["id"] = k
+                    services[j]["uid"] = k
                     services[j].update(v)
 
             return services

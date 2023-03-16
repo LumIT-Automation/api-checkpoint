@@ -152,7 +152,7 @@ class VpnToHost:
                 for k, v in service.items():
                     rolesToIpv4[j] = dict()
 
-                    rolesToIpv4[j]["id"] = k
+                    rolesToIpv4[j]["uid"] = k
                     rolesToIpv4[j].update(v)
 
             return rolesToIpv4
