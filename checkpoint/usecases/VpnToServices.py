@@ -108,6 +108,14 @@ class VpnToServices:
             else:
                 raise CustomException(status=404, payload={"CheckPoint": "role not found"})
 
+            # Cleanup data structure.
+            for j, service in enumerate(services):
+                for k, v in service.items():
+                    services[j] = dict()
+
+                    services[j]["id"] = k
+                    services[j].update(v)
+
             return services
         except Exception as e:
             raise e

@@ -147,6 +147,14 @@ class VpnToHost:
                                 except KeyError:
                                     pass
 
+            # Cleanup data structure.
+            for j, service in enumerate(rolesToIpv4):
+                for k, v in service.items():
+                    rolesToIpv4[j] = dict()
+
+                    rolesToIpv4[j]["id"] = k
+                    rolesToIpv4[j].update(v)
+
             return rolesToIpv4
         except Exception as e:
             raise e
