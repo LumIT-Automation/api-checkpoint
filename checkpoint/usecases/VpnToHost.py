@@ -81,7 +81,7 @@ class VpnToHost:
             #                     pass
 
             # Alternative approach for collecting acls.
-            # Find all access control rules of the layers corresponding to self.package with self.ipv4Address as destination.
+            # Find all access control rules (of the layers corresponding to self.package) with self.ipv4Address as destination.
             policyPackageUid = list(filter(
                 lambda pp: pp.get("name", "") == self.package,
                 PolicyPackage.listQuick(sessionId=self.sessionId, assetId=self.assetId, domain=self.domain)
@@ -103,7 +103,7 @@ class VpnToHost:
                 if "rulebase" in ac:
                     acls.extend(ac["rulebase"])
 
-            # Information from collected security rules (if belonging to the package self.package).
+            # Information from collected security rules.
             for acl in acls:
                 #if acl.get("package", {}).get("name", "") == self.package:
                 if True:
@@ -155,7 +155,7 @@ class VpnToHost:
                     rolesToIpv4[j]["uid"] = k
                     rolesToIpv4[j].update(v)
 
-            return rolesToIpv4
+            return list({v['uid']: v for v in rolesToIpv4}.values()) # unique uids.
         except Exception as e:
             raise e
 
