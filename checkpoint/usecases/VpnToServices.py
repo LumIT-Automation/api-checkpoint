@@ -116,7 +116,7 @@ class VpnToServices:
                     services[j]["uid"] = k
                     services[j].update(v)
 
-            return services
+            return list({v['uid']: v for v in services}.values()) # unique uids.
         except Exception as e:
             raise e
 
