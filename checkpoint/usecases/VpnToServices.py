@@ -65,7 +65,10 @@ class VpnToServices:
                             if j["type"] == "address-range":
                                 r = AddressRange(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
                                 ipv4s = {
-                                    "range": r["ipv4-address-first"] + " - " + r["ipv4-address-last"]
+                                    "range": [
+                                        r["ipv4-address-first"],
+                                        r["ipv4-address-last"]
+                                    ]
                                 }
                             if j["type"] == "network":
                                 n = Network(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()

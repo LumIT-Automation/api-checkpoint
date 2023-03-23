@@ -132,14 +132,19 @@ class VpnToHost:
 
                                         if "service" in ruleAcl:
                                             for s in ruleAcl["service"]:
+                                                stype = s.get("type", "")
                                                 info = {
-                                                    "type": s.get("type", ""),
+                                                    "type": stype,
                                                 }
 
                                                 if "port" in s:
                                                     info["port"] = s["port"]
                                                 if "protocol" in s:
                                                     info["protocol"] = s["protocol"]
+
+                                                if stype == "CpmiAnyObject":
+                                                    info["type"] = ""
+                                                    info["port"] = "any"
 
                                                 rolesToIpv4[no][j["uid"]]["services"].append(info)
 
