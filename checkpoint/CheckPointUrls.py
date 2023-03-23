@@ -32,6 +32,7 @@ from .controllers.CheckPoint import NatRuleObjects
 from .controllers.CheckPoint import Roles as CheckPointRoles, Role as CheckPointRole
 from .controllers.CheckPoint import LayersAccess, LayersThreat, LayersHttps, LayerAccess, LayerThreat, LayerHttps
 from .controllers.CheckPoint import User
+from .controllers.Configuration import Configuration
 from .controllers.History import History
 
 
@@ -45,6 +46,8 @@ urlpatterns = [
     path('permission/<int:permissionId>/', Permission.PermissionController.as_view(), name='permission'),
 
     path('authorizations/', Authorizations.AuthorizationsController.as_view(), name='authorizations'),
+
+    path('configuration/<str:configType>/', Configuration.ConfigurationController.as_view(), name='configuration'),
 
     # Asset.
     path('assets/', Assets.CheckPointAssetsController.as_view(), name='checkpoint-assets'),

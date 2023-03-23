@@ -22,6 +22,13 @@ SET time_zone = "+00:00";
 --
 
 --
+-- Dump dei dati per la tabella `configuration`
+--
+
+INSERT INTO `configuration` (`id`, `config_type`) VALUES
+(1, 'global');
+
+--
 -- Dump dei dati per la tabella `privilege`
 --
 
@@ -120,7 +127,8 @@ INSERT INTO `privilege` (`id`, `privilege`, `privilege_type`, `description`) VAL
 (92, 'datacenter_queries_post', 'object', NULL),
 (93, 'datacenter_query_get', 'object', NULL),
 (94, 'datacenter_query_delete', 'object', NULL),
-(95, 'datacenter_query_patch', 'object', NULL);
+(95, 'datacenter_query_patch', 'object', NULL),
+(96, 'configuration_put', 'global', NULL);
 
 --
 -- Dump dei dati per la tabella `role`
@@ -231,6 +239,7 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (1, 93),
 (1, 94),
 (1, 95),
+(1, 96),
 (2, 3),
 (2, 10),
 (2, 11),
