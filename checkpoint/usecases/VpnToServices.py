@@ -48,39 +48,37 @@ class VpnToServices:
                     ruleAcl = Rule(self.sessionId, "access", self.assetId, self.domain, layerUid=rule.get("layer", {}).get("uid", ""), uid=rule.get("rule", {}).get("uid", "")).info()
                     for j in ruleAcl.get("destination", []):
                         try:
-                            ipv4s = {}
+                            ipv4s = list()
 
                             # Get Ipv4 addresses depending on destination type.
                             if j["type"] == "host":
-                                h = Host(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
-                                ipv4s = {
-                                    "address": h["ipv4-address"]
-                                }
+                                ipv4s = [
+                                    Host(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()["ipv4-address"]
+                                ]
+
                             if j["type"] == "group":
                                 l = []
                                 VpnToServices.__groupIpv4Addresses(self.sessionId, self.assetId, self.domain, groupUid=j["uid"], l=l)
-                                ipv4s = {
-                                    "addresses": l
-                                }
+                                ipv4s = l
+
                             if j["type"] == "address-range":
                                 r = AddressRange(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
-                                ipv4s = {
-                                    "range": [
-                                        r["ipv4-address-first"],
-                                        r["ipv4-address-last"]
-                                    ]
-                                }
+                                ipv4s = [
+                                    r["ipv4-address-first"],
+                                    r["ipv4-address-last"]
+                                ]
+
                             if j["type"] == "network":
                                 n = Network(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
-                                ipv4s = {
-                                    "network": str(n["subnet4"]) + "/" + str(n["mask-length4"])
-                                }
+                                ipv4s = [
+                                    str(n["subnet4"]) + "/" + str(n["mask-length4"])
+                                ]
 
                             services.append({
                                 j["uid"]: {
                                     "name": j["name"],
                                     "type": j["type"],
-                                    "ipv4": ipv4s,
+                                    "ipv4s": ipv4s,
                                     "services": list()
                                 }
                             })
