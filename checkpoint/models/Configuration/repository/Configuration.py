@@ -36,7 +36,7 @@ class Configuration:
                 try:
                     o["configuration"] = json.loads(o["configuration"])
                 except JSONDecodeError:
-                    o["configuration"] = {}
+                    o["configuration"] = []
 
             return o
         except IndexError:
@@ -53,7 +53,7 @@ class Configuration:
         c = connection.cursor()
 
         if not configuration:
-            configuration = {}
+            configuration = []
 
         try:
             c.execute("UPDATE configuration SET configuration=%s WHERE id=%s", [

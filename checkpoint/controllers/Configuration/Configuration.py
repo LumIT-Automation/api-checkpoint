@@ -1,75 +1,41 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
+
+from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
+from checkpoint.controllers.CustomControllerPut import CustomControllerCheckPointUpdateAll
 
 from checkpoint.models.Configuration.Configuration import Configuration
-from checkpoint.models.Permission.Permission import Permission
 
 from checkpoint.serializers.Configuration.Configuration import ConfigurationSerializer as Serializer
 
-from checkpoint.controllers.CustomControllerBase import CustomControllerBase as CustomController
-from checkpoint.helpers.Log import Log
+
+class ConfigurationController(CustomControllerCheckPointGetInfo, CustomControllerCheckPointUpdateAll):
+    def __init__(self, *args, **kwargs):
+        super().__init__(subject="configuration", *args, **kwargs)
 
 
-class ConfigurationController(CustomController):
-    @staticmethod
-    def get(request: Request, configType: str) -> Response:
-        user = CustomController.loggedUser(request)
 
-        try:
-            Log.actionLog("Configuration read", user)
-
-            data = {
-                "data": CustomController.validate(
-                    Configuration(configType=configType).repr(),
-                    Serializer
-                ),
-                "href": request.get_full_path()
+    def get(self, request: Request, configType: str) -> Response:
+        return self.getInfo(
+            request=request,
+            objectUid=str(configType),
+            actionCallback=lambda: Configuration(configType=configType).repr(),
+            Serializer=Serializer,
+            permission={
+                "args": {}
             }
-
-            httpStatus = status.HTTP_200_OK
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(data, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        )
 
 
 
-    @staticmethod
-    def put(request: Request, configType: str) -> Response:
-        response = None
-        user = CustomController.loggedUser(request)
-
-        try:
-            if Permission.hasUserPermission(groups=user["groups"], action="configuration_put") or user["authDisabled"]:
-                Log.actionLog("Configuration modification", user)
-                Log.actionLog("User data: "+str(request.data), user)
-
-                serializer = Serializer(data=request.data["data"])
-                if serializer.is_valid():
-                    Configuration(configType=configType).rewrite(
-                        serializer.validated_data
-                    )
-
-                    httpStatus = status.HTTP_200_OK
-                else:
-                    httpStatus = status.HTTP_400_BAD_REQUEST
-                    response = {
-                        "checkpoint": {
-                            "error": str(serializer.errors)
-                        }
-                    }
-
-                    Log.actionLog("User data incorrect: "+str(response), user)
-            else:
-                httpStatus = status.HTTP_403_FORBIDDEN
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(response, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+    def put(self, request: Request, configType: str) -> Response:
+        return self.rewrite(
+            request=request,
+            assetId=0,
+            objectUid=str(configType),
+            Serializer=Serializer,
+            actionCallback=lambda data: Configuration(configType=configType).rewrite(data),
+            permission={
+                "args": {}
+            }
+        )
