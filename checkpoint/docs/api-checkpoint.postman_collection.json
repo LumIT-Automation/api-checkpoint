@@ -728,6 +728,84 @@
 			"name": "Checkpoint Concerto API",
 			"item": [
 				{
+					"name": "Configuration",
+					"item": [
+						{
+							"name": "configuration",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwttoken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://10.0.111.26/api/v1/checkpoint/configuration/global/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"111",
+										"26"
+									],
+									"path": [
+										"api",
+										"v1",
+										"checkpoint",
+										"configuration",
+										"global",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "configuration",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwttoken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"configuration\": [\n            {\n                \"key\": \"key1\",\n                \"value\": \"value1\"\n            },\n            {\n                \"key\": \"key2\",\n                \"value\": \"value2\"\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.111.26/api/v1/checkpoint/configuration/global/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"111",
+										"26"
+									],
+									"path": [
+										"api",
+										"v1",
+										"checkpoint",
+										"configuration",
+										"global",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Assets",
 					"item": [
 						{
