@@ -92,3 +92,63 @@ class CustomControllerCheckPointUpdateAll(CustomControllerBase):
         return Response(None, status=httpStatus, headers={
             "Cache-Control": "no-cache"
         })
+
+
+
+    def globalRewrite(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable = None, assetId: int = 0, objectType: str = "") -> Response:
+        Serializer = Serializer or None
+
+        action = self.subject + "_put"
+        actionLog = f"{self.subject.capitalize()} {objectType} - rewrite".replace("  ", " ")
+        lockedObjectClass = self.subject + objectType
+
+        data = None
+        response = dict()
+        httpStatus = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+        try:
+            user = CustomControllerBase.loggedUser(request)
+            # Check if user has permission of doing <action> on asset (if specified).
+            if Permission.hasUserPermission(groups=user["groups"], action=action, **permission["args"]) or user["authDisabled"]:
+                Log.actionLog(actionLog, user)
+                Log.actionLog("User data: " + str(request.data), user)
+
+                if Serializer:
+                    serializer = Serializer(data=request.data["data"])
+                    if serializer.is_valid():
+                        data = serializer.validated_data
+                    else:
+                        httpStatus = status.HTTP_400_BAD_REQUEST
+                        response = {
+                            "CheckPoint": {
+                                "error": str(serializer.errors)
+                            }
+                        }
+                        Log.actionLog("User data incorrect: " + str(response), user)
+                else:
+                    data = request.data["data"]
+
+                    lock = Lock(lockedObjectClass, locals())
+                    if lock.isUnlocked():
+                        lock.lock()
+
+                        response["data"] = actionCallback(data)
+                        if not response["data"]:
+                            response = None
+                        httpStatus = status.HTTP_202_ACCEPTED
+
+                        lock.release()
+                    else:
+                        httpStatus = status.HTTP_423_LOCKED
+            else:
+                response = None
+                httpStatus = status.HTTP_403_FORBIDDEN
+        except Exception as e:
+            Lock(lockedObjectClass, locals()).release()
+
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(response, status=httpStatus, headers={
+            "Cache-Control": "no-cache"
+        })

@@ -25,7 +25,7 @@ class CustomControllerCheckPointGetInfo(CustomControllerBase):
 
 
 
-    def getInfo(self, request: Request, permission: dict, actionCallback: Callable, objectUid: str, assetId: int = 0, domain: str = "", objectType: str = "", Serializer: Callable = None) -> Response:
+    def getInfo(self, request: Request, permission: dict, actionCallback: Callable, objectUid: str = "", assetId: int = 0, domain: str = "", objectType: str = "", Serializer: Callable = None) -> Response:
         Serializer = Serializer or None
 
         action = self.subject + "_get" # example: host_get.
