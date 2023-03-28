@@ -11,11 +11,12 @@ class CheckPointIpsController(CustomControllerCheckPointGetInfo, CustomControlle
     def __init__(self, *args, **kwargs):
         super().__init__(subject="ips", *args, **kwargs)
 
-    def get(self, request: Request, assetId: int) -> Response:
+    def get(self, request: Request, assetId: int, domain: str) -> Response:
         return self.getInfo(
             request=request,
             assetId=assetId,
-            actionCallback=lambda: Ips(sessionId="", assetId=assetId).info(),
+            domain=domain,
+            actionCallback=lambda: Ips(sessionId="", assetId=assetId, domain=domain).info(),
             permission={
                 "args": {
                     "assetId": assetId
@@ -25,11 +26,12 @@ class CheckPointIpsController(CustomControllerCheckPointGetInfo, CustomControlle
 
 
 
-    def put(self, request: Request, assetId: int) -> Response:
-        return self.globalRewrite(
+    def put(self, request: Request, assetId: int, domain: str) -> Response:
+        return self.launchTask(
             request=request,
             assetId=assetId,
-            actionCallback=lambda data: Ips(sessionId=self.sessionId, assetId=assetId).runUpdate(data),
+            domain=domain,
+            actionCallback=lambda data: Ips(sessionId=self.sessionId, assetId=assetId, domain=domain).runUpdate(data),
             permission={
                 "args": {
                     "assetId": assetId

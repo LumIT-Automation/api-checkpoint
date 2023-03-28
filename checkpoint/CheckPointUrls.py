@@ -31,7 +31,7 @@ from .controllers.CheckPoint import NatRule, NatRulebase
 from .controllers.CheckPoint import NatRuleObjects
 from .controllers.CheckPoint import Roles as CheckPointRoles, Role as CheckPointRole
 from .controllers.CheckPoint import LayersAccess, LayersThreat, LayersHttps, LayerAccess, LayerThreat, LayerHttps
-from .controllers.CheckPoint import Ips, IpsSchedule
+from .controllers.CheckPoint import Ips, IpsAttributes, IpsSchedule
 from .controllers.CheckPoint import User
 from .controllers.Configuration import Configuration
 from .controllers.History import History
@@ -178,8 +178,9 @@ urlpatterns = [
     path('<int:assetId>/<str:domain>/access-role/<str:roleUid>/', CheckPointRole.CheckPointRoleController.as_view(), name='access-role'),
 
     # Ips.
-    path('<int:assetId>/ips/', Ips.CheckPointIpsController.as_view(), name='ips'),
-    path('<int:assetId>/ips-schedule/', IpsSchedule.CheckPointIpsScheduleController.as_view(), name='ips-schedule'),
+    path('<int:assetId>/<str:domain>/ips/', Ips.CheckPointIpsController.as_view(), name='ips'),
+    path('<int:assetId>/<str:domain>/ips-extended-attributes/', IpsAttributes.CheckPointIpsExtendedAttributesController.as_view(), name='ips-extended-attributes'),
+    path('<int:assetId>/<str:domain>/ips-schedule/', IpsSchedule.CheckPointIpsScheduleController.as_view(), name='ips-schedule'),
 
     # Users.
     path('<int:assetId>/<str:domain>/user/<str:userUid>/', User.CheckPointUserController.as_view(), name='user'),

@@ -95,12 +95,17 @@ class CustomControllerCheckPointUpdateAll(CustomControllerBase):
 
 
 
-    def globalRewrite(self, request: Request, permission: dict, actionCallback: Callable, Serializer: Callable = None, assetId: int = 0, objectType: str = "") -> Response:
+    def launchTask(self, request: Request, permission: dict, actionCallback: Callable, objectUid: str = "", Serializer: Callable = None, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
         Serializer = Serializer or None
 
         action = self.subject + "_put"
-        actionLog = f"{self.subject.capitalize()} {objectType} - rewrite".replace("  ", " ")
+        actionLog = f"{self.subject.capitalize()} {objectType} - rewrite: {domain} {objectUid}".replace("  ", " ")
         lockedObjectClass = self.subject + objectType
+
+        # Example:
+        #   subject: host
+        #   action: host_put
+        #   lockedObjectClass: host
 
         data = None
         response = dict()
@@ -108,7 +113,7 @@ class CustomControllerCheckPointUpdateAll(CustomControllerBase):
 
         try:
             user = CustomControllerBase.loggedUser(request)
-            # Check if user has permission of doing <action> on asset (if specified).
+            # Check if user has permission of doing <action> on asset (if specified) and partition (if specified).
             if Permission.hasUserPermission(groups=user["groups"], action=action, **permission["args"]) or user["authDisabled"]:
                 Log.actionLog(actionLog, user)
                 Log.actionLog("User data: " + str(request.data), user)
@@ -128,26 +133,36 @@ class CustomControllerCheckPointUpdateAll(CustomControllerBase):
                 else:
                     data = request.data["data"]
 
-                    lock = Lock(lockedObjectClass, locals())
-                    if lock.isUnlocked():
-                        lock.lock()
+                # Locking logic for a specific object, example: host:PUT:1:DOMAIN = 'objectUid',
+                # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.
 
-                        response["data"] = actionCallback(data)
-                        if not response["data"]:
-                            response = None
-                        httpStatus = status.HTTP_202_ACCEPTED
+                lock = Lock(lockedObjectClass, locals(), objectUid)
+                if lock.isUnlocked():
+                    lock.lock()
 
-                        lock.release()
-                    else:
-                        httpStatus = status.HTTP_423_LOCKED
+                    response["data"] = actionCallback(data)
+                    if not response["data"]:
+                        response = None
+                    httpStatus = status.HTTP_200_OK
+
+                    lock.release()
+                else:
+                    httpStatus = status.HTTP_423_LOCKED
             else:
-                response = None
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:
-            Lock(lockedObjectClass, locals()).release()
+            Lock(lockedObjectClass, locals(), objectUid).release()
 
             data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)
+        finally:
+            try:
+                if assetId:
+                    if httpStatus != status.HTTP_423_LOCKED and httpStatus != status.HTTP_400_BAD_REQUEST and httpStatus != status.HTTP_403_FORBIDDEN:
+                        time.sleep(0.5)
+                        Session(sessionId=self.sessionId, assetId=assetId, domain=domain).logout()
+            except Exception:
+                pass
 
         return Response(response, status=httpStatus, headers={
             "Cache-Control": "no-cache"

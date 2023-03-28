@@ -1,12 +1,15 @@
+from typing import List
+
 from checkpoint.models.CheckPoint.backend.Ips import Ips as Backend
 
 
 class Ips():
-    def __init__(self, sessionId: str, assetId: int, *args, **kwargs):
+    def __init__(self, sessionId: str, assetId: int, domain: str = "", *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.sessionId = sessionId
         self.assetId: int = int(assetId)
+        self.domain: str = domain
 
 
 
@@ -16,7 +19,7 @@ class Ips():
 
     def info(self) -> dict:
         try:
-            return Backend.info(self.sessionId, self.assetId)
+            return Backend.info(self.sessionId, self.assetId, self.domain)
         except Exception as e:
             raise e
 
@@ -26,6 +29,19 @@ class Ips():
         data = data or {}
 
         try:
-            return Backend.runUpdate(self.sessionId, self.assetId, data)
+            return Backend.runUpdate(self.sessionId, self.assetId, self.domain, data)
+        except Exception as e:
+            raise e
+
+
+
+    ####################################################################################################################
+    # Public static methods
+    ####################################################################################################################
+
+    @staticmethod
+    def listExtendedAttributes(sessionId: str, assetId: int, domain: str) -> list:
+        try:
+            return Backend.listExtendedAttributes(sessionId, assetId, domain)
         except Exception as e:
             raise e
