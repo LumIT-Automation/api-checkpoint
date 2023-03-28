@@ -24,6 +24,22 @@ class Ips:
 
 
     @staticmethod
+    def extendedAttributeInfo(sessionId: str, assetId: int, domain: str, attributeUid: str) -> dict:
+        try:
+            return ApiSupplicant(sessionId, assetId).post(
+                urlSegment="show-ips-protection-extended-attribute",
+                domain=domain,
+                data = {
+                    "uid": attributeUid,
+                    "details-level": "full"
+                }
+            )
+        except Exception as e:
+            raise e
+
+
+
+    @staticmethod
     def runUpdate(sessionId: str, assetId: int, domain: str, data: dict = None) -> dict:
         data = data or {}
 

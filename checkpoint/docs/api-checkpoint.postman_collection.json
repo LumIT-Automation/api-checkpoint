@@ -6666,7 +6666,44 @@
 									"response": []
 								},
 								{
-									"name": "ips extended attributes",
+									"name": "ips extended attribute",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/ips-extended-attribute/2a1d7bbf-a4ef-1e40-a014-955e1edf2a49/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"ips-extended-attribute",
+												"2a1d7bbf-a4ef-1e40-a014-955e1edf2a49",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "ips extended attributes Copy",
 									"request": {
 										"auth": {
 											"type": "noauth"

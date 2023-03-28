@@ -25,6 +25,14 @@ class Ips():
 
 
 
+    def extendedAttributeInfo(self, attributeUid: str) -> dict:
+        try:
+            return Backend.extendedAttributeInfo(self.sessionId, self.assetId, self.domain, attributeUid=attributeUid)
+        except Exception as e:
+            raise e
+
+
+
     def runUpdate(self, data: dict = None) -> dict:
         data = data or {}
 
