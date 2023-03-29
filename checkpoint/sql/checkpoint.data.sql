@@ -128,7 +128,13 @@ INSERT INTO `privilege` (`id`, `privilege`, `privilege_type`, `description`) VAL
 (93, 'datacenter_query_get', 'object', NULL),
 (94, 'datacenter_query_delete', 'object', NULL),
 (95, 'datacenter_query_patch', 'object', NULL),
-(96, 'configuration_put', 'global', NULL);
+(96, 'configuration_put', 'global', NULL),
+(97, 'ips_get', 'asset', NULL),
+(98, 'ips_update_put', 'asset', NULL),
+(99, 'ips_schedule_get', 'asset', NULL),
+(100, 'ips_schedule_patch', 'asset', NULL),
+(101, 'ips_attribute_put', 'asset', NULL),
+(102, 'ips_attributes_get', 'asset', NULL);
 
 --
 -- Dump dei dati per la tabella `role`
@@ -240,6 +246,12 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (1, 94),
 (1, 95),
 (1, 96),
+(1, 97),
+(1, 98),
+(1, 99),
+(1, 100),
+(1, 101),
+(1, 102),
 (2, 3),
 (2, 10),
 (2, 11),
@@ -323,6 +335,12 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (2, 93),
 (2, 94),
 (2, 95),
+(2, 97),
+(2, 98),
+(2, 99),
+(2, 100),
+(2, 101),
+(2, 102),
 (3, 3),
 (3, 10),
 (3, 11),
@@ -363,6 +381,9 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (3, 88),
 (3, 91),
 (3, 93),
+(3, 97),
+(3, 99),
+(3, 102),
 (4, 3),
 (4, 10),
 (4, 11),
@@ -439,7 +460,24 @@ INSERT INTO `role_privilege` (`id_role`, `id_privilege`) VALUES
 (4, 82),
 (4, 83),
 (4, 84),
-(4, 85);
+(4, 85),
+(4, 86),
+(4, 87),
+(4, 88),
+(4, 89),
+(4, 90),
+(4, 91),
+(4, 92),
+(4, 93),
+(4, 94),
+(4, 95),
+(4, 96),
+(4, 97),
+(4, 98),
+(4, 99),
+(4, 100),
+(4, 101),
+(4, 102);
 
 -- Dump dei dati per la tabella `identity_group`
 -- (Workflow system group)

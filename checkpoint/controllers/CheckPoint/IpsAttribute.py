@@ -8,7 +8,7 @@ from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPoin
 
 class CheckPointIpsExtendedAttributeController(CustomControllerCheckPointGetInfo):
     def __init__(self, *args, **kwargs):
-        super().__init__(subject="ips", *args, **kwargs)
+        super().__init__(subject="ips_attribute", *args, **kwargs)
 
 
 
