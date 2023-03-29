@@ -6790,7 +6790,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"data\": {}\n}",
+											"raw": "{\n    \"data\": {\n        \"enabled\": true,\n        \"recurrence\": {\n            \"pattern\": \"interval\",\n            \"minutes\": 1440\n        }\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"

@@ -27,7 +27,7 @@ class CheckPointIpsScheduleController(CustomControllerCheckPointGetInfo, CustomC
 
 
     def patch(self, request: Request, assetId: int, domain: str) -> Response:
-        return self.update(
+        return self.modify(
             request=request,
             assetId=assetId,
             domain=domain,
