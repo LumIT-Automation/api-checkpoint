@@ -6621,7 +6621,7 @@
 									"response": []
 								},
 								{
-									"name": "ips",
+									"name": "ips update",
 									"request": {
 										"auth": {
 											"type": "noauth"

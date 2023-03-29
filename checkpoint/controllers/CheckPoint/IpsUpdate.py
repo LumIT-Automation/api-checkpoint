@@ -8,15 +8,16 @@ from checkpoint.controllers.CustomControllerPut import CustomControllerCheckPoin
 
 class CheckPointIpsUpdateController(CustomControllerCheckPointUpdateAll):
     def __init__(self, *args, **kwargs):
-        super().__init__(subject="ips", *args, **kwargs)
+        super().__init__(subject="ips_update", *args, **kwargs)
 
 
 
     def put(self, request: Request, assetId: int, domain: str) -> Response:
-        return self.launchTask(
+        return self.rewrite(
             request=request,
             assetId=assetId,
             domain=domain,
+            objectUid="ips-update",
             actionCallback=lambda data: Ips(sessionId=self.sessionId, assetId=assetId, domain=domain).runUpdate(data),
             permission={
                 "args": {

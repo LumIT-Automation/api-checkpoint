@@ -31,11 +31,11 @@ class Ips:
 
 
 
-    def runUpdate(self, data: dict = None) -> dict:
+    def runUpdate(self, data: dict = None) -> None:
         data = data or {}
 
         try:
-            return Backend.runUpdate(self.sessionId, self.assetId, self.domain, data)
+            Backend.runUpdate(self.sessionId, self.assetId, self.domain, data)
         except Exception as e:
             raise e
 

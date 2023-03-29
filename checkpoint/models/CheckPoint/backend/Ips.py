@@ -1,6 +1,9 @@
+import time
+
 from django.conf import settings
 
 from checkpoint.helpers.ApiSupplicant import ApiSupplicant
+from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Log import Log
 
 
@@ -41,15 +44,39 @@ class Ips:
 
 
     @staticmethod
-    def runUpdate(sessionId: str, assetId: int, domain: str, data: dict = None) -> dict:
+    def runUpdate(sessionId: str, assetId: int, domain: str, data: dict = None) -> None:
         data = data or {}
+        timeout = 120 # [second]
+
+        from checkpoint.models.CheckPoint.Task import Task
 
         try:
-            return ApiSupplicant(sessionId, assetId).post(
+            response = ApiSupplicant(sessionId, assetId).post(
                 urlSegment="run-ips-update",
                 domain=domain,
                 data=data
             )
+
+            # Monitor async tasks.
+            t0 = time.time()
+
+            while True:
+                try:
+                    taskRunInfo = Task(sessionId, assetId, domain, uid=response["task-id"]).info()["tasks"][0]
+
+                    if taskRunInfo["status"] == "succeeded":
+                        break
+                    elif taskRunInfo["status"] == "failed":
+                        raise CustomException(status=400, payload={"CheckPoint": taskRunInfo.get("task-details", [])[0].get("statusDescription", "unknown error")})
+
+                    if time.time() >= t0 + timeout: # timeout reached.
+                        raise CustomException(status=400, payload={"CheckPoint": f"task timeout reached"})
+
+                    time.sleep(5)
+                except KeyError:
+                    pass
+                except IndexError:
+                    pass
         except Exception as e:
             raise e
 
