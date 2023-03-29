@@ -45,7 +45,7 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
                 Log.actionLog("User data: " + str(request.data), user)
 
                 if Serializer:
-                    serializer = Serializer(data=request.data["data"])
+                    serializer = Serializer(data=request.data.get("data", {}))
                     if serializer.is_valid():
                         data = serializer.validated_data
                     else:
@@ -57,7 +57,7 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
                         }
                         Log.actionLog("User data incorrect: " + str(response), user)
                 else:
-                    data = request.data["data"]
+                    data = request.data.get("data", {})
 
                 if data:
                     # Locking logic for a specific object, example: host:PATCH:1:DOMAIN = 'objectUid',

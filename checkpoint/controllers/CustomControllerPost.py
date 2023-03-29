@@ -48,7 +48,7 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
                 Log.actionLog("User data: " + str(request.data), user)
 
                 if Serializer:
-                    serializer = Serializer(data=request.data["data"])
+                    serializer = Serializer(data=request.data.get("data", {}))
                     if serializer.is_valid():
                         data = serializer.validated_data
                     else:
@@ -60,7 +60,7 @@ class CustomControllerCheckPointCreate(CustomControllerBase):
                         }
                         Log.actionLog("User data incorrect: " + str(response), user)
                 else:
-                    data = request.data["data"]
+                    data = request.data.get("data", {})
 
                 if data:
                     # Locking logic for a class of objects, for example: host:POST:1:DOMAIN = 'any'.

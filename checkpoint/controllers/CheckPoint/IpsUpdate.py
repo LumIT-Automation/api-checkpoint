@@ -17,7 +17,7 @@ class CheckPointIpsUpdateController(CustomControllerCheckPointUpdateAll):
             request=request,
             assetId=assetId,
             domain=domain,
-            objectUid="ips-update",
+            objectUid="update",
             actionCallback=lambda data: Ips(sessionId=self.sessionId, assetId=assetId, domain=domain).runUpdate(data),
             permission={
                 "args": {

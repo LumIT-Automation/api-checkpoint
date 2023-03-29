@@ -18,7 +18,7 @@ class CheckPointIpsScheduleController(CustomControllerCheckPointGetInfo, CustomC
             request=request,
             assetId=assetId,
             domain=domain,
-            objectUid="ips-schedule",
+            objectUid="schedule",
             actionCallback=lambda: IpsSchedule(sessionId="", assetId=assetId, domain=domain).info(),
             permission={
                 "args": {
@@ -34,7 +34,7 @@ class CheckPointIpsScheduleController(CustomControllerCheckPointGetInfo, CustomC
             request=request,
             assetId=assetId,
             domain=domain,
-            objectUid="ips-schedule",
+            objectUid="schedule",
             actionCallback=lambda data: IpsSchedule(sessionId=self.sessionId, assetId=assetId, domain=domain).modify(data),
             permission={
                 "args": {

@@ -48,7 +48,7 @@ class CheckPointRemoveHostController(CustomControllerBase):
                 Log.actionLog("[Workflow id for Host complete removal: "+workflowId, {"username": originalUsername})
 
             if Permission.hasUserPermission(groups=user["groups"], action="host_remove", assetId=assetId) or user["authDisabled"]:
-                serializer = Serializer(data=request.data["data"])
+                serializer = Serializer(data=request.data.get("data", {}))
                 if serializer.is_valid():
                     data = serializer.validated_data
 

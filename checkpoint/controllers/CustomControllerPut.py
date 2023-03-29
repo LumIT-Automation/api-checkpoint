@@ -36,7 +36,6 @@ class CustomControllerCheckPointUpdateAll(CustomControllerBase):
 
         data = None
         response = None
-        httpStatus = status.HTTP_500_INTERNAL_SERVER_ERROR
 
         try:
             user = CustomControllerBase.loggedUser(request)
@@ -46,7 +45,7 @@ class CustomControllerCheckPointUpdateAll(CustomControllerBase):
                 Log.actionLog("User data: " + str(request.data), user)
 
                 if Serializer:
-                    serializer = Serializer(data=request.data["data"])
+                    serializer = Serializer(data=request.data.get("data", {}))
                     if serializer.is_valid():
                         data = serializer.validated_data
                     else:
@@ -58,7 +57,7 @@ class CustomControllerCheckPointUpdateAll(CustomControllerBase):
                         }
                         Log.actionLog("User data incorrect: " + str(response), user)
                 else:
-                    data = request.data["data"]
+                    data = request.data.get("data", {})
 
                 # Locking logic for a specific object, example: host:PUT:1:DOMAIN = 'objectUid',
                 # @todo: locking logic for all object's fathers should be applied, too: object -> whereUsed() -> lock.

@@ -48,7 +48,7 @@ class CheckPointVpnProfilesToHostController(CustomControllerBase):
                 Log.actionLog("[Workflow id for VPN to host: "+workflowId, {"username": originalUsername})
 
             if Permission.hasUserPermission(groups=user["groups"], action="vpn_to_host", assetId=assetId) or user["authDisabled"]:
-                serializer = Serializer(data=request.data["data"])
+                serializer = Serializer(data=request.data.get("data", {}))
                 if serializer.is_valid():
                     data = serializer.validated_data
 
