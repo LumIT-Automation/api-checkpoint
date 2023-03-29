@@ -11,11 +11,14 @@ class CheckPointIpsScheduleController(CustomControllerCheckPointGetInfo, CustomC
     def __init__(self, *args, **kwargs):
         super().__init__(subject="ips_schedule", *args, **kwargs)
 
+
+
     def get(self, request: Request, assetId: int, domain: str) -> Response:
         return self.getInfo(
             request=request,
             assetId=assetId,
             domain=domain,
+            objectUid="ips-schedule",
             actionCallback=lambda: IpsSchedule(sessionId="", assetId=assetId, domain=domain).info(),
             permission={
                 "args": {
@@ -31,6 +34,7 @@ class CheckPointIpsScheduleController(CustomControllerCheckPointGetInfo, CustomC
             request=request,
             assetId=assetId,
             domain=domain,
+            objectUid="ips-schedule",
             actionCallback=lambda data: IpsSchedule(sessionId=self.sessionId, assetId=assetId, domain=domain).modify(data),
             permission={
                 "args": {

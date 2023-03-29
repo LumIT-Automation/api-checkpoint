@@ -10,6 +10,8 @@ class CheckPointIpsExtendedAttributeController(CustomControllerCheckPointGetInfo
     def __init__(self, *args, **kwargs):
         super().__init__(subject="ips", *args, **kwargs)
 
+
+
     def get(self, request: Request, assetId: int, domain: str, attributeUid) -> Response:
         return self.getInfo(
             request=request,

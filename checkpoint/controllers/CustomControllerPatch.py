@@ -22,7 +22,7 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
 
 
 
-    def modify(self, request: Request, permission: dict, actionCallback: Callable, objectUid: str = "", Serializer: Callable = None, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
+    def modify(self, request: Request, permission: dict, actionCallback: Callable, objectUid: str, Serializer: Callable = None, assetId: int = 0, domain: str = "", objectType: str = "") -> Response:
         Serializer = Serializer or None
 
         action = self.subject + "_patch"

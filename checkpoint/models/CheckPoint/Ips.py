@@ -1,9 +1,7 @@
-from typing import List
-
 from checkpoint.models.CheckPoint.backend.Ips import Ips as Backend
 
 
-class Ips():
+class Ips:
     def __init__(self, sessionId: str, assetId: int, domain: str = "", *args, **kwargs):
         super().__init__(*args, **kwargs)
 

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b73fbaca-514f-41c6-adbb-23560b5677d5",
+		"_postman_id": "4e7a615c-4232-4e69-9326-61c566db2a7b",
 		"name": "api-checkpoint",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -6644,7 +6644,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/ips/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/ips-update/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -6658,7 +6658,7 @@
 												"checkpoint",
 												"1",
 												"POLAND",
-												"ips",
+												"ips-update",
 												""
 											]
 										}

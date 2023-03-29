@@ -3,6 +3,7 @@ from django.conf import settings
 from checkpoint.helpers.ApiSupplicant import ApiSupplicant
 from checkpoint.helpers.Log import Log
 
+
 class Ips:
 
     ####################################################################################################################
@@ -29,7 +30,7 @@ class Ips:
             return ApiSupplicant(sessionId, assetId).post(
                 urlSegment="show-ips-protection-extended-attribute",
                 domain=domain,
-                data = {
+                data={
                     "uid": attributeUid,
                     "details-level": "full"
                 }
@@ -44,7 +45,7 @@ class Ips:
         data = data or {}
 
         try:
-            return  ApiSupplicant(sessionId, assetId).post(
+            return ApiSupplicant(sessionId, assetId).post(
                 urlSegment="run-ips-update",
                 domain=domain,
                 data=data
@@ -108,4 +109,3 @@ class Ips:
             return out
         except Exception as e:
             raise e
-
