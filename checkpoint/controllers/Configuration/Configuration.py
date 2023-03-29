@@ -2,14 +2,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetInfo
-from checkpoint.controllers.CustomControllerPut import CustomControllerCheckPointUpdateAll
+from checkpoint.controllers.CustomControllerPut import CustomControllerCheckPointRewrite
 
 from checkpoint.models.Configuration.Configuration import Configuration
 
 from checkpoint.serializers.Configuration.Configuration import ConfigurationSerializer as Serializer
 
 
-class ConfigurationController(CustomControllerCheckPointGetInfo, CustomControllerCheckPointUpdateAll):
+class ConfigurationController(CustomControllerCheckPointGetInfo, CustomControllerCheckPointRewrite):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="configuration", *args, **kwargs)
 

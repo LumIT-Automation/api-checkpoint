@@ -15,7 +15,7 @@ from checkpoint.helpers.Lock import Lock
 from checkpoint.helpers.Log import Log
 
 
-class CustomControllerCheckPointUpdateAll(CustomControllerBase):
+class CustomControllerCheckPointRewrite(CustomControllerBase):
     def __init__(self,  subject: str, *args, **kwargs):
         self.sessionId = uuid.uuid4().hex
         self.subject = subject

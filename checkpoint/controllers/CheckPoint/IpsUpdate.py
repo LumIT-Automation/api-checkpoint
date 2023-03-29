@@ -3,10 +3,10 @@ from rest_framework.response import Response
 
 from checkpoint.models.CheckPoint.Ips import Ips
 
-from checkpoint.controllers.CustomControllerPut import CustomControllerCheckPointUpdateAll
+from checkpoint.controllers.CustomControllerPut import CustomControllerCheckPointRewrite
 
 
-class CheckPointIpsUpdateController(CustomControllerCheckPointUpdateAll):
+class CheckPointIpsUpdateController(CustomControllerCheckPointRewrite):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="ips_update", *args, **kwargs)
 
