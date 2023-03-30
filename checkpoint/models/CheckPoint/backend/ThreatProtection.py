@@ -63,7 +63,7 @@ class ThreatProtection:
 
         try:
             response = ApiSupplicant(sessionId, assetId).post(
-                urlSegment="delete-threat-protections ",
+                urlSegment="delete-threat-protections",
                 domain=domain,
                 data=data
             )

@@ -6839,7 +6839,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-protections/?local",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-protections/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -6852,15 +6852,99 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"Global",
 												"threat-protections",
 												""
-											],
-											"query": [
-												{
-													"key": "local",
-													"value": null
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "threat protections delete all",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\": {\n        \"package-format\": \"snort\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
 												}
+											}
+										},
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-protections/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"Global",
+												"threat-protections",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "threat protection",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\": {\n        \"package-format\": \"snort\",\n        \"package-path\": \"/path/to/community.rules\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-protections/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"Global",
+												"threat-protections",
+												""
 											]
 										}
 									},
@@ -6881,7 +6965,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-protection/0e83a392-c4c3-4b42-a5d5-3974e3e17521/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-protection/0e83a392-c4c3-4b42-a5d5-3974e3e17521/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -6894,7 +6978,53 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"Global",
+												"threat-protection",
+												"0e83a392-c4c3-4b42-a5d5-3974e3e17521",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "threat protection",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\": {\n        \"comments\": \"Lo zio pino\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-protection/0e83a392-c4c3-4b42-a5d5-3974e3e17521/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"Global",
 												"threat-protection",
 												"0e83a392-c4c3-4b42-a5d5-3974e3e17521",
 												""
