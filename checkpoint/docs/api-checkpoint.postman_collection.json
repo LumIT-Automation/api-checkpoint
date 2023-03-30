@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4e7a615c-4232-4e69-9326-61c566db2a7b",
+		"_postman_id": "10b80046-7328-4e3d-b2e7-c8421fffe9b6",
 		"name": "api-checkpoint",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -6813,6 +6813,90 @@
 												"1",
 												"POLAND",
 												"ips-schedule",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "threat Protection",
+							"item": [
+								{
+									"name": "threat protections",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-protections/?local",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"threat-protections",
+												""
+											],
+											"query": [
+												{
+													"key": "local",
+													"value": null
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "threat protection",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-protection/0e83a392-c4c3-4b42-a5d5-3974e3e17521/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"threat-protection",
+												"0e83a392-c4c3-4b42-a5d5-3974e3e17521",
 												""
 											]
 										}
