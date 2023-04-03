@@ -6906,7 +6906,7 @@
 									"response": []
 								},
 								{
-									"name": "threat protection",
+									"name": "threat protections",
 									"request": {
 										"auth": {
 											"type": "noauth"
@@ -7075,7 +7075,7 @@
 									"response": []
 								},
 								{
-									"name": "threat profile",
+									"name": "threat profiles",
 									"request": {
 										"auth": {
 											"type": "noauth"
@@ -7232,6 +7232,212 @@
 												"1",
 												"POLAND",
 												"threat-profile",
+												"caf8b711-d762-4c1e-82d5-6af2549b2869",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "threat ioc feed",
+							"item": [
+								{
+									"name": "threat ioc feeds",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-ioc-feeds/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"threat-ioc-feeds",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "threat ioc feeds",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\": {\n        \"name\": \"ciccio\",\n        \"action\": \"prevent\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-ioc-feeds/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"threat-ioc-feeds",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "threat ioc feed",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-ioc-feed/caf8b711-d762-4c1e-82d5-6af2549b2869/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"threat-ioc-feed",
+												"caf8b711-d762-4c1e-82d5-6af2549b2869",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "threat profile",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-ioc-feed/caf8b711-d762-4c1e-82d5-6af2549b2869/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"threat-ioc-feed",
+												"caf8b711-d762-4c1e-82d5-6af2549b2869",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "threat profile",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Authorization",
+												"type": "text",
+												"value": "Bearer {{jwttoken}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"data\": {\n        \"comments\": \"Lo zio pino\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-ioc-feed/caf8b711-d762-4c1e-82d5-6af2549b2869/",
+											"protocol": "http",
+											"host": [
+												"10",
+												"0",
+												"111",
+												"26"
+											],
+											"path": [
+												"api",
+												"v1",
+												"checkpoint",
+												"1",
+												"POLAND",
+												"threat-ioc-feed",
 												"caf8b711-d762-4c1e-82d5-6af2549b2869",
 												""
 											]
