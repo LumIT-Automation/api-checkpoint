@@ -32,7 +32,7 @@ from .controllers.CheckPoint import NatRuleObjects
 from .controllers.CheckPoint import Roles as CheckPointRoles, Role as CheckPointRole
 from .controllers.CheckPoint import LayersAccess, LayersThreat, LayersHttps, LayerAccess, LayerThreat, LayerHttps
 from .controllers.CheckPoint import Ips, IpsAttributes, IpsAttribute, IpsSchedule, IpsUpdate
-from .controllers.CheckPoint import ThreatProtection, ThreatProtections
+from .controllers.CheckPoint import ThreatProtection, ThreatProtections, ThreatProfile, ThreatProfiles
 from .controllers.CheckPoint import User
 from .controllers.Configuration import Configuration
 from .controllers.History import History
@@ -190,6 +190,10 @@ urlpatterns = [
     # Threat protection.
     path('<int:assetId>/<str:domain>/threat-protections/', ThreatProtections.CheckPointThreatProtectionsController.as_view(), name='threat-protections'),
     path('<int:assetId>/<str:domain>/threat-protection/<str:threatProtectionUid>/', ThreatProtection.CheckPointThreatProtectionController.as_view(), name='threat-protection'),
+
+    # Threat profile.
+    path('<int:assetId>/<str:domain>/threat-profiles/', ThreatProfiles.CheckPointThreatProfilesController.as_view(), name='threat-profiles'),
+    path('<int:assetId>/<str:domain>/threat-profile/<str:threatProfileUid>/', ThreatProfile.CheckPointThreatProfileController.as_view(), name='threat-profile'),
 
     # Users.
     path('<int:assetId>/<str:domain>/user/<str:userUid>/', User.CheckPointUserController.as_view(), name='user'),

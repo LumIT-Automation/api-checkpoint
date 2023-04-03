@@ -1,16 +1,15 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from checkpoint.models.CheckPoint.ThreatProtection import ThreatProtection
+from checkpoint.models.CheckPoint.ThreatProfile import ThreatProfile
 
 from checkpoint.controllers.CustomControllerGet import CustomControllerCheckPointGetList
 from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPointCreate
-from checkpoint.controllers.CustomControllerPut import CustomControllerCheckPointRewrite
 
 
-class CheckPointThreatProtectionsController(CustomControllerCheckPointGetList, CustomControllerCheckPointCreate, CustomControllerCheckPointRewrite):
+class CheckPointThreatProfilesController(CustomControllerCheckPointGetList, CustomControllerCheckPointCreate):
     def __init__(self, *args, **kwargs):
-        super().__init__(subject="threat_protection", *args, **kwargs)
+        super().__init__(subject="threat_profile", *args, **kwargs)
 
     def get(self, request: Request, assetId: int, domain: str) -> Response:
         def actionCallback():
@@ -18,7 +17,7 @@ class CheckPointThreatProtectionsController(CustomControllerCheckPointGetList, C
             if "local" in request.GET:
                 localOnly = True
 
-            return ThreatProtection.listQuick(sessionId="", assetId=assetId, domain=domain, localOnly=localOnly)
+            return ThreatProfile.listQuick(sessionId="", assetId=assetId, domain=domain, localOnly=localOnly)
 
         return self.getList(
             request=request,
@@ -40,7 +39,7 @@ class CheckPointThreatProtectionsController(CustomControllerCheckPointGetList, C
             request=request,
             assetId=assetId,
             domain=domain,
-            actionCallback=lambda data: ThreatProtection.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
+            actionCallback=lambda data: ThreatProfile.add(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
                 "args": {
                     "assetId": assetId,

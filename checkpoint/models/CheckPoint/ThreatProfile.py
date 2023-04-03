@@ -1,12 +1,12 @@
 from typing import List
 
 from checkpoint.models.CheckPoint.Object import Object
-from checkpoint.models.CheckPoint.backend.ThreatProtection import ThreatProtection as Backend
+from checkpoint.models.CheckPoint.backend.ThreatProfile import ThreatProfile as Backend
 
 from checkpoint.helpers.Lang import Lang
 
 
-class ThreatProtection(Object):
+class ThreatProfile(Object):
     def __init__(self, sessionId: str, assetId: int, domain: str = "", name: str = "", uid: str = "", *args, **kwargs):
         super().__init__(sessionId, assetId, domain, uid, *args, **kwargs)
 
@@ -34,25 +34,25 @@ class ThreatProtection(Object):
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
 
-            for k, v in Lang.toDict(data).items():
-                setattr(self, k, v)
+            #for k, v in Lang.toDict(data).items():
+            #    setattr(self, k, v)
         except Exception as e:
             raise e
 
+
+
+    def delete(self, autoPublish: bool = True) -> None:
+        try:
+            Backend.delete(self.sessionId, self.assetId, self.domain, self.uid, autoPublish)
+            del self
+        except Exception as e:
+            raise e
 
 
     ####################################################################################################################
     # Public static methods
     ####################################################################################################################
 
-    @staticmethod
-    def deleteAll(sessionId: int, assetId: int, domain: str, data: dict = None) -> None:
-        data = data or {}
-
-        try:
-            Backend.deleteAll(sessionId, assetId, domain, data)
-        except Exception as e:
-            raise e
 
 
 
@@ -78,8 +78,6 @@ class ThreatProtection(Object):
 
     @staticmethod
     def add(sessionId: str, assetId: int, domain: str, data: dict) -> None:
-        out = dict()
-
         try:
             Backend.add(sessionId, assetId, domain, data)
         except Exception as e:

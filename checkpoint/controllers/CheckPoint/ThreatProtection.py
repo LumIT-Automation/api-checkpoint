@@ -10,7 +10,7 @@ from checkpoint.controllers.CustomControllerDelete import CustomControllerCheckP
 
 class CheckPointThreatProtectionController(CustomControllerCheckPointGetInfo, CustomControllerCheckPointUpdate, CustomControllerCheckPointDelete):
     def __init__(self, *args, **kwargs):
-        CustomControllerCheckPointGetInfo.__init__(self, subject="network", *args, **kwargs)
+        CustomControllerCheckPointGetInfo.__init__(self, subject="threat_protection", *args, **kwargs)
 
     def get(self, request: Request, assetId: int, domain: str, threatProtectionUid: str) -> Response:
         return self.getInfo(

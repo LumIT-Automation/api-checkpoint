@@ -8,7 +8,7 @@ from checkpoint.helpers.ApiSupplicant import ApiSupplicant
 from checkpoint.helpers.Exception import CustomException
 
 
-class ThreatProtection:
+class ThreatProfile:
 
     ####################################################################################################################
     # Public static methods
@@ -18,13 +18,10 @@ class ThreatProtection:
     def info(sessionId: str, assetId: int, domain: str, uid: str) -> dict:
         try:
             return ApiSupplicant(sessionId, assetId).post(
-                urlSegment="show-threat-protection",
+                urlSegment="show-threat-profile",
                 domain=domain,
                 data={
                     "uid": uid,
-                    "show-capture-packets-and-track": True,
-                    "show-ips-additional-properties": True,
-                    "show-profiles": True,
                     "details-level": "full"
                 }
             )
@@ -39,7 +36,7 @@ class ThreatProtection:
 
         try:
             ApiSupplicant(sessionId, assetId).post(
-                urlSegment="set-threat-protection",
+                urlSegment="set-threat-profile",
                 domain=domain,
                 data=data
             )
@@ -55,42 +52,22 @@ class ThreatProtection:
 
 
     @staticmethod
-    def deleteAll(sessionId: str, assetId: int, domain: str, data: dict = None) -> None:
-        data = data or {}
-        timeout = 120 # [second]
-
-        from checkpoint.models.CheckPoint.Task import Task
-
+    def delete(sessionId: str, assetId: int, domain: str, uid: str, autoPublish: bool = True) -> None:
         try:
-            response = ApiSupplicant(sessionId, assetId).post(
-                urlSegment="delete-threat-protections",
+            ApiSupplicant(sessionId, assetId).post(
+                urlSegment="delete-threat-profile",
                 domain=domain,
-                data=data
+                data={
+                    "uid": uid
+                }
             )
 
-            # Monitor async tasks.
-            t0 = time.time()
-
-            while True:
-                try:
-                    taskRunInfo = Task(sessionId, assetId, domain, uid=response["task-id"]).info()["tasks"][0]
-
-                    if taskRunInfo["status"] == "succeeded":
-                        break
-                    elif taskRunInfo["status"] == "failed":
-                        raise CustomException(status=400, payload={
-                            "CheckPoint": taskRunInfo.get("task-details", [])[0].get("statusDescription",
-                                                                                     "unknown error")})
-
-                    if time.time() >= t0 + timeout:  # timeout reached.
-                        raise CustomException(status=400, payload={"CheckPoint": f"task timeout reached"})
-
-                    time.sleep(5)
-                except KeyError:
-                    pass
-                except IndexError:
-                    pass
+            if autoPublish:
+                Session(sessionId=sessionId, assetId=assetId, domain=domain).publish()
         except Exception as e:
+            if autoPublish:
+                Session(sessionId=sessionId, assetId=assetId, domain=domain).discard()
+
             raise e
 
 
@@ -104,7 +81,7 @@ class ThreatProtection:
             # Collect all data (serial requests).
             for n in range(0, settings.MAX_REQUESTS):
                 o = ApiSupplicant(sessionId, assetId, silent=True).post(
-                    urlSegment="show-threat-protections",
+                    urlSegment="show-threat-profiles",
                     domain=domain,
                     data={
                         "details-level": details,
@@ -113,8 +90,8 @@ class ThreatProtection:
                     }
                 )
 
-                if "protections" in o and o["protections"]:
-                    out.extend(o["protections"])
+                if "profiles" in o and o["profiles"]:
+                    out.extend(o["profiles"])
                     if o["to"] >= o["total"]:
                         break
                 else:
@@ -135,7 +112,7 @@ class ThreatProtection:
 
         try:
             response = ApiSupplicant(sessionId, assetId).post(
-                urlSegment="add-threat-protections",
+                urlSegment="add-threat-profile",
                 domain=domain,
                 data=data
             )
