@@ -2808,7 +2808,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/network/0e83a392-c4c3-4b42-a5d5-3974e3e17521//",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/network/d5fcd7f1-bae9-48de-a73c-a8b77e10cf19/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -2823,8 +2823,7 @@
 												"1",
 												"POLAND",
 												"network",
-												"0e83a392-c4c3-4b42-a5d5-3974e3e17521",
-												"",
+												"d5fcd7f1-bae9-48de-a73c-a8b77e10cf19",
 												""
 											]
 										}
@@ -6839,7 +6838,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-protections/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-protections/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -6852,7 +6851,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"Global",
+												"POLAND",
 												"threat-protections",
 												""
 											]
@@ -6929,7 +6928,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-protections/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-protections/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -6942,7 +6941,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"Global",
+												"POLAND",
 												"threat-protections",
 												""
 											]
@@ -7053,7 +7052,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-profiles/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-profiles/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -7066,7 +7065,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"Global",
 												"threat-profiles",
 												""
 											]
@@ -7098,7 +7097,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-profiles/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-profiles/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -7111,7 +7110,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"Global",
 												"threat-profiles",
 												""
 											]
@@ -7134,7 +7133,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-profile/caf8b711-d762-4c1e-82d5-6af2549b2869/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-profile/0d1b5176-a76f-4613-b4f5-977e2569b75f/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -7147,9 +7146,9 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"Global",
 												"threat-profile",
-												"caf8b711-d762-4c1e-82d5-6af2549b2869",
+												"0d1b5176-a76f-4613-b4f5-977e2569b75f",
 												""
 											]
 										}
@@ -7259,7 +7258,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-ioc-feeds/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/Global/threat-ioc-feeds/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -7272,7 +7271,7 @@
 												"v1",
 												"checkpoint",
 												"1",
-												"POLAND",
+												"Global",
 												"threat-ioc-feeds",
 												""
 											]
@@ -7296,7 +7295,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"data\": {\n        \"name\": \"ciccio\",\n        \"action\": \"prevent\"\n    }\n}",
+											"raw": "{\n    \"data\": {\n        \"name\": \"ciccio\",\n        \"action\": \"detect\",\n        \"feed-url\": \"https://per.di.qua.org/ciapa/\"\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -7340,7 +7339,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-ioc-feed/caf8b711-d762-4c1e-82d5-6af2549b2869/",
+											"raw": "http://10.0.111.26/api/v1/checkpoint/1/POLAND/threat-ioc-feed/f0839e8e-7f66-4e48-86c9-05e04e359c77/",
 											"protocol": "http",
 											"host": [
 												"10",
@@ -7355,7 +7354,7 @@
 												"1",
 												"POLAND",
 												"threat-ioc-feed",
-												"caf8b711-d762-4c1e-82d5-6af2549b2869",
+												"f0839e8e-7f66-4e48-86c9-05e04e359c77",
 												""
 											]
 										}

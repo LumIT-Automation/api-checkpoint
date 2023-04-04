@@ -46,7 +46,7 @@ class ThreatProtection(Object):
     ####################################################################################################################
 
     @staticmethod
-    def deleteAll(sessionId: int, assetId: int, domain: str, data: dict = None) -> None:
+    def deleteAll(sessionId: str, assetId: int, domain: str, data: dict = None) -> None:
         data = data or {}
 
         try:

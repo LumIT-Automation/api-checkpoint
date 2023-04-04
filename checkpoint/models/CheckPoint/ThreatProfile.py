@@ -34,8 +34,8 @@ class ThreatProfile(Object):
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
 
-            #for k, v in Lang.toDict(data).items():
-            #    setattr(self, k, v)
+            for k, v in Lang.toDict(data).items():
+                setattr(self, k, v)
         except Exception as e:
             raise e
 

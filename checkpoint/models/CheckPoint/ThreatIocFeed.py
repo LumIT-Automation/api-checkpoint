@@ -34,8 +34,8 @@ class ThreatIocFeed(Object):
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
 
-            #for k, v in Lang.toDict(data).items():
-            #    setattr(self, k, v)
+            for k, v in Lang.toDict(data).items():
+                setattr(self, k, v)
         except Exception as e:
             raise e
 
@@ -77,8 +77,8 @@ class ThreatIocFeed(Object):
 
 
     @staticmethod
-    def add(sessionId: str, assetId: int, domain: str, data: dict) -> None:
+    def add(sessionId: str, assetId: int, domain: str, data: dict) -> dict:
         try:
-            Backend.add(sessionId, assetId, domain, data)
+            return Backend.add(sessionId, assetId, domain, data)
         except Exception as e:
             raise e

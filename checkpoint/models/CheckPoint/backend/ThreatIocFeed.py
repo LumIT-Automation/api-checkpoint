@@ -80,7 +80,7 @@ class ThreatIocFeed:
         try:
             # Collect all data (serial requests).
             for n in range(0, settings.MAX_REQUESTS):
-                o = ApiSupplicant(sessionId, assetId, silent=True).post(
+                o = ApiSupplicant(sessionId, assetId, silent=False).post(
                     urlSegment="show-threat-ioc-feeds",
                     domain=domain,
                     data={
@@ -90,8 +90,8 @@ class ThreatIocFeed:
                     }
                 )
 
-                if "profiles" in o and o["profiles"]:
-                    out.extend(o["profiles"])
+                if "objects" in o and o["objects"]:
+                    out.extend(o["objects"])
                     if o["to"] >= o["total"]:
                         break
                 else:
@@ -104,38 +104,22 @@ class ThreatIocFeed:
 
 
     @staticmethod
-    def add(sessionId: str, assetId: int, domain: str, data: dict) -> None:
+    def add(sessionId: str, assetId: int, domain: str, data: dict, autoPublish: bool = True) -> dict:
         data = data or {}
-        timeout = 120 # [second]
-
-        from checkpoint.models.CheckPoint.Task import Task
 
         try:
-            response = ApiSupplicant(sessionId, assetId).post(
+            o = ApiSupplicant(sessionId, assetId).post(
                 urlSegment="add-threat-ioc-feed",
                 domain=domain,
                 data=data
             )
 
-            # Monitor async tasks.
-            t0 = time.time()
+            if autoPublish:
+                Session(sessionId=sessionId, assetId=assetId, domain=domain).publish()
 
-            while True:
-                try:
-                    taskRunInfo = Task(sessionId, assetId, domain, uid=response["task-id"]).info()["tasks"][0]
-
-                    if taskRunInfo["status"] == "succeeded":
-                        break
-                    elif taskRunInfo["status"] == "failed":
-                        raise CustomException(status=400, payload={"CheckPoint": taskRunInfo.get("task-details", [])[0].get("statusDescription", "unknown error")})
-
-                    if time.time() >= t0 + timeout: # timeout reached.
-                        raise CustomException(status=400, payload={"CheckPoint": f"task timeout reached"})
-
-                    time.sleep(5)
-                except KeyError:
-                    pass
-                except IndexError:
-                    pass
+            return o
         except Exception as e:
+            if autoPublish:
+                Session(sessionId=sessionId, assetId=assetId, domain=domain).discard()
+
             raise e
