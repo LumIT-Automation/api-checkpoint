@@ -9,7 +9,9 @@ from checkpoint.controllers.CustomControllerPost import CustomControllerCheckPoi
 
 class CheckPointThreatIocFeedsController(CustomControllerCheckPointGetList, CustomControllerCheckPointCreate):
     def __init__(self, *args, **kwargs):
-        super().__init__(subject="threat_iov_feed", *args, **kwargs)
+        super().__init__(subject="threat_ioc_feed", *args, **kwargs)
+
+
 
     def get(self, request: Request, assetId: int, domain: str) -> Response:
         def actionCallback():

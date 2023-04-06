@@ -1,7 +1,5 @@
 from checkpoint.models.CheckPoint.backend.ApplicationSite import ApplicationSite as Backend
 
-from checkpoint.helpers.Lang import Lang
-
 
 class ApplicationSite:
     def __init__(self, sessionId: str, assetId: int, domain: str = "", name: str = "", uid: str = "", applicationId: str = "", *args, **kwargs):
@@ -31,9 +29,6 @@ class ApplicationSite:
     def modify(self, data: dict, autoPublish: bool = True) -> None:
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
-
-            for k, v in Lang.toDict(data).items():
-                setattr(self, k, v)
         except Exception as e:
             raise e
  
@@ -42,7 +37,6 @@ class ApplicationSite:
     def delete(self, autoPublish: bool = True) -> None:
         try:
             Backend.delete(self.sessionId, self.assetId, self.domain, self.uid, autoPublish)
-            del self
         except Exception as e:
             raise e
 

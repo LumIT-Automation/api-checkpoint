@@ -1,7 +1,5 @@
 from typing import List
 
-from checkpoint.helpers.Lang import Lang
-
 
 class LayerBackendFactory:
     def __init__(self, layerType):
@@ -53,9 +51,6 @@ class Layer:
     def modify(self, data: dict, autoPublish: bool = True) -> None:
         try:
             self.Backend(self.sessionId, self.assetId, self.domain, self.uid).modify(data, autoPublish)
-
-            for k, v in Lang.toDict(data).items():
-                setattr(self, k, v)
         except Exception as e:
             raise e
 
@@ -64,7 +59,6 @@ class Layer:
     def delete(self, autoPublish: bool = True) -> None:
         try:
             self.Backend(self.sessionId, self.assetId, self.domain, self.uid).delete(autoPublish)
-            del self
         except Exception as e:
             raise e
 

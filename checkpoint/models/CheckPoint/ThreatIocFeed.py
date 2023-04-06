@@ -3,8 +3,6 @@ from typing import List
 from checkpoint.models.CheckPoint.Object import Object
 from checkpoint.models.CheckPoint.backend.ThreatIocFeed import ThreatIocFeed as Backend
 
-from checkpoint.helpers.Lang import Lang
-
 
 class ThreatIocFeed(Object):
     def __init__(self, sessionId: str, assetId: int, domain: str = "", name: str = "", uid: str = "", *args, **kwargs):
@@ -33,9 +31,6 @@ class ThreatIocFeed(Object):
     def modify(self, data: dict, autoPublish: bool = True) -> None:
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
-
-            for k, v in Lang.toDict(data).items():
-                setattr(self, k, v)
         except Exception as e:
             raise e
 
@@ -44,17 +39,14 @@ class ThreatIocFeed(Object):
     def delete(self, autoPublish: bool = True) -> None:
         try:
             Backend.delete(self.sessionId, self.assetId, self.domain, self.uid, autoPublish)
-            del self
         except Exception as e:
             raise e
+
 
 
     ####################################################################################################################
     # Public static methods
     ####################################################################################################################
-
-
-
 
     @staticmethod
     def listQuick(sessionId: str, assetId: int, domain: str, localOnly: bool = False) -> List[dict]:

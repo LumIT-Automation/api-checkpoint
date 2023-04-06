@@ -11,6 +11,8 @@ class CheckPointThreatProfilesController(CustomControllerCheckPointGetList, Cust
     def __init__(self, *args, **kwargs):
         super().__init__(subject="threat_profile", *args, **kwargs)
 
+
+
     def get(self, request: Request, assetId: int, domain: str) -> Response:
         def actionCallback():
             localOnly = False

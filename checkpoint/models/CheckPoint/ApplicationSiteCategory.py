@@ -2,8 +2,6 @@ from typing import List
 
 from checkpoint.models.CheckPoint.backend.ApplicationSiteCategory import ApplicationSiteCategory as Backend
 
-from checkpoint.helpers.Lang import Lang
-
 
 class ApplicationSiteCategory:
     def __init__(self, sessionId: str, assetId: int, domain: str = "", name: str = "", uid: str = "", *args, **kwargs):
@@ -32,9 +30,6 @@ class ApplicationSiteCategory:
     def modify(self, data: dict, autoPublish: bool = True) -> None:
         try:
             Backend.modify(self.sessionId, self.assetId, self.domain, self.uid, data, autoPublish)
-
-            for k, v in Lang.toDict(data).items():
-                setattr(self, k, v)
         except Exception as e:
             raise e
 
@@ -43,7 +38,6 @@ class ApplicationSiteCategory:
     def delete(self, autoPublish: bool = True) -> None:
         try:
             Backend.delete(self.sessionId, self.assetId, self.domain, self.uid, autoPublish)
-            del self
         except Exception as e:
             raise e
 

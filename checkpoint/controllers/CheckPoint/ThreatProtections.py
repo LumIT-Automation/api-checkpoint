@@ -12,6 +12,8 @@ class CheckPointThreatProtectionsController(CustomControllerCheckPointGetList, C
     def __init__(self, *args, **kwargs):
         super().__init__(subject="threat_protection", *args, **kwargs)
 
+
+
     def get(self, request: Request, assetId: int, domain: str) -> Response:
         def actionCallback():
             localOnly = False
@@ -57,7 +59,7 @@ class CheckPointThreatProtectionsController(CustomControllerCheckPointGetList, C
             request=request,
             assetId=assetId,
             domain=domain,
-            objectUid="delete_all_threat_protections",
+            objectUid="delete_all",
             actionCallback=lambda data: ThreatProtection.deleteAll(sessionId=self.sessionId, assetId=assetId, domain=domain, data=data),
             permission={
                 "args": {

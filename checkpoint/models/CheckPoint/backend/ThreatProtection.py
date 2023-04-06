@@ -78,11 +78,9 @@ class ThreatProtection:
                     if taskRunInfo["status"] == "succeeded":
                         break
                     elif taskRunInfo["status"] == "failed":
-                        raise CustomException(status=400, payload={
-                            "CheckPoint": taskRunInfo.get("task-details", [])[0].get("statusDescription",
-                                                                                     "unknown error")})
+                        raise CustomException(status=400, payload={"CheckPoint": taskRunInfo.get("task-details", [])[0].get("statusDescription", "unknown error")})
 
-                    if time.time() >= t0 + timeout:  # timeout reached.
+                    if time.time() >= t0 + timeout: # timeout reached.
                         raise CustomException(status=400, payload={"CheckPoint": f"task timeout reached"})
 
                     time.sleep(5)

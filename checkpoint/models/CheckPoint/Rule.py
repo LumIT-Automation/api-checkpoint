@@ -1,6 +1,3 @@
-from checkpoint.helpers.Lang import Lang
-
-
 class RuleBackendFactory:
     def __init__(self, ruleType):
         self.ruleType = ruleType
@@ -53,9 +50,6 @@ class Rule:
     def modify(self, data: dict, autoPublish: bool = True) -> None:
         try:
             self.Backend(self.sessionId, self.assetId, self.domain, self.layerUid, self.uid).modify(data, autoPublish)
-
-            for k, v in Lang.toDict(data).items():
-                setattr(self, k, v)
         except Exception as e:
             raise e
  
@@ -64,7 +58,6 @@ class Rule:
     def delete(self, autoPublish: bool = True) -> None:
         try:
             self.Backend(self.sessionId, self.assetId, self.domain, self.layerUid, self.uid).delete(autoPublish)
-            del self
         except Exception as e:
             raise e
 

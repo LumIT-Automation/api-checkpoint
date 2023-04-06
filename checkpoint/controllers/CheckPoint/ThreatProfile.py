@@ -12,6 +12,8 @@ class CheckPointThreatProfileController(CustomControllerCheckPointGetInfo, Custo
     def __init__(self, *args, **kwargs):
         CustomControllerCheckPointGetInfo.__init__(self, subject="threat_profile", *args, **kwargs)
 
+
+
     def get(self, request: Request, assetId: int, domain: str, threatProfileUid: str) -> Response:
         return self.getInfo(
             request=request,

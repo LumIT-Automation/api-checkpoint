@@ -12,6 +12,8 @@ class CheckPointThreatProtectionController(CustomControllerCheckPointGetInfo, Cu
     def __init__(self, *args, **kwargs):
         CustomControllerCheckPointGetInfo.__init__(self, subject="threat_protection", *args, **kwargs)
 
+
+
     def get(self, request: Request, assetId: int, domain: str, threatProtectionUid: str) -> Response:
         return self.getInfo(
             request=request,
