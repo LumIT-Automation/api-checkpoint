@@ -131,28 +131,12 @@ class VpnToHost:
                                                 }
                                             })
 
+                                            # Collect services' information.
                                             if "service" in ruleAcl:
                                                 for s in ruleAcl["service"]:
-                                                    stype = s.get("type", "")
-
-                                                    if stype == "service-group":
-                                                        rolesToIpv4[no][j["uid"]]["services"].extend(
-                                                            VpnToHost.__serviceGroupPorts(self.sessionId, self.assetId, self.domain, serviceGroupUid=s.get("uid", ""))
-                                                        )
-                                                    else:
-                                                        info = {}
-                                                        if stype == "CpmiAnyObject":
-                                                            info["type"] = ""
-                                                            info["port"] = "any"
-                                                            info["protocol"] = ""
-                                                        else:
-                                                            info["type"] = stype
-                                                            if "port" in s:
-                                                                info["port"] = s.get("port", "")
-                                                            if "protocol" in s:
-                                                                info["protocol"] = s.get("protocol", "")
-
-                                                        rolesToIpv4[no][j["uid"]]["services"].append(info)
+                                                    rolesToIpv4[no][j["uid"]]["services"].extend(
+                                                        VpnToHost.__ruleAclServicesInformation(self.sessionId, self.assetId, self.domain, ruleAclService=s)
+                                                    )
 
                                             no += 1
                                     except KeyError:
@@ -187,32 +171,50 @@ class VpnToHost:
     ####################################################################################################################
 
     @staticmethod
-    def __serviceGroupPorts(sessionId: str, assetId: int, domain: str, serviceGroupUid: str):
-        memberServices = list()
+    def __ruleAclServicesInformation(sessionId: str, assetId: int, domain: str, ruleAclService: dict):
+        services = list()
 
         try:
-            for member in Object(sessionId, assetId, domain, uid=serviceGroupUid).info().get("object", {}).get("members", []):
-                stype = member.get("type", "")
+            stype = ruleAclService.get("type", "")
+            suid = ruleAclService.get("uid", "")
 
-                if stype == "service-group":
-                    memberServices.extend(
-                        VpnToHost.__serviceGroupPorts(sessionId, assetId, domain, serviceGroupUid=member.get("uid", ""))
-                    )
-                else:
-                    info = {}
-                    if stype == "CpmiAnyObject":
-                        info["type"] = ""
-                        info["port"] = "any"
-                        info["protocol"] = ""
+            if stype == "service-group":
+                for member in Object(sessionId, assetId, domain, uid=suid).info().get("object", {}).get("members", []):
+                    stype = member.get("type", "")
+
+                    if stype == "service-group":
+                        services.extend(
+                            VpnToHost.__ruleAclServicesInformation(sessionId, assetId, domain, ruleAclService=member)
+                        )
                     else:
-                        info["type"] = stype
-                        if "port" in member:
-                            info["port"] = member.get("port", "")
-                        if "protocol" in member:
-                            info["protocol"] = member.get("protocol", "")
+                        info = {}
+                        if stype == "CpmiAnyObject":
+                            info["type"] = ""
+                            info["port"] = "any"
+                            info["protocol"] = ""
+                        else:
+                            info["type"] = stype
+                            if "port" in member:
+                                info["port"] = member.get("port", "")
+                            if "protocol" in member:
+                                info["protocol"] = member.get("protocol", "")
 
-                    memberServices.append(info)
+                        services.append(info)
+            else:
+                info = {}
+                if stype == "CpmiAnyObject":
+                    info["type"] = ""
+                    info["port"] = "any"
+                    info["protocol"] = ""
+                else:
+                    info["type"] = stype
+                    if "port" in ruleAclService:
+                        info["port"] = ruleAclService.get("port", "")
+                    if "protocol" in ruleAclService:
+                        info["protocol"] = ruleAclService.get("protocol", "")
+
+                services.append(info)
         except Exception as e:
             raise e
 
-        return memberServices
+        return services
