@@ -35,6 +35,7 @@ class VpnToHost:
             no = 0
             accessSections = list()
             rolesToIpv4 = list()
+            uniqueRolesToIpv4 = list()
             acls = list()
 
             # # Security rules which directly or indirectly reach the host.
@@ -150,7 +151,15 @@ class VpnToHost:
                         rolesToIpv4[j]["uid"] = k
                         rolesToIpv4[j].update(v)
 
-            return list({v['uid']: v for v in rolesToIpv4}.values()) # unique uids.
+                for r in list({v['uid']: v for v in rolesToIpv4}.values()): # unique uids.
+                    rs = list()
+                    for s in r.get("services"):
+                        if s not in rs:
+                            rs.append(s)
+
+                    uniqueRolesToIpv4.append(rs)
+
+            return uniqueRolesToIpv4
         except Exception as e:
             raise e
 
