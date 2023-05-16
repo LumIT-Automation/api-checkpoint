@@ -57,9 +57,7 @@ class VpnToServices:
                                 ]
 
                             if j["type"] == "group":
-                                l = []
-                                VpnToServices.__groupIpv4Addresses(self.sessionId, self.assetId, self.domain, groupUid=j["uid"], l=l)
-                                ipv4s = l
+                                ipv4s = VpnToServices.__groupIpv4Addresses(self.sessionId, self.assetId, self.domain, groupUid=j["uid"])
 
                             if j["type"] == "address-range":
                                 r = AddressRange(self.sessionId, self.assetId, self.domain, uid=j["uid"]).info()
@@ -137,19 +135,27 @@ class VpnToServices:
     ####################################################################################################################
 
     @staticmethod
-    def __groupIpv4Addresses(sessionId: str, assetId: int, domain: str, groupUid: str, l: list) -> None: # l: list.
-        group = Group(sessionId, assetId, domain, uid=groupUid).info()
+    def __groupIpv4Addresses(sessionId: str, assetId: int, domain: str, groupUid: str) -> list:
+        l = list()
 
-        for member in group["members"]:
-            if member["type"] == "group":
-                for m in member["members"]:
-                    o = Object(sessionId, assetId, domain, uid=m).info()
+        try:
+            group = Group(sessionId, assetId, domain, uid=groupUid).info()
 
-                    if o["object"]["type"] == "host":
-                        l.append(o["object"]["ipv4-address"])
+            for member in group["members"]:
+                if member["type"] == "group":
+                    for m in member["members"]:
+                        o = Object(sessionId, assetId, domain, uid=m).info()
 
-                    if o["object"]["type"] == "group":
-                        VpnToServices.__groupIpv4Addresses(sessionId, assetId, domain, groupUid=m, l=l) # recurse.
+                        if o["object"]["type"] == "host":
+                            l.append(o["object"]["ipv4-address"])
 
-            if member["type"] == "host":
-                l.append(member["ipv4-address"])
+                        if o["object"]["type"] == "group":
+                            l.append(
+                                VpnToServices.__groupIpv4Addresses(sessionId, assetId, domain, groupUid=m) # recurse.
+                            )
+                if member["type"] == "host":
+                    l.append(member["ipv4-address"])
+        except Exception as e:
+            raise e
+
+        return l
