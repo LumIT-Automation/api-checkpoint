@@ -5,21 +5,27 @@ import traceback
 
 class Log:
     @staticmethod
-    def log(o: any, title: str = "", jsonFormat: bool = False) -> None:
-        # Sends input logs to the "checkpoint" logger (settings).
+    def log(o: any, title: str = "") -> None:
+        # Sends input logs to the configured logger (settings).
         log = logging.getLogger("django")
         if title:
-            if title == "_":
+            if "_" in title:
                 for j in range(80):
                     title = title + "_"
             log.debug(title)
 
-        if jsonFormat:
-            log.debug(json.dumps(o))
-        else:
+        try:
+            if not isinstance(o, str):
+                log.debug(json.dumps(o))
+            else:
+                log.debug(o)
+        except Exception:
             log.debug(o)
 
         if title:
+            title = ""
+            for j in range(80):
+                title = title + "_"
             log.debug(title)
 
 

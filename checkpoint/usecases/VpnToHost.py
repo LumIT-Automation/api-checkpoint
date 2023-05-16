@@ -85,80 +85,86 @@ class VpnToHost:
             policyPackageUid = list(filter(
                 lambda pp: pp.get("name", "") == self.package,
                 PolicyPackage.listQuick(sessionId=self.sessionId, assetId=self.assetId, domain=self.domain)
-            ))
+            ))[0].get("uid", "")
 
-            layers = Object(self.sessionId, self.assetId, self.domain, uid=policyPackageUid[0]["uid"]).info().get("object", {}).get("access-layers", [])
-            for l in layers:
-                accessSections.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
-                    filter="dst:" + self.ipv4Address,
-                    filterSettings={
-                        "search-mode": "packet",
-                        "packet-search-settings": {
-                            "match-on-any": True
+            if policyPackageUid:
+                layers = Object(self.sessionId, self.assetId, self.domain, uid=policyPackageUid).info().get("object", {}).get("access-layers", [])
+                for l in layers:
+                    accessSections.extend(Layer.listRules(sessionId=self.sessionId, layerType="access", assetId=self.assetId, domain=self.domain, accessLayerUid=l["uid"],
+                        filter="dst:" + self.ipv4Address,
+                        filterSettings={
+                            "search-mode": "packet",
+                            "packet-search-settings": {
+                                "match-on-any": True
+                            }
                         }
-                    }
-                ))
+                    ))
 
-            for ac in accessSections:
-                if "rulebase" in ac:
-                    acls.extend(ac["rulebase"])
+                for ac in accessSections:
+                    if "rulebase" in ac:
+                        acls.extend(ac["rulebase"])
 
-            # Information from collected security rules.
-            for acl in acls:
-                #if acl.get("package", {}).get("name", "") == self.package:
-                if True:
-                    ruleAcl = Object(self.sessionId, self.assetId, self.domain, uid=(acl.get("rule", {}).get("uid", "") or acl.get("uid", ""))).info()["object"]
+                # Information from collected security rules.
+                for acl in acls:
+                    #if acl.get("package", {}).get("name", "") == self.package:
+                    if True:
+                        ruleAcl = Object(self.sessionId, self.assetId, self.domain, uid=(acl.get("rule", {}).get("uid", "") or acl.get("uid", ""))).info()["object"]
 
-                    # Collect information for all (active) source access roles.
-                    if ruleAcl.get("enabled", False):
-                        for j in ruleAcl.get("source", []):
-                            if j.get("type", "") == "access-role":
-                                try:
-                                    # Output only access roles related to a domain.
-                                    output = False
-                                    for u in j.get("users", []):
-                                        o = Object(self.sessionId, self.assetId, self.domain, uid=u).info()["object"]
-                                        if "dn" in o:
-                                            output = True
-                                            break
+                        # Collect information for all (active) source access roles.
+                        if ruleAcl.get("enabled", False):
+                            for j in ruleAcl.get("source", []):
+                                if j.get("type", "") == "access-role":
+                                    try:
+                                        # Output only access roles related to a domain.
+                                        output = False
+                                        for u in j.get("users", []):
+                                            o = Object(self.sessionId, self.assetId, self.domain, uid=u).info()["object"]
+                                            if "dn" in o:
+                                                output = True
+                                                break
 
-                                    if output:
-                                        rolesToIpv4.append({
-                                            j["uid"]: {
-                                                "name": j["name"],
-                                                "services": list()
-                                            }
-                                        })
-
-                                        if "service" in ruleAcl:
-                                            for s in ruleAcl["service"]:
-                                                stype = s.get("type", "")
-                                                info = {
-                                                    "type": stype,
+                                        if output:
+                                            rolesToIpv4.append({
+                                                j["uid"]: {
+                                                    "name": j["name"],
+                                                    "services": list()
                                                 }
+                                            })
 
-                                                if "port" in s:
-                                                    info["port"] = s["port"]
-                                                if "protocol" in s:
-                                                    info["protocol"] = s["protocol"]
+                                            if "service" in ruleAcl:
+                                                for s in ruleAcl["service"]:
+                                                    stype = s.get("type", "")
 
-                                                if stype == "CpmiAnyObject":
-                                                    info["type"] = ""
-                                                    info["port"] = "any"
+                                                    if stype == "service-group":
+                                                        rolesToIpv4[no][j["uid"]]["services"].extend(
+                                                            VpnToHost.__serviceGroupPorts(self.sessionId, self.assetId, self.domain, serviceGroupUid=s.get("uid", ""))
+                                                        )
+                                                    else:
+                                                        info = {}
+                                                        if stype == "CpmiAnyObject":
+                                                            info["type"] = ""
+                                                            info["port"] = "any"
+                                                            info["protocol"] = ""
+                                                        else:
+                                                            info["type"] = stype
+                                                            if "port" in s:
+                                                                info["port"] = s.get("port", "")
+                                                            if "protocol" in s:
+                                                                info["protocol"] = s.get("protocol", "")
 
-                                                rolesToIpv4[no][j["uid"]]["services"].append(info)
+                                                        rolesToIpv4[no][j["uid"]]["services"].append(info)
 
-                                        no += 1
-                                except KeyError:
-                                    pass
+                                            no += 1
+                                    except KeyError:
+                                        pass
 
-            # Cleanup data structure.
-            for j, service in enumerate(rolesToIpv4):
-                for k, v in service.items():
-                    rolesToIpv4[j] = dict()
+                # Cleanup data structure.
+                for j, service in enumerate(rolesToIpv4):
+                    for k, v in service.items():
+                        rolesToIpv4[j] = dict()
 
-                    rolesToIpv4[j]["uid"] = k
-                    rolesToIpv4[j].update(v)
+                        rolesToIpv4[j]["uid"] = k
+                        rolesToIpv4[j].update(v)
 
             return list({v['uid']: v for v in rolesToIpv4}.values()) # unique uids.
         except Exception as e:
@@ -173,3 +179,40 @@ class VpnToHost:
     @staticmethod
     def usedModels() -> list:
         return ["object", "host", "ruleaccess", "roleaccess"]
+
+
+
+    ####################################################################################################################
+    # Private static methods
+    ####################################################################################################################
+
+    @staticmethod
+    def __serviceGroupPorts(sessionId: str, assetId: int, domain: str, serviceGroupUid: str):
+        memberServices = list()
+
+        try:
+            for member in Object(sessionId, assetId, domain, uid=serviceGroupUid).info().get("object", {}).get("members", []):
+                stype = member.get("type", "")
+
+                if stype == "service-group":
+                    memberServices.extend(
+                        VpnToHost.__serviceGroupPorts(sessionId, assetId, domain, serviceGroupUid=member.get("uid", ""))
+                    )
+                else:
+                    info = {}
+                    if stype == "CpmiAnyObject":
+                        info["type"] = ""
+                        info["port"] = "any"
+                        info["protocol"] = ""
+                    else:
+                        info["type"] = stype
+                        if "port" in member:
+                            info["port"] = member.get("port", "")
+                        if "protocol" in member:
+                            info["protocol"] = member.get("protocol", "")
+
+                    memberServices.append(info)
+        except Exception as e:
+            raise e
+
+        return memberServices
