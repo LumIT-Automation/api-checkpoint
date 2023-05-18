@@ -151,13 +151,16 @@ class VpnToHost:
                         rolesToIpv4[j]["uid"] = k
                         rolesToIpv4[j].update(v)
 
+                Log.log(rolesToIpv4, "_")
+
                 for r in list({v['uid']: v for v in rolesToIpv4}.values()): # unique uids.
                     rs = list()
                     for s in r.get("services"):
                         if s not in rs:
                             rs.append(s)
 
-                    uniqueRolesToIpv4.append(rs)
+                    r["services"] = rs
+                    uniqueRolesToIpv4.append(r)
 
             return uniqueRolesToIpv4
         except Exception as e:
