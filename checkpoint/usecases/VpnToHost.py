@@ -151,8 +151,6 @@ class VpnToHost:
                         rolesToIpv4[j]["uid"] = k
                         rolesToIpv4[j].update(v)
 
-                Log.log(rolesToIpv4, "_")
-
                 for r in list({v['uid']: v for v in rolesToIpv4}.values()): # unique uids.
                     rs = list()
                     for s in r.get("services"):
