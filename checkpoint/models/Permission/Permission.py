@@ -63,18 +63,6 @@ class Permission:
 
     @staticmethod
     def permissionsDataList() -> list:
-
-        #     {
-        #         "id": 2,
-        #         "identity_group_name": "groupAdmin",
-        #         "identity_group_identifier": "cn=groupadmin,cn=users,dc=lab,dc=local",
-        #         "role": "admin",
-        #         "domain": {
-        #             "asset_id": 1,
-        #             "name": "any"
-        #         }
-        #     },
-
         try:
             return Repository.list()
         except Exception as e:

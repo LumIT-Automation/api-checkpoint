@@ -101,7 +101,7 @@ class Permission:
 
             for el in l:
                 el["domain"] = {
-                    "asset_id": el["domain_asset"],
+                    "id_asset": el["domain_asset"],
                     "name": el["domain_name"]
                 }
 

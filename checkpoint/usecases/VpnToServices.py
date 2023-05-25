@@ -148,7 +148,6 @@ class VpnToServices:
 
                         if o["object"]["type"] == "host":
                             l.append(o["object"]["ipv4-address"])
-
                         if o["object"]["type"] == "group":
                             l.append(
                                 VpnToServices.__groupIpv4Addresses(sessionId, assetId, domain, groupUid=m) # recurse.
