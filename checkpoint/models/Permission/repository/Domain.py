@@ -9,13 +9,6 @@ class Domain:
 
     # Table: domain
 
-    #   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    #   `id_asset` int(11) NOT NULL KEY,
-    #   `domain` varchar(64) NOT NULL,
-    #   `description` varchar(255) DEFAULT NULL
-    #
-    #   UNIQUE KEY `id_asset` (`id_asset`,`domain`)
-
 
 
     ####################################################################################################################

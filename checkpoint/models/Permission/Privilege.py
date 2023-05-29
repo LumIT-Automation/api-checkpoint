@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List
 
 from checkpoint.models.Permission.repository.Privilege import Privilege as Repository
@@ -17,11 +18,20 @@ class Privilege:
 
 
     ####################################################################################################################
+    # Public methods
+    ####################################################################################################################
+
+    def repr(self):
+        return repr(self)
+
+
+
+    ####################################################################################################################
     # Public static methods
     ####################################################################################################################
 
     @staticmethod
-    def list() -> list:
+    def list() -> List[Privilege]:
         privileges = []
 
         try:

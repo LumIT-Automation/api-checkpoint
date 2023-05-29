@@ -22,7 +22,9 @@ class PermissionRolesController(CustomControllerCheckPointGetList):
                 if "privileges" in rList:
                     loadPrivilege = True
 
-            return Role.dataList(loadPrivilege=loadPrivilege)
+            return [
+                r.repr() for r in Role.list(loadPrivilege=loadPrivilege)
+            ]
 
         return self.getList(
             request=request,
