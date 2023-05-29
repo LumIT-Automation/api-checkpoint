@@ -18,13 +18,9 @@ class PermissionIdentityGroupsController(CustomControllerCheckPointGetList, Cust
 
     def get(self, request: Request) -> Response:
         def actionCallback():
-            showPrivileges = False
-            if "related" in request.GET:
-                rList = request.GET.getlist('related')
-                if "privileges" in rList:
-                    showPrivileges = True
-
-            return IdentityGroup.listWithPermissionsPrivileges(showPrivileges=showPrivileges)
+            return [
+                ig.repr() for ig in IdentityGroup.list()
+            ]
 
         return self.getList(
             request=request,

@@ -308,7 +308,7 @@ class PermissionPrivilege:
                 # Obtain: WHERE (identity_group.identity_group_identifier = %s || identity_group.identity_group_identifier = %s || identity_group.identity_group_identifier = %s || ....)
                 args = groups.copy()
                 groupWhere = ""
-                for g in groups:
+                for _ in groups:
                     groupWhere += "identity_group.identity_group_identifier = %s || "
 
                 # Put all the args of the query in a list.
