@@ -174,7 +174,7 @@ ALTER TABLE `configuration`
 --
 ALTER TABLE `asset`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `address` (`address`);
+  ADD UNIQUE KEY `fqdn` (`fqdn`);
 
 --
 -- Indici per le tabelle `group_role_domain`
