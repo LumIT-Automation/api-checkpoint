@@ -4,4 +4,4 @@ from checkpoint.serializers.CheckPoint.Asset.Asset import CheckPointAssetSeriali
 
 
 class CheckPointAssetsSerializer(serializers.Serializer):
-    items = CheckPointAssetSerializer(many=True)
+    items = CheckPointAssetSerializer(idField=True, many=True)
