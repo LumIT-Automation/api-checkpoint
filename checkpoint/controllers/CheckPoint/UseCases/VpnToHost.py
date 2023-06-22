@@ -45,7 +45,7 @@ class CheckPointVpnProfilesToHostController(CustomControllerBase):
             if originalUsername:
                 Log.actionLog("[Original user for VPN to host]", {"username": originalUsername})
             if workflowId:
-                Log.actionLog("[Workflow id for VPN to host: "+workflowId, {"username": originalUsername})
+                Log.actionLog("[Workflow id for VPN to host: " + workflowId, {"username": originalUsername})
 
             if Permission.hasUserPermission(groups=user["groups"], action="vpn_to_host", assetId=assetId) or user["authDisabled"]:
                 serializer = Serializer(data=request.data.get("data", {}))
@@ -72,7 +72,7 @@ class CheckPointVpnProfilesToHostController(CustomControllerBase):
                             "error": str(serializer.errors)
                         }
                     }
-                    Log.actionLog("User data incorrect: "+str(response), user)
+                    Log.actionLog("User data incorrect: " + str(response), user)
             else:
                 response = None
                 httpStatus = status.HTTP_403_FORBIDDEN

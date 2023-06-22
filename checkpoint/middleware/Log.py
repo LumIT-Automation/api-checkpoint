@@ -10,7 +10,6 @@ class LogMiddleware:
 
 
     def __call__(self, request: request) -> response:
-        self.log.debug("Request: "+str(request))
+        self.log.debug("Request: " + str(request))
 
-        response = self.response(request)
-        return response
+        return self.response(request)

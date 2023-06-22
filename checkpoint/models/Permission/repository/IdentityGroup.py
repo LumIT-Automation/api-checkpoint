@@ -106,11 +106,11 @@ class IdentityGroup:
             keys += k + ","
             values.append(strip_tags(v)) # no HTML allowed.
 
-        keys = keys[:-1]+")"
+        keys = keys[:-1] + ")"
 
         try:
             with transaction.atomic():
-                c.execute("INSERT INTO identity_group "+keys+" VALUES ("+s[:-1]+")", values) # user data are filtered by the serializer.
+                c.execute("INSERT INTO identity_group " + keys + " VALUES (" + s[:-1] + ")", values) # user data are filtered by the serializer.
 
                 return c.lastrowid
         except Exception as e:

@@ -64,20 +64,20 @@ class Session:
     @staticmethod
     def getSavedToken(sessionId: str, assetId: int, domain: str) -> str:
         return cache.get(
-            "token-"+str(sessionId)+"-"+str(assetId)+"-"+str(domain) # load from cache.
+            "token-" + str(sessionId) + "-" + str(assetId) + "-" + str(domain) # load from cache.
         )
 
 
 
     @staticmethod
     def saveToken(sessionId: str, assetId: int, domain: str, value: str, timeout: int) -> None:
-        cache.set("token-"+str(sessionId)+"-"+str(assetId)+"-"+str(domain), value, timeout=timeout)
+        cache.set("token-" + str(sessionId) + "-" + str(assetId) + "-" + str(domain), value, timeout=timeout)
 
 
 
     @staticmethod
     def deleteTokens(sessionId: str, assetId: int, domain: str, onlyFromDomain: bool = True) -> None:
         if not onlyFromDomain:
-            cache.delete("token-"+str(sessionId)+"-"+str(assetId)+"-") # login.
+            cache.delete("token-" + str(sessionId) + "-" + str(assetId) + "-") # login.
 
-        cache.delete("token-"+str(sessionId)+"-"+str(assetId)+"-"+str(domain)) # domain.
+        cache.delete("token-" + str(sessionId) + "-" + str(assetId) + "-" + str(domain)) # domain.

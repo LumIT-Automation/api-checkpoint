@@ -26,7 +26,7 @@ class Rule:
     def info(self) -> dict:
         try:
             return ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="show-"+self.type+"-rule",
+                urlSegment="show-" + self.type + "-rule",
                 domain=self.domain,
                 data={
                     "uid": self.uid,
@@ -47,7 +47,7 @@ class Rule:
 
         try:
             ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="set-"+self.type+"-rule",
+                urlSegment="set-" + self.type + "-rule",
                 domain=self.domain,
                 data=data
             )
@@ -65,7 +65,7 @@ class Rule:
     def delete(self, autoPublish: bool = True) -> None:
         try:
             ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="delete-"+self.type+"-rule",
+                urlSegment="delete-" + self.type + "-rule",
                 domain=self.domain,
                 data={
                     "uid": self.uid,
@@ -90,7 +90,7 @@ class Rule:
 
         try:
             o = ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="add-"+self.type+"-rule",
+                urlSegment="add-" + self.type + "-rule",
                 domain=self.domain,
                 data=data
             )

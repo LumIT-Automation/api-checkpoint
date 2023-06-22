@@ -20,11 +20,15 @@ class Asset:
     ####################################################################################################################
 
     @staticmethod
-    def get(assetId: int) -> dict:
+    def get(assetId: int, showPassword: bool = False) -> dict:
         c = connection.cursor()
 
+        fields = "id, fqdn, protocol, port, path, tlsverify, baseurl, IFNULL (datacenter, '') AS datacenter, IFNULL (environment, '') AS environment, IFNULL (position, '') AS position"
+        if showPassword:
+            fields += ", IFNULL (username, '') AS username, IFNULL (password, '') AS password"
+
         try:
-            c.execute("SELECT * FROM asset WHERE id = %s", [assetId])
+            c.execute("SELECT " + fields + " FROM asset WHERE id = %s", [assetId])
 
             return DBHelper.asDict(c)[0]
         except IndexError:
@@ -45,11 +49,11 @@ class Asset:
 
         # Build SQL query according to dict fields.
         for k, v in data.items():
-            sql += k+"=%s,"
+            sql += k + "=%s,"
             values.append(strip_tags(v)) # no HTML allowed.
 
         try:
-            c.execute("UPDATE asset SET "+sql[:-1]+" WHERE id = "+str(assetId), values) # user data are filtered by the serializer.
+            c.execute("UPDATE asset SET " + sql[:-1] + " WHERE id = " + str(assetId), values) # user data are filtered by the serializer.
         except Exception as e:
             if e.__class__.__name__ == "IntegrityError" \
                     and e.args and e.args[0] and e.args[0] == 1062:
@@ -79,11 +83,15 @@ class Asset:
     ####################################################################################################################
 
     @staticmethod
-    def list() -> List[dict]:
+    def list(showPassword: bool = False) -> List[dict]:
         c = connection.cursor()
 
+        fields = "id, fqdn, protocol, port, path, tlsverify, baseurl, IFNULL (datacenter, '') AS datacenter, IFNULL (environment, '') AS environment, IFNULL (position, '') AS position"
+        if showPassword:
+            fields += ", IFNULL (username, '') AS username, IFNULL (password, '') AS password"
+
         try:
-            c.execute("SELECT id, address, fqdn, baseurl, tlsverify, datacenter, environment, position FROM asset")
+            c.execute("SELECT " + fields + " FROM asset")
             return DBHelper.asDict(c)
         except Exception as e:
             raise CustomException(status=400, payload={"database": e.__str__()})
@@ -102,14 +110,14 @@ class Asset:
         # Build SQL query according to dict fields.
         for k, v in data.items():
             s += "%s,"
-            keys += k+","
+            keys += k + ","
             values.append(strip_tags(v)) # no HTML allowed.
 
-        keys = keys[:-1]+")"
+        keys = keys[:-1] + ")"
 
         try:
             with transaction.atomic():
-                c.execute("INSERT INTO asset "+keys+" VALUES ("+s[:-1]+")", values) # user data are filtered by the serializer.
+                c.execute("INSERT INTO asset " + keys + " VALUES (" + s[:-1] + ")", values) # user data are filtered by the serializer.
 
                 return c.lastrowid
         except Exception as e:
