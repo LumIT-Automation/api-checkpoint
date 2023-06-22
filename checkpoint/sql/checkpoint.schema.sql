@@ -44,7 +44,7 @@ CREATE TABLE `asset` (
   `port` int(11) NOT NULL DEFAULT 443,
   `path` varchar(255) NOT NULL DEFAULT '/',
   `tlsverify` tinyint(4) NOT NULL DEFAULT 1,
-  `baseurl` varchar(255) NOT NULL,
+  `baseurl` varchar(255) NOT NULL DEFAULT '',
   `datacenter` varchar(255) NULL,
   `environment` varchar(255) NULL,
   `position` varchar(255) NULL,

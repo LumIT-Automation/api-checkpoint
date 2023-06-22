@@ -45,7 +45,7 @@ class CustomControllerCheckPointUpdate(CustomControllerBase):
                 Log.actionLog("User data: " + str(request.data), user)
 
                 if Serializer:
-                    serializer = Serializer(data=request.data.get("data", {}))
+                    serializer = Serializer(data=request.data.get("data", {}), partial=True)
                     if serializer.is_valid():
                         data = serializer.validated_data
                     else:

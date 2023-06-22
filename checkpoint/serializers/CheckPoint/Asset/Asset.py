@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 
 class CheckPointAssetSerializer(serializers.Serializer):
-    id = serializers.IntegerField(required=True)
+    id = serializers.IntegerField(required=False)
     fqdn = serializers.CharField(max_length=255, required=True)
     protocol = serializers.CharField(max_length=16, required=False)
     port = serializers.IntegerField(required=False)

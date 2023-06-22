@@ -6,7 +6,6 @@ from django.db import transaction
 
 from checkpoint.helpers.Exception import CustomException
 from checkpoint.helpers.Database import Database as DBHelper
-from checkpoint.helpers.Log import Log
 
 
 class Asset:
@@ -16,7 +15,7 @@ class Asset:
 
 
     ####################################################################################################################
-    # Public methods
+    # Public static methods
     ####################################################################################################################
 
     @staticmethod
@@ -53,7 +52,11 @@ class Asset:
             values.append(strip_tags(v)) # no HTML allowed.
 
         try:
-            c.execute("UPDATE asset SET " + sql[:-1] + " WHERE id = " + str(assetId), values) # user data are filtered by the serializer.
+            with transaction.atomic():
+                c.execute("UPDATE asset SET " + sql[:-1] + " WHERE id = " + str(assetId), values) # user data are filtered by the serializer.
+                c.execute("UPDATE asset SET baseurl=%s WHERE id = " + str(assetId), [
+                    Asset.__getBaseurl(assetId)
+                ])
         except Exception as e:
             if e.__class__.__name__ == "IntegrityError" \
                     and e.args and e.args[0] and e.args[0] == 1062:
@@ -77,10 +80,6 @@ class Asset:
             c.close()
 
 
-
-    ####################################################################################################################
-    # Public static methods
-    ####################################################################################################################
 
     @staticmethod
     def list(showPassword: bool = False) -> List[dict]:
@@ -118,8 +117,13 @@ class Asset:
         try:
             with transaction.atomic():
                 c.execute("INSERT INTO asset " + keys + " VALUES (" + s[:-1] + ")", values) # user data are filtered by the serializer.
+                lwId = c.lastrowid
 
-                return c.lastrowid
+                c.execute("UPDATE asset SET baseurl=%s WHERE id = " + str(lwId), [
+                    Asset.__getBaseurl(lwId)
+                ])
+
+                return lwId
         except Exception as e:
             if e.__class__.__name__ == "IntegrityError" \
                     and e.args and e.args[0] and e.args[0] == 1062:
@@ -128,3 +132,15 @@ class Asset:
                 raise CustomException(status=400, payload={"database": e.__str__()})
         finally:
             c.close()
+
+
+
+    ####################################################################################################################
+    # Private static methods
+    ####################################################################################################################
+
+    @staticmethod
+    def __getBaseurl(assetId: int) -> str:
+        ai = Asset.get(assetId)
+
+        return str(ai["protocol"]) + "://" + str(ai["fqdn"]) + ":" + str(ai["port"]) + str(ai["path"])
