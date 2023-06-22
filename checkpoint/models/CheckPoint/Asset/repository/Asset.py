@@ -29,7 +29,10 @@ class Asset:
         try:
             c.execute("SELECT " + fields + " FROM asset WHERE id = %s", [assetId])
 
-            return DBHelper.asDict(c)[0]
+            info = DBHelper.asDict(c)[0]
+            info["tlsverify"] = bool(info["tlsverify"])
+
+            return info
         except IndexError:
             raise CustomException(status=404, payload={"database": "Non existent asset"})
         except Exception as e:
@@ -49,6 +52,9 @@ class Asset:
         # Build SQL query according to dict fields.
         for k, v in data.items():
             sql += k + "=%s,"
+
+            if k == "tlsverify":
+                v = int(v)
             values.append(strip_tags(v)) # no HTML allowed.
 
         try:
@@ -91,7 +97,12 @@ class Asset:
 
         try:
             c.execute("SELECT " + fields + " FROM asset")
-            return DBHelper.asDict(c)
+
+            l = DBHelper.asDict(c)
+            for el in l:
+                el["tlsverify"] = bool(el["tlsverify"])
+
+            return l
         except Exception as e:
             raise CustomException(status=400, payload={"database": e.__str__()})
         finally:
@@ -110,6 +121,9 @@ class Asset:
         for k, v in data.items():
             s += "%s,"
             keys += k + ","
+
+            if k == "tlsverify":
+                v = int(v)
             values.append(strip_tags(v)) # no HTML allowed.
 
         keys = keys[:-1] + ")"

@@ -14,7 +14,7 @@ class Asset:
         self.protocol: str = "https"
         self.port: int = 443
         self.path: str = "/"
-        self.tlsverify: int = 1
+        self.tlsverify: bool = True
         self.baseurl: str = ""
         self.datacenter: str = ""
         self.environment: str = ""

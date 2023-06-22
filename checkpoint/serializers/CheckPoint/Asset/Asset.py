@@ -7,7 +7,7 @@ class CheckPointAssetSerializer(serializers.Serializer):
     protocol = serializers.CharField(max_length=16, required=False)
     port = serializers.IntegerField(required=False)
     path = serializers.CharField(max_length=255, required=False)
-    tlsverify = serializers.IntegerField(required=False)
+    tlsverify = serializers.BooleanField(required=False)
     baseurl = serializers.CharField(max_length=255, required=False)
     datacenter = serializers.CharField(max_length=255, required=False, allow_blank=True)
     environment = serializers.CharField(max_length=255, required=False, allow_blank=True)

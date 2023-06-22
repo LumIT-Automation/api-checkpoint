@@ -906,7 +906,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"data\": {\n        \"fqdn\": \"172.25.0.101\",\n        \"protocol\": \"https\",\n        \"port\": 443,\n        \"path\": \"/web_api/\",\n        \"tlsverify\": 0,\n        \"datacenter\": \"\",\n        \"environment\": \"Development\",\n        \"position\": \"RACK 2\",\n        \"username\": \"username\",\n        \"password\": \"password\"\n    }\n}",
+									"raw": "{\n    \"data\": {\n        \"fqdn\": \"172.25.0.101\",\n        \"protocol\": \"https\",\n        \"port\": 443,\n        \"path\": \"/web_api/\",\n        \"tlsverify\": true,\n        \"datacenter\": \"\",\n        \"environment\": \"Development\",\n        \"position\": \"RACK 2\",\n        \"username\": \"username\",\n        \"password\": \"password\"\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -957,7 +957,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://10.0.111.26/api/v1/checkpoint/asset/12/",
+									"raw": "http://10.0.111.26/api/v1/checkpoint/asset/2/",
 									"protocol": "http",
 									"host": [
 										"10",
@@ -970,7 +970,7 @@
 										"v1",
 										"checkpoint",
 										"asset",
-										"12",
+										"2",
 										""
 									]
 								}
