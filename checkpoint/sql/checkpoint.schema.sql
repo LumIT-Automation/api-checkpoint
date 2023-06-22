@@ -176,7 +176,7 @@ ALTER TABLE `configuration`
 --
 ALTER TABLE `asset`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `fqdn` (`fqdn`,`protocol`,`port`) USING BTREE;
+  ADD UNIQUE KEY `fqdn` (`fqdn`,`protocol`,`port`);
 
 --
 -- Indici per le tabelle `group_role_domain`
@@ -192,7 +192,7 @@ ALTER TABLE `group_role_domain`
 --
 ALTER TABLE `identity_group`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `identity_group_identifier` (`identity_group_identifier`) USING BTREE,
+  ADD UNIQUE KEY `identity_group_identifier` (`identity_group_identifier`),
   ADD KEY `name` (`name`);
 
 --
