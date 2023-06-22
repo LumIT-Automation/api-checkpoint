@@ -104,7 +104,7 @@ class VpnToServices:
                         except KeyError:
                             pass
             else:
-                raise CustomException(status=404, payload={"CheckPoint": "role not found"})
+                raise CustomException(status=404, payload={"CheckPoint": "Role not found"})
 
             # Cleanup data structure.
             for j, service in enumerate(services):

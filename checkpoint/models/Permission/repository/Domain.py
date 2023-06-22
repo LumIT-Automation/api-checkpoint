@@ -27,7 +27,7 @@ class Domain:
 
             return DBHelper.asDict(c)[0]
         except IndexError:
-            raise CustomException(status=404, payload={"database": "non existent domain"})
+            raise CustomException(status=404, payload={"database": "Non existent domain"})
         except Exception as e:
             raise CustomException(status=400, payload={"database": e.__str__()})
         finally:
@@ -63,7 +63,7 @@ class Domain:
         except Exception as e:
             if e.__class__.__name__ == "IntegrityError" \
                     and e.args and e.args[0] and e.args[0] == 1062:
-                        raise CustomException(status=400, payload={"database": "duplicated domain"})
+                        raise CustomException(status=400, payload={"database": "Duplicated domain"})
             else:
                 raise CustomException(status=400, payload={"database": e.__str__()})
         finally:

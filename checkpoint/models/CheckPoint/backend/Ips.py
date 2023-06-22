@@ -67,10 +67,10 @@ class Ips:
                     if taskRunInfo["status"] == "succeeded":
                         break
                     elif taskRunInfo["status"] == "failed":
-                        raise CustomException(status=400, payload={"CheckPoint": taskRunInfo.get("task-details", [])[0].get("statusDescription", "unknown error")})
+                        raise CustomException(status=400, payload={"CheckPoint": taskRunInfo.get("task-details", [])[0].get("statusDescription", "Unknown error")})
 
                     if time.time() >= t0 + timeout: # timeout reached.
-                        raise CustomException(status=400, payload={"CheckPoint": f"task timeout reached"})
+                        raise CustomException(status=400, payload={"CheckPoint": "Task timeout reached"})
 
                     time.sleep(5)
                 except KeyError:
