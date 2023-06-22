@@ -176,7 +176,7 @@ ALTER TABLE `configuration`
 --
 ALTER TABLE `asset`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `fqdn` (`fqdn`);
+  ADD UNIQUE KEY `fqdn` (`fqdn`,`protocol`,`port`) USING BTREE;
 
 --
 -- Indici per le tabelle `group_role_domain`
