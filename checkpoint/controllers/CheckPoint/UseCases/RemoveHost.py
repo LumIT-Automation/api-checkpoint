@@ -45,7 +45,7 @@ class CheckPointRemoveHostController(CustomControllerBase):
             if originalUsername:
                 Log.actionLog("[Original user for Host complete removal]", {"username": originalUsername})
             if workflowId:
-                Log.actionLog("[Workflow id for Host complete removal: "+workflowId, {"username": originalUsername})
+                Log.actionLog("[Workflow id for Host complete removal: " + workflowId, {"username": originalUsername})
 
             if Permission.hasUserPermission(groups=user["groups"], action="host_remove", assetId=assetId) or user["authDisabled"]:
                 serializer = Serializer(data=request.data.get("data", {}))
@@ -72,7 +72,7 @@ class CheckPointRemoveHostController(CustomControllerBase):
                             "error": str(serializer.errors)
                         }
                     }
-                    Log.actionLog("User data incorrect: "+str(response), user)
+                    Log.actionLog("User data incorrect: " + str(response), user)
             else:
                 httpStatus = status.HTTP_403_FORBIDDEN
         except Exception as e:

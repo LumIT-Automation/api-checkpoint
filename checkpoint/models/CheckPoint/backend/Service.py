@@ -29,7 +29,7 @@ class Service:
     def info(self) -> dict:
         try:
             return ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="show-service-"+self.type,
+                urlSegment="show-service-" + self.type,
                 domain=self.domain,
                 data={
                     "uid": self.uid,
@@ -46,7 +46,7 @@ class Service:
 
         try:
             ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="set-service-"+self.type,
+                urlSegment="set-service-" + self.type,
                 domain=self.domain,
                 data=data
             )
@@ -64,7 +64,7 @@ class Service:
     def delete(self, autoPublish: bool = True) -> None:
         try:
             ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="delete-service-"+self.type,
+                urlSegment="delete-service-" + self.type,
                 domain=self.domain,
                 data={
                     "uid": self.uid
@@ -89,7 +89,7 @@ class Service:
             # Collect all data (serial requests).
             for n in range(0, settings.MAX_REQUESTS):
                 o = ApiSupplicant(self.sessionId, self.assetId, silent=True).post(
-                    urlSegment="show-services-"+self.type,
+                    urlSegment="show-services-" + self.type,
                     domain=self.domain,
                     data={
                         "details-level": details,
@@ -114,7 +114,7 @@ class Service:
     def add(self, data: dict, autoPublish: bool = True) -> dict:
         try:
             o = ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="add-service-"+self.type,
+                urlSegment="add-service-" + self.type,
                 domain=self.domain,
                 data=data
             )

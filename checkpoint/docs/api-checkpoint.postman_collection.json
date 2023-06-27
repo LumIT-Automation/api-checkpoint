@@ -906,7 +906,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"data\": {\n        \"address\": \"172.25.0.100\",\n        \"fqdn\": \"172.25.0.100\",\n        \"baseurl\": \"https://172.25.0.100/web_api/\",\n        \"tlsverify\": 0,\n        \"datacenter\": \"Bologna\",\n        \"environment\": \"Development\",\n        \"position\": \"RACK 2\",\n        \"username\": \"lumit\",\n        \"password\": \"PASSWORD\"\n    }\n}",
+									"raw": "{\n    \"data\": {\n        \"fqdn\": \"172.25.0.101\",\n        \"protocol\": \"https\",\n        \"port\": 443,\n        \"path\": \"/web_api/\",\n        \"tlsverify\": true,\n        \"datacenter\": \"\",\n        \"environment\": \"Development\",\n        \"position\": \"RACK 2\",\n        \"username\": \"username\",\n        \"password\": \"password\"\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -949,7 +949,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"data\": \n    {\n        \"address\": \"198.18.215.100\",\n        \"fqdn\": \"198.18.215.100\",\n        \"baseurl\": \"https://198.18.215.100/web_api/\",\n        \"datacenter\": \"Bologna\",\n        \"environment\": \"Development\"\n    }\n}",
+									"raw": "{\n    \"data\": {\n        \"protocol\": \"http\",\n        \"port\": 80\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"

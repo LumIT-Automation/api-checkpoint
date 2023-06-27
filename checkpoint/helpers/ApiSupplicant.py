@@ -37,8 +37,8 @@ class ApiSupplicant:
         try:
             url = self.assetData.baseurl+urlSegment
 
-            Log.actionLog("[API Supplicant] Posting to remote: "+str(url))
-            Log.actionLog("[API Supplicant] Posting data: "+str(data))
+            Log.actionLog("[API Supplicant] Posting to remote: " + str(url))
+            Log.actionLog("[API Supplicant] Posting data: " + str(data))
 
             return self.__request(
                 requests.post,
@@ -73,10 +73,10 @@ class ApiSupplicant:
             if not token:
                 # Obtain login token.
                 if not domain:
-                    Log.actionLog("[API Supplicant] Requesting login token for asset "+str(self.assetId))
+                    Log.actionLog("[API Supplicant] Requesting login token for asset " + str(self.assetId))
                     response = self.__request(
                         requests.post,
-                        url=self.assetData.baseurl+"login",
+                        url=self.assetData.baseurl + "login",
                         data={
                             "user": self.assetData.username,
                             "password": self.assetData.password,
@@ -89,10 +89,10 @@ class ApiSupplicant:
 
                 # Domain token.
                 else:
-                    Log.actionLog("[API Supplicant] Requesting domain token: "+str(domain)+" for asset "+str(self.assetId))
+                    Log.actionLog("[API Supplicant] Requesting domain token: " + str(domain) + " for asset " + str(self.assetId))
                     response = self.__request(
                         requests.post,
-                        url=self.assetData.baseurl+"login-to-domain",
+                        url=self.assetData.baseurl + "login-to-domain",
                         additionalHeaders={
                             "x-chkp-sid": self.__getToken() # recursive.
                         },
@@ -149,7 +149,7 @@ class ApiSupplicant:
 
             if not self.silent:
                 for j in (("status", self.responseStatus), ("headers", self.responseHeaders), ("payload", self.responsePayload)):
-                    Log.actionLog("[API Supplicant] Remote response "+j[0]+": "+str(j[1]))
+                    Log.actionLog("[API Supplicant] Remote response " + j[0] + ": " + str(j[1]))
             else:
                 Log.actionLog("[API Supplicant] Remote response status (log silenced): " + str(self.responseStatus))
 
@@ -157,26 +157,26 @@ class ApiSupplicant:
             if self.responseStatus == 200 or self.responseStatus == 201: # ok / ok on POST.
                 pass
             elif self.responseStatus == 401:
-                raise CustomException(status=400, payload={"CheckPoint": "wrong credentials for the asset"})
+                raise CustomException(status=400, payload={"CheckPoint": "Wrong credentials for the asset"})
             else:
                 if "message" in self.responsePayload:
                     checkpointError = self.responsePayload["message"]
                     if "warnings" in self.responsePayload:
                         checkpointError += ". "
                         for el in self.responsePayload["warnings"]:
-                            checkpointError += str(el.get("message", ""))+" "
+                            checkpointError += str(el.get("message", "")) + " "
                     if "errors" in self.responsePayload:
                         checkpointError += ". "
                         for el in self.responsePayload["errors"]:
-                            checkpointError += str(el.get("message", ""))+" "
+                            checkpointError += str(el.get("message", "")) + " "
                     if "blocking-errors" in self.responsePayload:
                         checkpointError += ". "
                         for el in self.responsePayload["blocking-errors"]:
-                            checkpointError += str(el.get("message", ""))+" "
+                            checkpointError += str(el.get("message", "")) + " "
                 else:
                     checkpointError = self.responsePayload
 
-                Log.actionLog("[API Supplicant] CheckPoint error: "+str(checkpointError))
+                Log.actionLog("[API Supplicant] CheckPoint error: " + str(checkpointError))
                 raise CustomException(status=self.responseStatus, payload={"CheckPoint": checkpointError})
         except Exception as e:
             raise e

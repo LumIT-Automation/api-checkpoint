@@ -29,7 +29,7 @@ class Layer:
     def info(self) -> dict:
         try:
             return ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="show-"+self.type+"-layer",
+                urlSegment="show-" + self.type + "-layer",
                 domain=self.domain,
                 data={
                     "uid": self.uid,
@@ -46,7 +46,7 @@ class Layer:
 
         try:
             ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="set-"+self.type+"-layer",
+                urlSegment="set-" + self.type + "-layer",
                 domain=self.domain,
                 data=data
             )
@@ -64,7 +64,7 @@ class Layer:
     def delete(self, autoPublish: bool = True) -> None:
         try:
             ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="delete-"+self.type+"-layer",
+                urlSegment="delete-" + self.type + "-layer",
                 domain=self.domain,
                 data={
                     "uid": self.uid
@@ -89,7 +89,7 @@ class Layer:
             # Collect all data (serial requests).
             for n in range(0, settings.MAX_REQUESTS):
                 o = ApiSupplicant(self.sessionId, self.assetId, silent=True).post(
-                    urlSegment="show-"+self.type+"-layers",
+                    urlSegment="show-" + self.type + "-layers",
                     domain=self.domain,
                     data={
                         "details-level": details,
@@ -98,7 +98,7 @@ class Layer:
                     }
                 )
 
-                l = self.type+"-layers"
+                l = self.type + "-layers"
                 if l in o and o[l]:
                     out.extend(o[l])
                     if o["to"] >= o["total"]:
@@ -115,7 +115,7 @@ class Layer:
     def add(self, data: dict, autoPublish: bool = True) -> dict:
         try:
             o = ApiSupplicant(self.sessionId, self.assetId).post(
-                urlSegment="add-"+self.type+"-layer",
+                urlSegment="add-" + self.type + "-layer",
                 domain=self.domain,
                 data=data
             )
@@ -154,7 +154,7 @@ class Layer:
                     data["filter-settings"] = filterSettings
 
                 o = ApiSupplicant(self.sessionId, self.assetId).post(
-                    urlSegment="show-"+self.type+"-rulebase",
+                    urlSegment="show-" + self.type + "-rulebase",
                     domain=self.domain,
                     data=data
                 )

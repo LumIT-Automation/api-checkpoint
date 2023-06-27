@@ -104,8 +104,8 @@ class Lock:
                     if oc:
                         if str(httpMethod) in table:
                             for method, compatibility in table[httpMethod].items():
-                                entry = oc+":"+str(method)+":"+self.assetId+":"+self.domain # exact same entry check.
-                                entryAllDomains = oc+":"+str(method)+":"+self.assetId+":any" # same rule but for all domains.
+                                entry = oc + ":" + str(method) + ":" + self.assetId + ":" + self.domain # exact same entry check.
+                                entryAllDomains = oc + ":" + str(method) + ":" + self.assetId + ":any" # same rule but for all domains.
 
                                 # <httpMethod>: {
                                 #    "POST": "x",
@@ -126,7 +126,7 @@ class Lock:
                                             if isinstance(c["lock"], list):
                                                 if c["lock"]:
                                                     Log.log("Locked on API.")
-                                                    Log.log("Available locks: "+str(c))
+                                                    Log.log("Available locks: " + str(c))
 
                                                     return False
 
@@ -136,8 +136,8 @@ class Lock:
                                         if "lock" in c:
                                             if isinstance(c["lock"], list):
                                                 if self.objectName in c["lock"]:
-                                                    Log.log("Locked on object "+self.objectName)
-                                                    Log.log("Available locks: "+str(c))
+                                                    Log.log("Locked on object " + self.objectName)
+                                                    Log.log("Available locks: " + str(c))
 
                                                     return False
         except Exception:
@@ -167,7 +167,7 @@ class Lock:
                 for oc in self.objectClass:
                     if oc:
                         # @todo: a Redis cache transaction lock is needed here.
-                        entry = oc+":"+str(httpMethod)+":"+self.assetId+":"+self.domain
+                        entry = oc + ":" + str(httpMethod) + ":" + self.assetId + ":" + self.domain
                         c = cache.get(entry)
 
                         # If some locked objectName already set, add the current one.
@@ -180,7 +180,7 @@ class Lock:
                                 lockedObjects = c["lock"]
 
                         cache.set(entry, { "lock": lockedObjects }, timeout=settings.LOCK_MAX_VALIDITY)
-                        Log.log("Lock set for "+entry+", which now values "+str(lockedObjects))
+                        Log.log("Lock set for " + entry + ", which now values " + str(lockedObjects))
         except Exception:
             pass
 
@@ -194,7 +194,7 @@ class Lock:
             if httpMethod:
                 for oc in self.objectClass:
                     if oc:
-                        entry = oc+":"+str(httpMethod)+":"+self.assetId+":"+self.domain
+                        entry = oc + ":" + str(httpMethod) + ":" + self.assetId + ":" + self.domain
                         c = cache.get(entry)
 
                         if "lock" in c:
@@ -208,7 +208,7 @@ class Lock:
                                     # Delete the entry completely.
                                     cache.delete(entry)
 
-                                Log.log("Lock released for "+entry+"; now it values: "+str(cache.get(entry)))
+                                Log.log("Lock released for " + entry + "; now it values: " + str(cache.get(entry)))
         except Exception:
             pass
 

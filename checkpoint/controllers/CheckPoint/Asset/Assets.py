@@ -23,7 +23,7 @@ class CheckPointAssetsController(CustomControllerCheckPointGetList, CustomContro
 
             permittedAssets = []
             user = CustomControllerBase.loggedUser(request)
-            assets = Asset.list()
+            assets = Asset.list(showPassword=False)
 
             # Filter each asset basing on actual permissions.
             for a in assets:

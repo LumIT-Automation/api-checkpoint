@@ -53,13 +53,13 @@ class History:
         # Build SQL query according to dict fields.
         for k, v in data.items():
             s += "%s,"
-            keys += k+","
+            keys += k + ","
             values.append(strip_tags(v)) # no HTML allowed.
 
-        keys = keys[:-1]+")"
+        keys = keys[:-1] + ")"
 
         try:
-            c.execute("INSERT INTO log "+keys+" VALUES ("+s[:-1]+")", values) # user data are filtered by the serializer.
+            c.execute("INSERT INTO log " + keys + " VALUES (" + s[:-1] + ")", values) # user data are filtered by the serializer.
         except Exception as e:
             raise CustomException(status=400, payload={"database": e.__str__()})
         finally:
